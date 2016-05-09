@@ -6,7 +6,8 @@ var https  = require( 'https' ),
 
 var options = {
     key: fs.readFileSync(path.join(__dirname, 'ssl/withcenter.key')),
-    cert: fs.readFileSync(path.join(__dirname, 'ssl/withcenter.crt'))
+    cert: fs.readFileSync(path.join(__dirname, 'ssl/withcenter.crt')),
+    ca: fs.readFileSync(path.join(__dirname, 'ssl/withcenter.ca-bundle'))
 };
 
 function serverHandler(request, response) {
