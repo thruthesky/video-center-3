@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="/www/dist/rmc3.js"></script>
+    <!-- signaling 을 위해서 반드시 socket.io 가 추가되어야 한다. -->
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+
+
+<button id="openNewSessionButton">Open New Room</button>
+<script>
+    var connection = new RTCMultiConnection();
+
+    // easiest way to customize what you need!
+    connection.session = {
+        audio: true,
+        video: true
+    };
+
+    // on getting local or remote media stream
+    // e.mediaElement 에는 video 태그가 들어가이싿. 찾아 볼 것.
+    connection.onstream = function(e) {
+        console.log(e.mediaElement);
+        document.body.appendChild(e.mediaElement);
+    };
+
+    // setup signaling channel
+    connection.connect();
+
+    // open new session
+    document.querySelector('#openNewSessionButton').onclick = function() {
+        connection.open();
+    };
+</script>
+
+
+
+
+
+
+
+</body>
+</html>
