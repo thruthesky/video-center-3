@@ -10,12 +10,15 @@ var options = {
     ca: fs.readFileSync(path.join(__dirname, 'ssl/withcenter.ca-bundle'))
 };
 
+var count_request = 0;
 function serverHandler(request, response) {
     var uri = url.parse(request.url).pathname;
     var www_path = path.join(process.cwd(), 'www');
     var filename = path.join(www_path, uri);
 
-    console.log(www_path);
+    count_request ++;
+    console.log('count request : ' + count_request );
+    //console.log(www_path);
     console.log(filename);
     var stats;
 
