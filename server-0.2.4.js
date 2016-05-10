@@ -13,9 +13,12 @@ var options = {
 };
 
 function serverHandler(request, response) {
-    var uri = url.parse(request.url).pathname,
-        filename = path.join(process.cwd(), uri);
+    var uri = url.parse(request.url).pathname;
+    var www_path = path.join(process.cwd(), 'www');
+    var filename = path.join(www_path, uri);
 
+    console.log(www_path);
+    console.log(filename);
     var stats;
 
     try {
