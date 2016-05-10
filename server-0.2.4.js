@@ -57,7 +57,10 @@ var app = https.createServer(options, serverHandler);
 
 app.listen(10443);
 
+var count_signaling_server = 0;
 require('./Signaling-Server.js')(app, function(socket) {
+    count_signaling_server ++;
+    console.log('signaling server : ' + count_signaling_server);
     try {
         var params = socket.handshake.query;
 
