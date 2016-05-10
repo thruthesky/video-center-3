@@ -18,4 +18,11 @@ Video Conference System By Withcenter, Inc.
 
 # 참고
 
-## 웹브라우저가 접속하는 scheme 이 SSL 이 아니면 getUserMedia() 를 사용 할 수 없다.
+## SSL 필수
+
+* 웹브라우저가 접속하는 scheme 이 SSL 이 아니면 getUserMedia() 를 사용 할 수 없다.
+
+## socket.io 에서 ERR_EMPTY_RESPONSE
+
+* SSL 이 아닌 상태에서 Join Room 을 할 때, socket.io 에러가 발생한다.
+
