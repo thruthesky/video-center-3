@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebRTC Peer Connection</title>
+    <script>
+        var socket = new WebSocket('ws://withcenter.com:10080');
+        socket.onopen = function() {
+            console.log('onopen');
+        };
+        socket.onmessage = function() {
+            console.log('onmessage');
+        };
+    </script>
+</head>
+<body>
+
+
+
+</body>
+</html>
