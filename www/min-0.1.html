@@ -54,31 +54,25 @@
     function getRoomID() {
         return el.room_id.val();
     }
-    el.open_room.click(function(){
-        var $this = $(this);
+    el.disable = function( $this ) {
         $this.prop('disabled', true);
+    };
+
+
+    el.open_room.click(function(){
+        console.log('open room : ' + getRoomID() );
+        el.disable( $(this) );
         connection.open( getRoomID() );
     });
-    /*
-    document.getElementById('join-room').onclick = function() {
-        this.disabled = true;
-        connection.join(document.getElementById('room-id').value);
-    };*/
     el.join_room.click( function() {
-        var $this = $(this);
-        $this.prop('disabled', true);
+        el.disable( $(this) );
         connection.join( getRoomID() );
     });
-    /*
-    document.getElementById('open-or-join-room').onclick = function() {
-        this.disabled = true;
-        connection.openOrJoin(document.getElementById('room-id').value);
-    };*/
     el.open_or_join_room.click( function() {
-        var $this = $(this);
-        $this.prop('disabled', true);
+        el.disable( $(this) );
         connection.openOrJoin( getRoomID() );
     });
+
     // ......................................................
     // ................FileSharing/TextChat Code.............
     // ......................................................
@@ -124,16 +118,17 @@
         OfferToReceiveVideo: true
     };
     connection.onstream = function(event) {
-
+        console.log('connection.onstream : ' + getRoomID() );
         // Remove controls property.
-        var video = event.mediaElement.outerHTML;
-        video = video.replace('controls', '');
+        var video = event.mediaElement;
+        //video = video.replace('controls', '');
         
         $('body').append(video);
     };
     connection.onmessage = appendDIV;
     connection.filesContainer = document.getElementById('file-container');
     connection.onopen = function() {
+        console.log('connection.onopen : ' + getRoomID() );
         document.getElementById('share-file').disabled      = false;
         document.getElementById('input-text-chat').disabled = false;
     };
