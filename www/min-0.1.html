@@ -27,6 +27,8 @@
 <button id="join-room">Join Room</button>
 <button id="open-or-join-room">Auto Open Or Join Room</button>
 <hr>
+<button id="get-public-moderators">getPublicModerators</button>
+<hr>
 <div id="chat-container">
     <input type="text" id="input-text-chat" placeholder="Enter Text Chat" disabled>
     <button id="share-file" disabled>Share File</button>
@@ -72,6 +74,7 @@
         el.disable( $(this) );
         connection.openOrJoin( getRoomID() );
     });
+
 
     // ......................................................
     // ................FileSharing/TextChat Code.............
@@ -132,6 +135,7 @@
         document.getElementById('share-file').disabled      = false;
         document.getElementById('input-text-chat').disabled = false;
     };
+    
 </script>
 
 </body>
