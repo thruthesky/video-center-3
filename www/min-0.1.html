@@ -9,7 +9,7 @@
     <style>
         video {
             object-fit: fill;
-            width: 30%;
+            width: 99%;
         }
     </style>
 </head>
@@ -120,14 +120,18 @@
         OfferToReceiveAudio: true,
         OfferToReceiveVideo: true
     };
+
+    /**
+     *
+     * @param event
+     */
     connection.onstream = function(event) {
-        console.log('connection.onstream : ' + getRoomID() );
-        // Remove controls property.
         var video = event.mediaElement;
-        //video = video.replace('controls', '');
-        
-        $('body').append(video);
+        var $v = $(video);
+        $v.prop('controls', false);
+        $('body').append($v);
     };
+
     connection.onmessage = appendDIV;
     connection.filesContainer = document.getElementById('file-container');
     connection.onopen = function() {
@@ -135,7 +139,6 @@
         document.getElementById('share-file').disabled      = false;
         document.getElementById('input-text-chat').disabled = false;
     };
-    
 </script>
 
 </body>
