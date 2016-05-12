@@ -58,3 +58,23 @@ Video Conference System By Withcenter, Inc.
 * video 태그의 속성으로 controls 를 주면, 비디오에 컨틀롤러가 나타나는데 불편하다.
 * 전체 화면 보기가 가능하고 여러가지 편리해 보이지만,
 * 비디오와 음성 녹음이 계속 되고 전달되므로 올바르게 동작하지 않는다.
+
+
+# 문서화 할 것.
+
+onstream 의 event.mediaElement 에서 video element 의 controls 를 없애려면
+아래와 같이
+
+$(event.mediaElement).prop('controls', false) 와 같이 하면 된다.
+
+$(event.mediaElement) 와 같이 jQuery 객체를 만들어서 활용을 할 수 있다.
+
+
+    connection.onstream = function(event) {
+        var video = event.mediaElement;
+        var $v = $(video);
+        console.log($v.prop('id'));
+        console.log($v.prop('src'));
+        $v.prop('controls', false);
+        $('body').append($v);
+    };
