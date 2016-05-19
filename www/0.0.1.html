@@ -3,24 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>WebRTC Peer Connection</title>
-    <script src="js/jquery-2.2.3.min.js"></script>
-    <script src="js/underscore-min.js"></script>
-    <script src="js/underscore.string.min.js"></script>
 
     <style>
         video {
             object-fit: fill;
             width: 99%;
         }
+
+        .room-name {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
+
+
+
+<script src="js/jquery-2.2.3.min.js"></script>
+<script src="js/underscore-min.js"></script>
+<script src="js/underscore.string.min.js"></script>
 
 <script src="https://www.withcenter.com:10443/dist/rmc3.js"></script>
 <script src="https://www.withcenter.com:10443/dist/rmc3.fbr.js"></script>
 
 <!-- socket.io for signaling -->
 <script src="https://www.withcenter.com:10443/socket.io/socket.io.js"></script>
+
 
 <hr>
 <input type="text" id="room-id" value="abcdef">
@@ -43,9 +51,9 @@
 </div>
 <hr>
 <div id="room-list">
-<ul>
+    <ul>
 
-</ul>
+    </ul>
 </div>
 
 <script>
@@ -114,6 +122,17 @@
         connection.extra.nickName = $('[name="nickname"]').val();
         connection.updateExtraData(); // now above value will be auto synced among all *connected* users
     });
+
+
+
+
+    $('body').on('click', '.room-name', function(){
+        var $this = $(this);
+        var person = $this.text();
+        console.log('connecting to: ' + person);
+        connection.join( person );
+    });
+
 
 
     // ......................................................
@@ -236,7 +255,7 @@
             $('#room-list ul li').remove();
             _.each( array, function(moderator) {
                 var UserID = moderator.userid;
-                $('#room-list ul').append('<li>'+UserID+'</li>');
+                $('#room-list ul').append('<li class="room-name">'+UserID+'</li>');
             });
             setTimeout(getPublicModeratorLoop, 2000);
         });
@@ -249,6 +268,10 @@
     };
 
 </script>
+
+
+
+
 
 </body>
 </html>
