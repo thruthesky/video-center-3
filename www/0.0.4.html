@@ -46,6 +46,10 @@
         </form>
         -->
         <button id="open-room-button">Open Room</button>
+        <div>
+        <input type="text" name="join_userid" placeholder="Input userid to join">
+        <button id="join-button">Join</button>
+        </div>
 
 
         <div id="room-list">
@@ -284,6 +288,12 @@
             $('#input-user-id').find('[name="user_id"]').val( getUserID() );
             rtc_setUserID( getUserID() );
         }
+
+        $body.on('click', '#join-button', function() {
+            var userid = $('[name="join_userid"]').val();
+            console.info('join to : ' + userid);
+            connection.join(userid);
+        });
     };
 
 
