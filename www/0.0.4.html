@@ -15,9 +15,9 @@
     <script>
         var url_signaling_server = 'https://www.videocenter.co.kr:443/';
 
-        console.log = function() {};
-        console.debug = function() {};
-        console.warn = function() {};
+        //console.log = function() {};
+        //console.debug = function() {};
+        //console.warn = function() {};
     </script>
 </head>
 <body>
@@ -34,6 +34,11 @@
 
 <script type="text/template" id="video-center-template">
     <header>Video Center v3 by Withcenter, Inc.</header>
+
+    <div>
+        <input type="text" name="join_userid" placeholder="Input userid to join">
+        <button id="join-button">Join</button>
+    </div>
     <section id="lobby">
         <h1>Lobby</h1>
 
@@ -46,10 +51,6 @@
         </form>
         -->
         <button id="open-room-button">Open Room</button>
-        <div>
-        <input type="text" name="join_userid" placeholder="Input userid to join">
-        <button id="join-button">Join</button>
-        </div>
 
 
         <div id="room-list">
