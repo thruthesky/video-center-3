@@ -260,6 +260,7 @@
     function rtc_setUserID(userID) {
         connection.userid = userID;
     }
+
     vc.run = function() {
         console.log('vc.run');
         vc.displayVideoCenter();
@@ -275,8 +276,14 @@
             Cookies.set('userid', userid, { expires: 365 });
             rtc_setUserID( userid );
         });
-        $('#input-user-id').find('[name="user_id"]').val( getUserID() );
-        rtc_setUserID( getUserID() );
+        var userid = getUserID();
+        if ( typeof userid == 'undefined' || userid == '' ) {
+            alert('Please input username');
+        }
+        else {
+            $('#input-user-id').find('[name="user_id"]').val( getUserID() );
+            rtc_setUserID( getUserID() );
+        }
     };
 
 
