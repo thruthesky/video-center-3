@@ -3,30 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>WebRTC Peer Connection</title>
-
     <style>
-        video {
-            object-fit: fill;
-            width: 99%;
-        }
-
-        .room-name {
-            cursor: pointer;
-        }
+        video { object-fit: fill; width: 99%; }
+        .room-name { cursor: pointer; }
     </style>
+    <script>
+        var url_signaling_server = 'https://www.videocenter.co.kr:443/';
+        var vc = {};
+        
+    </script>
 </head>
 <body>
-
 <script src="js/jquery-2.2.3.min.js"></script>
 <script src="js/underscore-min.js"></script>
 <script src="js/underscore.string.min.js"></script>
-
-<script src="/dist/rmc3.js"></script>
-<script src="/dist/rmc3.fbr.js"></script>
+<script src="dist/rmc3.js"></script>
+<script src="dist/rmc3.fbr.js"></script>
 
 <!-- socket.io for signaling -->
-<script src="/socket.io/socket.io.js"></script>
-
+<script src="https://www.videocenter.co.kr/socket.io/socket.io.js"></script>
 
 <hr>
 <input type="text" id="room-id" value="abcdef">
@@ -168,7 +163,7 @@
     // ......................................................
     // RTC Multi Connection Code
     // ......................................................
-    connection.socketURL = '/'; // '//www.withcenter.com:10443/';
+    connection.socketURL = url_signaling_server;
     connection.enableFileSharing = true; // by default, it is "false".
     connection.session = {
         audio: true,
@@ -264,6 +259,33 @@
         console.log(event.extra);
         console.log(event.extra.nickName);
     };
+
+
+    connection.multiPeersHandler.onPeerStateChanged = function(state) {
+        if (state.iceConnectionState.search(/disconnected|closed|failed/gi) === -1 && !connection.isConnected) {
+            connection.isConnected = true;
+
+            var peer = connection.peers[state.userid].peer;
+            // getStats() // This cause 'undefined function' error.
+        }
+    };
+
+    connection.getExternalIceServers = false;
+
+    connection.iceServers = [];
+
+    connection.iceServers.push({
+        url: 'stun:videocenter.co.kr:3478'
+    });
+
+    connection.iceServers.push({
+        urls: 'turn:videocenter.co.kr:3478',
+        username: 'test_username1',
+        credential: 'test_password1'
+    });
+
+
+
 
 </script>
 
