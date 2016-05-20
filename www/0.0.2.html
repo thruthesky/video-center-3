@@ -4,13 +4,20 @@
     <meta charset="UTF-8">
     <title>WebRTC Peer Connection</title>
     <style>
+        #lobby {
+            position: relative;
+        }
         video { object-fit: fill; width: 99%; }
         .room-name { cursor: pointer; }
     </style>
     <script>
         var url_signaling_server = 'https://www.videocenter.co.kr:443/';
         var vc = {};
-        
+        vc.run = function() {
+            console.log('vc.run');
+        };
+
+
     </script>
 </head>
 <body>
@@ -19,17 +26,13 @@
 <script src="js/underscore.string.min.js"></script>
 <script src="dist/rmc3.js"></script>
 <script src="dist/rmc3.fbr.js"></script>
-
-<!-- socket.io for signaling -->
 <script src="https://www.videocenter.co.kr/socket.io/socket.io.js"></script>
 
 <hr>
 <input type="text" id="room-id" value="abcdef">
 <button id="open-room">Open Room</button>
 <button id="join-room">Join Room</button>
-
 <button id="open-or-join-room">Auto Open Or Join Room</button>
-
 <button id="become-moderator">Become Moderator</button>
 
 <input type="text" name="nickname" placeholder="User nickname"><span class="update-nickname">Update</span>
@@ -278,6 +281,10 @@
         url: 'stun:videocenter.co.kr:3478'
     });
 
+
+    /**
+     * @todo username 과 credential 이 틀려도 접속이 된다. 확인을 해 볼 것.
+     */
     connection.iceServers.push({
         urls: 'turn:videocenter.co.kr:3478',
         username: 'test_username1',
@@ -287,6 +294,17 @@
 
 
 
+</script>
+
+
+
+<script type="text/template" id="lobby-template">
+    <h1>Lobby</h1>
+</script>
+<script>
+    $(function(){
+        vc.run();
+    });
 </script>
 
 
