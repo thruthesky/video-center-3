@@ -13,13 +13,14 @@ var options = {
     ca: fs.readFileSync('ssl/videocenter/videocenter_co_kr.ca-bundle')
 };
 
+
 /*
 var options = {
     key: fs.readFileSync(path.join(__dirname, 'ssl/onfis/onfis_com.key')),
     cert: fs.readFileSync(path.join(__dirname, 'ssl/onfis/onfis_com.crt')),
     ca: fs.readFileSync(path.join(__dirname, 'ssl/onfis/onfis_com.ca-bundle'))
 };
- */
+*/
 
 
 
