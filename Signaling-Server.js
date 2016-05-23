@@ -1,7 +1,6 @@
 // Muaz Khan      - www.MuazKhan.com
 // MIT License    - www.WebRTC-Experiment.com/licence
 // Documentation  - github.com/muaz-khan/RTCMultiConnection
-
 module.exports = exports = function(app, socketCallback) {
     var listOfUsers = {};
     var shiftedModerationControls = {};
@@ -173,6 +172,7 @@ module.exports = exports = function(app, socketCallback) {
         });
 
         socket.on('check-presence', function(userid, callback) {
+            try {
             if (userid === socket.userid && !!listOfUsers[userid]) {
                 callback(false, socket.userid, listOfUsers[userid].extra);
                 return;
@@ -183,7 +183,9 @@ module.exports = exports = function(app, socketCallback) {
                 extra = listOfUsers[userid].extra;
             }
 
-            callback(!!listOfUsers[userid], userid, extra);
+                callback(!!listOfUsers[userid], userid, extra);
+            }
+            catch (e) {}
         });
 
         function onMessageCallback(message) {
@@ -335,6 +337,25 @@ module.exports = exports = function(app, socketCallback) {
             } catch (e) {}
 
             delete listOfUsers[socket.userid];
+        });
+
+        socket.on('listOfUsers', function(callback) {
+            //socket.emit( 'listOfUsers', listOfUsers );
+            //console.log( listOfUsers );
+            // callback( listOfUsers );
+            var msg = '';
+            console.log("User IDs: ");
+            for ( var i in listOfUsers ) {
+
+                var conn = '';
+                for ( var c in listOfUsers[i].connectedWith ) {
+                    conn += c + ', ';
+                }
+                s = i + ' => ' + conn;
+                msg += s + ' : ',
+                console.log( s );
+            }
+            callback( msg );
         });
 
         if (socketCallback) {

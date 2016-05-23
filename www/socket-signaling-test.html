@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="config.js"></script>
+<script src="/dist/rmc3.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var connection = new RTCMultiConnection();
+    connection.socketURL = socketURL;
+    var socket = connection.getSocket();
+/*
+Google Chrome Dev Tool 에서 아래와 같이 하면 방이 존재하는지 존재하지 않는지 알 수 있다.
+아래와 같이 Signal Server 에 명령을 하면 된다.
+
+ socket.emit('check-presence', 'roomtest', function(re) { alert(re); } );
+ */
+</script>
+</body>
+</html>

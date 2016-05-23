@@ -13,17 +13,17 @@
 </head>
 <body>
 
+
+<script src="js/jquery-2.2.3.min.js"></script>
 <script src="/dist/rmc3.js"></script>
 
 <!-- socket.io for signaling -->
 <script src="/socket.io/socket.io.js"></script>
 
+Name: <input type="text" name="target_name">
+<button class="connect">Connect</button>
 
 <script>
-
-    var id = location.href.split('=')[1];
-
-
 
     console.log = function() {};
 
@@ -43,16 +43,15 @@
         OfferToReceiveAudio: true,
         OfferToReceiveVideo: true
     };
-    connection.userid = id;
+    connection.userid = 'jaeho';
+    //connection.open( 'jaeho' );
+    $(function(){
+        $('.connect').click(function(){
+            var user = $('[name="target_name"]').val();
+            connection.join( user );
+        });
+    });
 
-    document.writeln(connection.userid);
-
-    connection.openOrJoin('roomtest');
-
-
-    setTimeout( function() {
-        location.reload();
-    }, 1000 * 60 );
 
 </script>
 
