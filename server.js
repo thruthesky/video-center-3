@@ -6,11 +6,22 @@ var https  = require( 'https' ),
     path    = require( 'path' ),
     fs      = require( 'fs' );
 
+
 var options = {
-    key: fs.readFileSync(path.join(__dirname, 'ssl/videocenter/videocenter_co_kr.key')),
-    cert: fs.readFileSync(path.join(__dirname, 'ssl/videocenter/videocenter_co_kr.crt')),
-    ca: fs.readFileSync(path.join(__dirname, 'ssl/videocenter/videocenter_co_kr.ca-bundle'))
+    key: fs.readFileSync('ssl/videocenter/videocenter_co_kr.key'),
+    cert: fs.readFileSync('ssl/videocenter/videocenter_co_kr.crt'),
+    ca: fs.readFileSync('ssl/videocenter/videocenter_co_kr.ca-bundle')
 };
+
+/*
+var options = {
+    key: fs.readFileSync(path.join(__dirname, 'ssl/onfis/onfis_com.key')),
+    cert: fs.readFileSync(path.join(__dirname, 'ssl/onfis/onfis_com.crt')),
+    ca: fs.readFileSync(path.join(__dirname, 'ssl/onfis/onfis_com.ca-bundle'))
+};
+ */
+
+
 
 var count_request = 0;
 function serverHandler(request, response) {
@@ -55,7 +66,7 @@ function serverHandler(request, response) {
 }
 var app = https.createServer(options, serverHandler);
 
-app.listen(443);
+app.listen(10443);
 
 var count_signaling_server = 0;
 require('./Signaling-Server.js')(app, function(socket) {
