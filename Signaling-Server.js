@@ -98,10 +98,12 @@ module.exports = exports = function(app, socketCallback) {
         });
 
         socket.on('changed-uuid', function(newUserId, callback) {
+
             if (params.dontUpdateUserId) {
                 delete params.dontUpdateUserId;
                 return;
             }
+
 
             try {
                 if (listOfUsers[socket.userid] && listOfUsers[socket.userid].socket.id == socket.userid) {
@@ -110,18 +112,22 @@ module.exports = exports = function(app, socketCallback) {
                     var oldUserId = socket.userid;
                     listOfUsers[newUserId] = listOfUsers[oldUserId];
                     listOfUsers[newUserId].socket.userid = socket.userid = newUserId;
+                    console.log(newUserId);
+                    console.log(listOfUsers[newUserId]);
+
                     delete listOfUsers[oldUserId];
 
                     callback();
                     return;
                 }
 
+                var oldSocketId = socket.userid;
                 socket.userid = newUserId;
                 listOfUsers[socket.userid] = {
                     socket: socket,
                     connectedWith: {},
-                    isPublic: false,
-                    extra: {}
+                    isPublic: true,
+                    extra: listOfUsers[oldSocketId].extra
                 };
 
                 callback();
