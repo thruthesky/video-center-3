@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebRTC Peer Connection</title>
+    <style>
+        #lobby {
+            position: relative;
+        }
+        video { object-fit: fill; width: 99%; }
+        #lobby .room-name { cursor: pointer; }
+        #room { display: none; }
+        #room .videos { position: relative;  }
+    </style>
+    <script>
+        var url_signaling_server = 'https://www.videocenter.co.kr:443/';
+
+        //console.log = function() {};
+        //console.debug = function() {};
+        //console.warn = function() {};
+    </script>
+</head>
+<body>
+
+<div id="videocenter"></div>
+
+<script src="js/jquery-2.2.3.min.js"></script>
+<script src="js/underscore-min.js"></script>
+<script src="js/underscore.string.min.js"></script>
+<script src="js/js.cookie.js"></script>
+<script src="dist/rmc3.js"></script>
+<script src="dist/rmc3.fbr.js"></script>
+<script src="https://www.videocenter.co.kr/socket.io/socket.io.js"></script>
+
+<script type="text/template" id="video-center-template">
+    <header>Video Center v3 by Withcenter, Inc.</header>
+
+    <div>
+        <input type="text" name="join_userid" placeholder="Input userid to join">
+        <button id="join-button">Join</button>
+    </div>
+    <section id="lobby">
+        <h1>Lobby</h1>
+
+        <form id="input-user-id">
+            <input name="user_id" placeholder="Input user name"><input type="submit" value="Update">
+        </form>
+        <!--
+        <form id="open-room">
+            <input name="room_name" placeholder="Input room name"><input type="submit" value="Open">
+        </form>
+        -->
+        <button id="open-room-button">Open Room</button>
+
+
+        <div id="room-list">
+            <ul>
+
+            </ul>
+        </div>
+    </section>
+    <section id="room">
+        <header>
+            <button class="leave">Leave</button>
+            <button class="become-public-moderator" onclick="rtc_becomePublicModerator();">becomeModerator</button>
+            Display :
+            <button class="video-layout-list" onclick="videoLayout_list();">List</button>
+            <button class="video-layout-Metro" onclick="videoLayout_metro();">Metro</button>
+            <button class="video-layout-overlay" onclick="videoLayout_overlay();">Overlay</button>
+        </header>
+        <div class="videos">
+
+        </div>
+    </section>
+</script>
+
+<script>
+
+
+    // .......................................................
+    // Variables
+    // .......................................................
+    var connection = new RTCMultiConnection();
+
+
+    // ......................................................
+    // RTC Multi Connection Code
+    // ......................................................
+    connection.socketURL = url_signaling_server;
+    connection.enableFileSharing = true;
+    connection.session = {
+        audio: true,
+        video: true,
+        data : true
+    };
+    connection.sdpConstraints.mandatory = {
+        OfferToReceiveAudio: true,
+        OfferToReceiveVideo: true
+    };
+
+    connection.getExternalIceServers = false;
+
+    connection.iceServers = [];
+
+    connection.iceServers.push({
+        url: 'stun:videocenter.co.kr:3478'
+    });
+
+    /**
+     * @todo username 과 credential 이 틀려도 접속이 된다. 확인을 해 볼 것.
+     */
+    connection.iceServers.push({
+        urls: 'turn:videocenter.co.kr:3478',
+        username: 'test_username1',
+        credential: 'test_password1'
+    });
+
+
+    connection.userid = "JaeHo Song";
+    console.log( 'my id: ' + connection.userid );
+
+
+
+
+    /**
+     *
+     * 방을 목록을 Signaling Server 로 부터 가져오는 무한 루프를 돌린다.
+     *
+     */
+    function runRoomListLoop() {
+        (function getPublicModeratorLoop() {
+            connection.getAllParticipants().forEach(function(remoteUserId) {
+                var user = connection.peers[remoteUserId];
+                //console.log(user);
+            });
+
+            // connection.getPublicModerators(startsWith, callback)
+            connection.getPublicModerators(function (array) {
+                //console.log('room names', array);
+                $('#room-list').find('ul li').remove();
+                _.each( array, function(moderator) {
+                    var UserID = moderator.userid;
+                    //console.log(UserID);
+                    //console.log($('#room-list').length);
+                    $('#room-list').find('ul').append('<li class="room-name">'+UserID+'</li>');
+                });
+                setTimeout(getPublicModeratorLoop, 3000);
+            });
+        })();
+
+    }
+
+    connection.onExtraDataUpdated = function(event) {
+        //console.log('extra data updated :', event.userid);
+        //console.log(event.extra);
+        //console.log(event.extra.nickName);
+    };
+
+
+    $('body').on('click', '.room-name', function(){
+        var $this = $(this);
+        var person = $this.text();
+        console.log('connecting to: ' + person);
+        connection.join( person );
+    });
+
+
+    /**
+     *
+     *
+     * @param event
+     */
+    connection.onstream = function(event) {
+        //console.log('connection id: ' + connection.userid);
+        //console.log('event id: ' + event.userid);
+        //console.log(connection);
+        //console.log(event);
+        var video = event.mediaElement;
+        var $v = $(video);
+        $v.prop('controls', false);
+        if ( connection.userid == event.userid ) { // 나의 비디오 인가?
+            $v.attr('who', 'i');
+        }
+        else {
+            $v.attr('who', 'other');
+        }
+        //$('body').append($v);
+        lobby().hide();
+        room().show();
+        roomAddVideo($v);
+        videoLayout(connection.getAllParticipants().length);
+    };
+
+    function rtc_open_room(e) {
+        e.preventDefault();
+        var $this = $(this);
+        var $box = $('[name="room_name"]');
+        var name = $box.val();
+        console.log('rtc_open_room : ' + name);
+        if ( name == '' ) {
+            alert('Input room name');
+            return false;
+        }
+        connection.open( name, true );
+        $box.val('');
+        return false;
+    }
+    //
+    function rtc_leave_room(callback) {
+
+        // to leave entire room
+        connection.getAllParticipants().forEach(function(participantId) {
+            connection.disconnectWith(participantId, function() {
+                console.log( 'disconnectedWith: ' + participantId );
+                callback();
+            });
+        });
+    }
+
+</script>
+<script>
+    /**
+     * ...................................................................
+     *
+     * Functions
+     *
+     * ...................................................................
+     */
+    function reload() {
+        location.reload(true);
+    }
+</script>
+
+<script>
+    var $body = $('body');
+
+    /**
+     * ........................................................................
+     *
+     *  vc 클래스는 RTCMultiConnection 코드와 전혀 상관이 없다.
+     *  관련된 코드를 전혀 담지 않는다.
+     *  단, 호출은 가능하다.
+     *
+     * ........................................................................
+     */
+    var $videocenter = $('#videocenter');
+    var vc = {
+        options : {
+            videoLayout : 'list'
+        },
+        lobby: {
+            get : function() { return $('#lobby'); }
+        },
+        room: {
+            get : function() { return $('#room'); }
+        },
+        test : {
+
+        }
+    };
+    vc.displayVideoCenter = function() {
+        var m = _.template($('#video-center-template').html())();
+        $videocenter.html( m );
+    };
+    function rtc_setUserID(userID) {
+        connection.userid = userID;
+    }
+
+    vc.run = function() {
+        console.log('vc.run');
+        vc.displayVideoCenter();
+        //$body.on('submit', '#open-room', rtc_open_room);
+        function rtc_on_click_open_room_button() {
+            connection.open( getUserID(), true );
+        }
+
+        $body.on('click', '#open-room-button', rtc_on_click_open_room_button);
+        $body.on('submit', '#input-user-id', function(e) {
+            e.preventDefault();
+            var userid = $(this).find('[name="user_id"]').val();
+            Cookies.set('userid', userid, { expires: 365 });
+            rtc_setUserID( userid );
+        });
+        var userid = getUserID();
+        if ( typeof userid == 'undefined' || userid == '' ) {
+            alert('Please input username');
+        }
+        else {
+            $('#input-user-id').find('[name="user_id"]').val( getUserID() );
+            rtc_setUserID( getUserID() );
+        }
+
+        $body.on('click', '#join-button', function() {
+            var userid = $('[name="join_userid"]').val();
+            console.info('join to : ' + userid);
+            connection.join(userid);
+        });
+    };
+
+
+
+    function lobby() { return vc.lobby.get(); }
+    function room() { return vc.room.get(); }
+    function getUserID() { return Cookies.get('userid');  }
+    function roomAddVideo($v) {
+        room().find('.videos').append($v);
+    }
+
+    /**
+     * 방에 접속하는 사람 수에 따라 자동으로 layout 수정한다.
+     *
+     */
+    function videoLayout( ) {
+
+        if ( vc.options.videoLayout == 'list' ) videoLayout_list();
+        else if ( vc.options.videoLayout == 'metro' ) videoLayout_metro();
+        else if ( vc.options.videoLayout == 'overlay' ) videoLayout_overlay();
+
+
+        /*
+
+         videoLayout_overlay(); return; // 테스트 코드
+
+         console.info('videoLayout: ' + no );
+         if ( no == 0 ) videoLayout_list();
+         else if ( no == 1 ) videoLayout_overlay();
+         else if ( no == 2 ) videoLayout_list();
+         else videoLayout_metro();
+
+         */
+    }
+
+
+    /**
+     * 한 행에 비디오를 1 개 씩 표시.
+     */
+    function videoLayout_list() {
+        vc.options.videoLayout = 'list';
+        var $videos = room().find('.videos');
+        $videos.find('video').css ({
+            'position' : 'static',
+            'zindex' : 0,
+            'width' : '100%',
+            'height' : 'auto'
+        });
+    }
+
+
+    /**
+     * 큰 화면이 하나 있고, 나머지는 작은 화면으로 overlap 된다.
+     */
+    function videoLayout_overlay() {
+        vc.options.videoLayout = 'overlay';
+        var $videos = room().find('.videos');
+        $videos.find('[who="i"]').css ({
+            'float' : 'left',
+            'width' : '25%',
+            'height' : 'auto'
+        });
+
+        $videos.find('[who="other"]').css ({
+            'position' : 'static',
+            'float' : 'left',
+            'z-index' : 0,
+            'width' : '25%',
+            'height' : 'auto'
+        });
+
+        $videos.find('[who="other"]').last().css ({
+            'position' : 'absolute',
+            'z-index' : -1,
+            'top' : 0,
+            'left' : 0,
+            'width' : '100%',
+            'height' : 'auto'
+        });
+
+    }
+    /**
+     * 한 행에 비디오를 2개 또는 3개, 4개씩 표시.
+     *
+     */
+    function videoLayout_metro() {
+        vc.options.videoLayout = 'metro';
+        var $videos = room().find('.videos');
+        $videos.find('video').css ({
+            'position' : 'static',
+            'zindex' : 0,
+            'float' : 'left',
+            'width' : '50%',
+            'height' : 'auto'
+        });
+    }
+
+    /**
+     * .........................................................
+     *
+     * Initialization
+     *
+     * .........................................................
+     */
+
+
+    /**
+     *
+     * @todo 마지막 남은 video 태그가 몇개인지 보고, 1개 밖에 없으면, 자기 자신만 남았으니 그 때, reload 한다.
+     *
+     */
+    $body.on('click', '#room .leave', function() {
+        console.log('leave');
+        rtc_leave_room(function(){
+            // time delay
+            setTimeout(reload, 200);
+        });
+    });
+
+
+    /**
+     * ........................ TEST CODE .......................
+     */
+    vc.test.open_room = function (name) {
+        lobby().find('[name="room_name"]').val(name);
+        lobby().find('form').submit();
+    };
+    vc.test.join_room = function (name) { connection.join( name ) };
+    vc.test.openOrJoin = function (name) { connection.openOrJoin( name ) };
+
+    function rtc_becomePublicModerator() {
+        connection.becomePublicModerator();
+    }
+
+    $(function(){
+        vc.run();
+        setTimeout( runRoomListLoop, 100 );
+
+        // TEST code
+        // vc.test.open_room('Test room name');
+        // vc.test.join_room('Mac');
+//        vc.test.openOrJoin('Me');
+
+    });
+</script>
+
+
+
+
+</body>
+</html>

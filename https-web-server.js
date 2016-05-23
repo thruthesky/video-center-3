@@ -1,5 +1,6 @@
 /**
- *
+ * 로컬 임시 웹 서버
+ * HTTPS 로 접속을 하기 위한 단순한 도구
  */
 var https  = require( 'https' ),
     url     = require( 'url' ),
@@ -7,9 +8,9 @@ var https  = require( 'https' ),
     fs      = require( 'fs' );
 
 var options = {
-    key: fs.readFileSync(path.join(__dirname, 'ssl/videocenter/videocenter_co_kr.key')),
-    cert: fs.readFileSync(path.join(__dirname, 'ssl/videocenter/videocenter_co_kr.crt')),
-    ca: fs.readFileSync(path.join(__dirname, 'ssl/videocenter/videocenter_co_kr.ca-bundle'))
+    key: fs.readFileSync(path.join(__dirname, 'ssl/onfis/onfis_com.key')),
+    cert: fs.readFileSync(path.join(__dirname, 'ssl/onfis/onfis_com.crt')),
+    ca: fs.readFileSync(path.join(__dirname, 'ssl/onfis/onfis_com.ca-bundle'))
 };
 
 var count_request = 0;
@@ -54,32 +55,4 @@ function serverHandler(request, response) {
     });
 }
 var app = https.createServer(options, serverHandler);
-
-app.listen(443);
-
-var count_signaling_server = 0;
-require('./Signaling-Server.js')(app, function(socket) {
-    count_signaling_server ++;
-    console.log('signaling server : ' + count_signaling_server);
-    try {
-        var params = socket.handshake.query;
-
-        // "socket" object is totally in your own hands!
-        // do whatever you want!
-
-        // in your HTML page, you can access socket as following:
-        // connection.socketCustomEvent = 'custom-message';
-        // var socket = connection.getSocket();
-        // socket.emit(connection.socketCustomEvent, { test: true });
-
-        if (!params.socketCustomEvent) {
-            params.socketCustomEvent = 'custom-message';
-        }
-
-        socket.on(params.socketCustomEvent, function(message) {
-            try {
-                socket.broadcast.emit(params.socketCustomEvent, message);
-            } catch (e) {}
-        });
-    } catch (e) {}
-});
+app.listen(20443);

@@ -1319,6 +1319,9 @@
 
         connection.checkPresence = function(remoteUserId, callback) {
             if (!connection.socket) {
+                /**
+                 * 아래의 코드는 현재 사용자가 아직 connection 이 만들어지지 않은 경우를 대비해서,
+                 */
                 connection.connectSocket(function() {
                     connection.checkPresence(remoteUserId, callback);
                 });

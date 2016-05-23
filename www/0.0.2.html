@@ -3,32 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>WebRTC Peer Connection</title>
-    <script src="js/jquery-2.2.3.min.js"></script>
-    <script src="js/underscore-min.js"></script>
-    <script src="js/underscore.string.min.js"></script>
-
     <style>
-        video {
-            object-fit: fill;
-            width: 99%;
+        #lobby {
+            position: relative;
         }
+        video { object-fit: fill; width: 99%; }
+        .room-name { cursor: pointer; }
     </style>
+    <script>
+        var url_signaling_server = 'https://www.videocenter.co.kr:443/';
+        var vc = {};
+        vc.run = function() {
+            console.log('vc.run');
+        };
+
+
+    </script>
 </head>
 <body>
-
-<script src="https://www.withcenter.com:10443/dist/rmc3.js"></script>
-<script src="https://www.withcenter.com:10443/dist/rmc3.fbr.js"></script>
-
-<!-- socket.io for signaling -->
-<script src="https://www.withcenter.com:10443/socket.io/socket.io.js"></script>
+<script src="js/jquery-2.2.3.min.js"></script>
+<script src="js/underscore-min.js"></script>
+<script src="js/underscore.string.min.js"></script>
+<script src="dist/rmc3.js"></script>
+<script src="dist/rmc3.fbr.js"></script>
+<script src="https://www.videocenter.co.kr/socket.io/socket.io.js"></script>
 
 <hr>
 <input type="text" id="room-id" value="abcdef">
 <button id="open-room">Open Room</button>
 <button id="join-room">Join Room</button>
-
 <button id="open-or-join-room">Auto Open Or Join Room</button>
-
 <button id="become-moderator">Become Moderator</button>
 
 <input type="text" name="nickname" placeholder="User nickname"><span class="update-nickname">Update</span>
@@ -43,9 +47,9 @@
 </div>
 <hr>
 <div id="room-list">
-<ul>
+    <ul>
 
-</ul>
+    </ul>
 </div>
 
 <script>
@@ -116,6 +120,17 @@
     });
 
 
+
+
+    $('body').on('click', '.room-name', function(){
+        var $this = $(this);
+        var person = $this.text();
+        console.log('connecting to: ' + person);
+        connection.join( person );
+    });
+
+
+
     // ......................................................
     // ................FileSharing/TextChat Code.............
     // ......................................................
@@ -151,7 +166,7 @@
     // ......................................................
     // RTC Multi Connection Code
     // ......................................................
-    connection.socketURL = '/'; // '//www.withcenter.com:10443/';
+    connection.socketURL = url_signaling_server;
     connection.enableFileSharing = true; // by default, it is "false".
     connection.session = {
         audio: true,
@@ -185,18 +200,7 @@
         console.log('connection.onopen : ' + getRoomID() );
         document.getElementById('share-file').disabled      = false;
         document.getElementById('input-text-chat').disabled = false;
-
-
     };
-
-
-    var socket = connection.getSocket();
-    console.log(socket);
-    socket.emit('custom-event', 'hi there');
-    socket.on('custom-event', function(message) {
-        alert(message);
-    });
-
     /**
      * 누군가가 종료를 하면, 자신이 moderator 가 되기 위해서 becomePublicModerator 를 호출한다.
      * @note 그런데 이것은 버그가 있다. 제대로 동작하지 않는다.
@@ -247,7 +251,7 @@
             $('#room-list ul li').remove();
             _.each( array, function(moderator) {
                 var UserID = moderator.userid;
-                $('#room-list ul').append('<li>'+UserID+'</li>');
+                $('#room-list ul').append('<li class="room-name">'+UserID+'</li>');
             });
             setTimeout(getPublicModeratorLoop, 2000);
         });
@@ -260,7 +264,52 @@
     };
 
 
+    connection.multiPeersHandler.onPeerStateChanged = function(state) {
+        if (state.iceConnectionState.search(/disconnected|closed|failed/gi) === -1 && !connection.isConnected) {
+            connection.isConnected = true;
+
+            var peer = connection.peers[state.userid].peer;
+            // getStats() // This cause 'undefined function' error.
+        }
+    };
+
+    connection.getExternalIceServers = false;
+
+    connection.iceServers = [];
+
+    connection.iceServers.push({
+        url: 'stun:videocenter.co.kr:3478'
+    });
+
+
+    /**
+     * @todo username 과 credential 이 틀려도 접속이 된다. 확인을 해 볼 것.
+     */
+    connection.iceServers.push({
+        urls: 'turn:videocenter.co.kr:3478',
+        username: 'test_username1',
+        credential: 'test_password1'
+    });
+
+
+
+
 </script>
+
+
+
+<script type="text/template" id="lobby-template">
+    <h1>Lobby</h1>
+</script>
+<script>
+    $(function(){
+        vc.run();
+    });
+</script>
+
+
+
+
 
 </body>
 </html>
