@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebRTC Peer Connection</title>
+    <style>
+        video {
+            object-fit: fill;
+            width: 99%;
+        }
+    </style>
+</head>
+<body>
+
+<script src="/dist/rmc3.js"></script>
+
+<!-- socket.io for signaling -->
+<script src="/socket.io/socket.io.js"></script>
+
+
+<script>
+
+    // ......................................................
+    // ..................RTCMultiConnection Code.............
+    // ......................................................
+    var connection = new RTCMultiConnection();
+    connection.socketURL = '//www.withcenter.com:10443/';
+    connection.enableFileSharing = true; // by default, it is "false".
+    connection.session = {
+        audio: true,
+        video: true,
+        data : true
+    };
+    connection.sdpConstraints.mandatory = {
+        OfferToReceiveAudio: true,
+        OfferToReceiveVideo: true
+    };
+
+
+    connection.openOrJoin('roomtest');
+
+    setTimeout( function() {
+        location.reload();
+    }, 5000 );
+
+
+
+</script>
+
+</body>
+</html>
