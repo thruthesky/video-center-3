@@ -9,6 +9,7 @@
             width: 99%;
         }
     </style>
+    <script src="config.js"></script>
 </head>
 <body>
 
@@ -24,7 +25,7 @@
     // ..................RTCMultiConnection Code.............
     // ......................................................
     var connection = new RTCMultiConnection();
-    connection.socketURL = '//www.videocenter.co.kr:10443/';
+    connection.socketURL = socketURL;
     connection.enableFileSharing = true; // by default, it is "false".
     connection.session = {
         audio: true,
@@ -42,8 +43,6 @@
     setTimeout( function() {
         location.reload();
     }, 5000 );
-
-
 
 </script>
 
