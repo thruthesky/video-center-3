@@ -185,7 +185,18 @@
         console.log('connection.onopen : ' + getRoomID() );
         document.getElementById('share-file').disabled      = false;
         document.getElementById('input-text-chat').disabled = false;
+
+
     };
+
+
+    var socket = connection.getSocket();
+    console.log(socket);
+    socket.emit('custom-event', 'hi there');
+    socket.on('custom-event', function(message) {
+        alert(message);
+    });
+
     /**
      * 누군가가 종료를 하면, 자신이 moderator 가 되기 위해서 becomePublicModerator 를 호출한다.
      * @note 그런데 이것은 버그가 있다. 제대로 동작하지 않는다.
@@ -247,6 +258,7 @@
         console.log(event.extra);
         console.log(event.extra.nickName);
     };
+
 
 </script>
 
