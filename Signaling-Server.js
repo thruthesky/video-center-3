@@ -169,7 +169,7 @@ module.exports = exports = function(app, socketCallback) {
                         } catch (e) {}
                     }
                 });
-
+                
                 delete shiftedModerationControls[socket.userid];
                 callback();
             } catch (e) {

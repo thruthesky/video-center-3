@@ -25,11 +25,6 @@
         var src = socketURL + '/socket.io/socket.io.js';
         getScript( src );
 
-        // test
-        setTimeout( function() {
-            $('[name="join_userid"]').val('roomtest');
-            //$('#join-button').click();
-        }, 900);
     </script>
 </head>
 <body>
@@ -165,11 +160,7 @@
     }
 
 
-    connection.onExtraDataUpdated = function(event) {
-        //console.log('extra data updated :', event.userid);
-        //console.log(event.extra);
-        //console.log(event.extra.nickName);
-    };
+
 
 
     $('body').on('click', '.room-name', function(){
@@ -293,13 +284,13 @@
         $body.on('click', '#open-room-button', rtc_on_click_open_room_button);
         $body.on('submit', '#input-user-id', function(e) {
             e.preventDefault();
-            /*
             var userid = $(this).find('[name="user_id"]').val();
+            console.log( !!userid );
             if ( !! userid ) {
                 Cookies.set('userid', userid, { expires: 365 });
                 rtc_setUserID( userid );
             }
-            */
+
         });
         var userid = getUserID();
         if ( typeof userid == 'undefined' || userid == '' ) {
@@ -467,6 +458,13 @@
         // vc.test.open_room('Test room name');
         // vc.test.join_room('Mac');
 //        vc.test.openOrJoin('Me');
+
+
+        // test
+        setTimeout( function() {
+            $('[name="join_userid"]').val('roomtest');
+            //$('#join-button').click();
+        }, 900);
 
     });
 
