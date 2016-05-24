@@ -9,7 +9,7 @@ var https  = require( 'https' ),
 
 var options = {
     key: fs.readFileSync('ssl/videocenter/videocenter_co_kr.key'),
-    cert: fs.readFileSync('ssl/videocenter/videocenter_co_kr.crt'),
+    cert: fs.readFileSync('ssl/videocenter/videocenter.bundle.crt'),
     ca: fs.readFileSync('ssl/videocenter/videocenter_co_kr.ca-bundle')
 };
 
