@@ -9,11 +9,15 @@
         }
         video { object-fit: fill; width: 99%; }
         #lobby .room-name { cursor: pointer; }
-        #room { display: none; }
-        #room .videos { position: relative;  }
+        #room { display: none; position: relative; }
+        #room .videos { position: relative; margin-left: 200px; }
         #room .videos .user { position: relative;  }
         #room .videos .user .userid { position: absolute; top: 4px; left: 4px; }
 
+        #room .chat { position: absolute; top: 32px; left: 0; max-width: 200px; }
+        #room .chat .title { background-color: #cdcdcd; color: white; }
+        #room .chat .messages { min-height: 20em; background-color: #efefef; }
+        #room .chat input { width: 100%; }
     </style>
     <script src="config.js"></script>
     <script>
@@ -24,13 +28,11 @@
         }
         var src = socketURL + '/socket.io/socket.io.js';
         getScript( src );
-
     </script>
 </head>
 <body>
 
 <div id="videocenter"></div>
-
 <script src="js/jquery-2.2.3.min.js"></script>
 <script src="js/underscore-min.js"></script>
 <script src="js/underscore.string.min.js"></script>
@@ -38,24 +40,27 @@
 <script src="dist/rmc3.js"></script>
 <script src="dist/rmc3.fbr.js"></script>
 
-
-
 <script type="text/template" id="video-center-template">
     <header>Video Center v3 by Withcenter, Inc.</header>
 
-
-
     <div>
-        <input type="text" name="join_userid" placeholder="Input userid to join">
-        <button id="join-button">Join</button>
+        <a href="index.html">Index HTML</a>
+        <a href="?">Lobby</a>,
+        <a href="?reload=30">Reload on 'testroom'</a>
+    </div>
+    <div>
+        <input type="text" name="open_or_join_userid" placeholder="Input userid for open or join">
+        <button id="open-or-join">Open or Join</button>
     </div>
 
     <section id="lobby">
         <h1>Lobby</h1>
 
-        <form id="input-user-id">
-            <input name="user_id" placeholder="Input user name"><input type="submit" value="Update">
-        </form>
+
+        <span class="username">
+            User ID : <input name="username" placeholder="Input user name" size="10"><button>Update Username</button>
+        </span>
+
         <!--
         <form id="open-room">
             <input name="room_name" placeholder="Input room name"><input type="submit" value="Open">
@@ -63,8 +68,8 @@
         -->
         <button id="open-room-button">Open Room</button>
 
-
         <div id="room-list">
+            <h3>Click name below to JOIN</h3>
             <ul>
 
             </ul>
@@ -72,6 +77,7 @@
     </section>
     <section id="room">
         <header>
+            <a href="index.html">Index Page</a>
             <button class="leave">Leave</button>
             <!--<button class="become-public-moderator" onclick="rtc_becomePublicModerator();">becomeModerator</button>-->
             Display :
@@ -79,8 +85,17 @@
             <button class="video-layout-Metro" onclick="videoLayout_metro();">Metro</button>
             <!--<button class="video-layout-overlay" onclick="videoLayout_overlay();">Overlay</button>-->
         </header>
-        <div class="videos">
-
+        <div class="content">
+            <div class="videos">
+            </div>
+            <div class="chat">
+                <form>
+                    <div class="title">Chat room</div>
+                    <div class="messages"></div>
+                    <div class="input"><input type="text" name="message"></div>
+                </form>
+            </div>
+            <div class="whiteboard"></div>
         </div>
     </section>
 </script>
@@ -91,7 +106,6 @@
     // Variables
     // .......................................................
     var connection = new RTCMultiConnection();
-
 
     // ......................................................
     // RTC Multi Connection Code
@@ -126,10 +140,8 @@
     });
 
 
-    console.log( 'my id: ' + connection.userid );
-
-
-
+    console.log( 'default connection.userid: ' + connection.userid );
+    var socket = connection.getSocket();
 
     /**
      *
@@ -159,19 +171,19 @@
                 setTimeout(getPublicModeratorLoop, 3000);
             });
         })();
-
     }
-
-
-
 
 
     $('body').on('click', '.room-name', function(){
         var $this = $(this);
         var person = $this.text();
-        console.log('connecting to: ' + person);
-        connection.join( person );
+        //console.log('connecting to: ' + person);
+        //connection.join( person );
+        vc.joinRoom( person );
     });
+
+
+
 
 
     /**
@@ -189,6 +201,7 @@
         $v.prop('controls', false);
         if ( connection.userid == event.userid ) { // 나의 비디오 인가?
             $v.attr('who', 'i');
+
         }
         else {
             $v.attr('who', 'other');
@@ -201,19 +214,18 @@
     };
 
 
-    function rtc_open_room(e) {
-        e.preventDefault();
-        var $this = $(this);
-        var $box = $('[name="room_name"]');
-        var name = $box.val();
-        console.log('rtc_open_room : ' + name);
-        if ( name == '' ) {
-            alert('Input room name');
+    /**
+     *
+     * rtc.open() 은 userid 를 자동으로 connection.sessoinid 에 추가한다.
+     * @param userid
+     * @returns {boolean}
+     */
+    function rtc_open_room( userid ) {
+        if ( typeof userid == 'undefined' || userid == '' ) {
+            alert('Input userid : ' + userid);
             return false;
         }
-        connection.open( name, true );
-        $box.val('');
-        return false;
+        connection.open( userid, true );
     }
     //
     function rtc_leave_room(callback) {
@@ -239,6 +251,26 @@
     function reload() {
         location.reload(true);
     }
+    /**
+     * URL: https://www.onfis.com:10443/0.0.6.html?a=b&c=d&number=4
+     * Output : Object {a: "b", c: "d", number: "4"}
+     */
+    function getQueryString() {
+        var query = location.href.split('?')[1];
+        var qs = {};
+        if ( query ) {
+            var kvs = query.split('&');
+            if ( kvs ) {
+                for ( var i in kvs ) {
+                    var kv = kvs[i].split('=');
+                    qs[ kv[0] ] = kv[1];
+                }
+            }
+        }
+        return qs;
+    }
+
+
 </script>
 
 <script>
@@ -253,7 +285,6 @@
      *
      * ........................................................................
      */
-    var $videocenter = $('#videocenter');
     var vc = {
         options : {
             videoLayout : 'list'
@@ -270,55 +301,66 @@
     };
     vc.displayVideoCenter = function() {
         var m = _.template($('#video-center-template').html())();
-        $videocenter.html( m );
+        videocenter().html( m );
     };
-    function rtc_setUserID(userID) {
-        connection.extra.nickname = userID;
-        console.log('nickname: ' + connection.extra.nickname);
+    function chat_setUsername ( username ) {
+        if ( ! username ) return;
+        console.log('Updating username : ' + username);
+        socket.emit('set-user-info', { username : username, session_user_id: connection.userid, session_id : connection.sessionid }, function( info ) {
+            Cookies.set('username', username, { expires: 365 });
+            console.log(connection.userid);
+            console.log(info);
+        });
     }
 
+    vc.openRoom = function() {
+        rtc_open_room( getUserID() );
+    };
+    function rtc_join_room(person) {
+        console.log( connection.userid + ' connects to ' + person );
+        connection.join( person );
+    }
+    vc.joinRoom = function (person) {
+        rtc_join_room( person );
+    };
+
+    var rtc_open_or_join = function (userid) {
+        connection.userid = getUserID();
+        connection.openOrJoin(userid);
+    };
     vc.run = function() {
         console.log('vc.run');
         vc.displayVideoCenter();
-        //$body.on('submit', '#open-room', rtc_open_room);
-        function rtc_on_click_open_room_button() {
-            connection.open( getUserID(), true );
-        }
 
-        $body.on('click', '#open-room-button', rtc_on_click_open_room_button);
-        $body.on('submit', '#input-user-id', function(e) {
-            e.preventDefault();
-            var userid = $(this).find('[name="user_id"]').val();
-            console.log( !!userid );
-            if ( !! userid ) {
-                Cookies.set('userid', userid, { expires: 365 });
-                rtc_setUserID( userid );
-            }
 
+        $body.on('click', '#open-room-button', vc.openRoom);
+        $('.username button').click(function() {
+            var username = $('.username input').val();
+            chat_setUsername( username );
         });
-        var userid = getUserID();
-        if ( typeof userid == 'undefined' || userid == '' ) {
-            alert('Please input username');
+        var username = getUsername();
+        if ( typeof username == 'undefined' || username == '' ) {
+            console.log('No username on cookie. input user name');
         }
         else {
-            $('#input-user-id').find('[name="user_id"]').val( getUserID() );
-            rtc_setUserID( getUserID() );
+            $('.username input').val( username );
+            chat_setUsername( username );
         }
 
 
-        $body.on('click', '#join-button', function() {
-            var userid = $('[name="join_userid"]').val();
-            console.info('join to : ' + userid);
-
-            connection.openOrJoin(userid);
+        $body.on('click', 'button#open-or-join', function() {
+            var userid = $('[name="open_or_join_userid"]').val();
+            rtc_open_or_join(userid);
         });
     };
-
-
-
     function lobby() { return vc.lobby.get(); }
     function room() { return vc.room.get(); }
-    function getUserID() { return Cookies.get('userid');  }
+    var videocenter = function() { return $('#videocenter'); }
+    function getUsername() {
+        return Cookies.get('username');
+    }
+
+
     function roomAddVideo(event, $v) {
         video_count ++;
         var userid = event.extra.nickname;
@@ -373,33 +415,33 @@
      * 큰 화면이 하나 있고, 나머지는 작은 화면으로 overlap 된다.
      */
     /*
-    function videoLayout_overlay() {
-        vc.options.videoLayout = 'overlay';
-        var $videos = room().find('.videos');
-        $videos.find('[who="i"]').parent().css ({
-            'float' : 'left',
-            'width' : '25%',
-            'height' : 'auto'
-        });
+     function videoLayout_overlay() {
+     vc.options.videoLayout = 'overlay';
+     var $videos = room().find('.videos');
+     $videos.find('[who="i"]').parent().css ({
+     'float' : 'left',
+     'width' : '25%',
+     'height' : 'auto'
+     });
 
-        $videos.find('[who="other"]').parent().css ({
-            'position' : 'static',
-            'float' : 'left',
-            'z-index' : 0,
-            'width' : '25%',
-            'height' : 'auto'
-        });
+     $videos.find('[who="other"]').parent().css ({
+     'position' : 'static',
+     'float' : 'left',
+     'z-index' : 0,
+     'width' : '25%',
+     'height' : 'auto'
+     });
 
-        $videos.find('[who="other"]').parent().last().css ({
-            'position' : 'absolute',
-            'z-index' : -1,
-            'top' : 0,
-            'left' : 0,
-            'width' : '100%',
-            'height' : 'auto'
-        });
-    }
-    */
+     $videos.find('[who="other"]').parent().last().css ({
+     'position' : 'absolute',
+     'z-index' : -1,
+     'top' : 0,
+     'left' : 0,
+     'width' : '100%',
+     'height' : 'auto'
+     });
+     }
+     */
     /**
      * 한 행에 비디오를 2개 또는 3개, 4개씩 표시.
      *
@@ -455,9 +497,23 @@
 
 
     $(function(){
+
+
+
         vc.run();
 
         setTimeout( runRoomListLoop, 100 );
+
+
+        var q = getQueryString();
+        if ( typeof q['reload'] != 'undefined' ) {
+            rtc_open_or_join('test-room');
+            setTimeout( reload, q['reload'] * 1000 );
+        }
+
+        chat_setUsername( getUsername() );
+
+
         // TEST code
         // vc.test.open_room('Test room name');
         // vc.test.join_room('Mac');
@@ -465,10 +521,12 @@
 
 
         // test
+        /*
         setTimeout( function() {
             $('[name="join_userid"]').val('roomtest');
-            //$('#join-button').click();
-        }, 900);
+            $('#join-button').click();
+        }, 300);
+        */
 
     });
 

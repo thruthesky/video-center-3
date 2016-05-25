@@ -10,13 +10,22 @@
         }
     </style>
     <script src="config.js"></script>
+
+
+    <script>
+        var video_count = 0;
+        function getScript(src) {
+            document.write('<' + 'script src="' + src + '"' +
+                    ' type="text/javascript"><' + '/script>');
+        }
+        var src = socketURL + '/socket.io/socket.io.js';
+        getScript( src );
+    </script>
+
 </head>
 <body>
 
 <script src="/dist/rmc3.js"></script>
-
-<!-- socket.io for signaling -->
-<script src="/socket.io/socket.io.js"></script>
 
 
 <script>
@@ -44,11 +53,11 @@
         OfferToReceiveVideo: true
     };
     connection.userid = id;
+    connection.extra.nickname = id;
 
     document.writeln(connection.userid);
 
     connection.openOrJoin('roomtest');
-
 
     setTimeout( function() {
         location.reload();

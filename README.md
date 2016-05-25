@@ -5,11 +5,51 @@ Video Conference System By Withcenter, Inc.
 
 # TODO
 
-* UI
-    * jQueryUI 1.12 를 사용
-        * jQueryUI 1.12 새버젼인데 좀 좋아 보인다.
-        * Controllgroup 이 좋음 - http://view.jqueryui.com/1.12.0-beta.1/demos/controlgroup/toolbar.html
-        * 이것도 좋음 - http://view.jqueryui.com/1.12.0-beta.1/demos/checkboxradio/product-selector.html
+* 사용자 이름 A, B, C 가 있는 경우,
+
+    A 가 오픈을 하면 sessionid 는 아래와 같이 연결 된다.
+
+    A => B, C
+    B => A, C
+    C => A, B
+
+    와 같이 개별 연결을 한다.
+
+    즉, sessionid 와는 상관이 없이 연결이된다???
+
+    이 상태에서 A 가 빠지면
+
+    B => C
+    C => B
+
+    가 남게 된다.
+
+    이 상태에서 다시 A 가 들어와도 서로를 연결 할 수 없다.
+
+    Signaling 서버가 죽으면 모든 정보가 다 사라진다.
+
+
+
+    이런 과정이 반복되고, ... Signaling 에서는 어떤 아이디가 어떤 건지 헷갈리고....
+
+    그래서 0.0.6 을 정리하고, 완전한 채팅방 기능을 만들어도 연결 힘들다.
+
+일단 대충 사용한다.
+
+
+
+
+
+# 문서화
+
+아래와 같이 하면, extra 정보가 모든 사용자 들간에 공유가 된다. connection.updateExtraData() 를 호출하고 접속을 해야 하는가? 접속하고 나서 해도 되는가?
+
+        connection.extra.socket_id = socket.id;
+        connection.extra.username = username;
+        connection.updateExtraData();
+        connection.openOrJoin( roomname );
+
+
 
 
 * Video Stop ( Pause )

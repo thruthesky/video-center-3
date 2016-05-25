@@ -1,11 +1,15 @@
 // Muaz Khan      - www.MuazKhan.com
 // MIT License    - www.WebRTC-Experiment.com/licence
 // Documentation  - github.com/muaz-khan/RTCMultiConnection
+
 module.exports = exports = function(app, socketCallback) {
     var listOfUsers = {};
     var shiftedModerationControls = {};
     var ScalableBroadcast;
 
+    var chat = []; // 인덱싱을 socket.id 로 한다.
+
+    
     var io = require('socket.io');
 
     try {
@@ -40,7 +44,6 @@ module.exports = exports = function(app, socketCallback) {
         // temporarily disabled
         if (false && !!listOfUsers[params.userid]) {
             params.dontUpdateUserId = true;
-
             var useridAlreadyTaken = params.userid;
             params.userid = (Math.random() * 1000).toString().replace('.', '');
             socket.emit('userid-already-taken', useridAlreadyTaken, params.userid);
@@ -112,8 +115,8 @@ module.exports = exports = function(app, socketCallback) {
                     var oldUserId = socket.userid;
                     listOfUsers[newUserId] = listOfUsers[oldUserId];
                     listOfUsers[newUserId].socket.userid = socket.userid = newUserId;
-                    console.log(newUserId);
-                    console.log(listOfUsers[newUserId]);
+                    //console.log(newUserId);
+                    //console.log(listOfUsers[newUserId]);
 
                     delete listOfUsers[oldUserId];
 
@@ -350,7 +353,7 @@ module.exports = exports = function(app, socketCallback) {
             //console.log( listOfUsers );
             // callback( listOfUsers );
             var msg = '';
-            console.log("User IDs: ");
+            //console.log("User IDs: ");
             for ( var i in listOfUsers ) {
 
                 var conn = '';
@@ -358,8 +361,8 @@ module.exports = exports = function(app, socketCallback) {
                     conn += c + ', ';
                 }
                 s = i + ' => ' + conn;
-                msg += s + ' : ',
-                console.log( s );
+                msg += s + ' : ';
+                //console.log( s );
             }
             callback( msg );
         });
@@ -367,5 +370,153 @@ module.exports = exports = function(app, socketCallback) {
         if (socketCallback) {
             socketCallback(socket);
         }
+
+        // ------------------------------------------------------------------
+        //
+        //
+        // S O C K E T    C H A T    R O O M    C O D E
+        //
+        //
+        // ------------------------------------------------------------------
+
+
+        chat[ socket.id ] = socket;
+
+
+        var info = {};
+        info.username = 'No Username, yet';
+        info.connectedOn = Math.floor( new Date() / 1000 );
+        info.socket_id = socket.id;
+        socket.info = info;
+
+
+        //console.log(chat);
+
+        console.log('New connection on chat. No. of clients : ' + getNumberChatClients());
+
+        socket.on('disconnect', function(){
+
+            var info = socket.info;
+
+            //console.log( info.username + ' disconnects on '+info.roomname+' ------------------------- ');
+            //console.log( info );
+
+            // emit to all the room members that this user disconnected.
+            if ( info.roomname ) {
+                io.sockets.in( info.roomname ).emit( 'room-leave', info );
+            }
+
+            if ( typeof chat[socket.id] == 'undefined' ) {
+                console.log("ERROR : chat[" + socket.id + "] does not exist on chat array.");
+            }
+            removeChatClient( socket.id );
+            //chat.splice( chat.indexOf( socket ), 1 );
+            console.log("chat client count: " + getNumberChatClients() + "client names: " + getClientNames() );
+        });
+
+        socket.on('set-user-info', function ( info, callback ) {
+            socket.info.username = info.username;
+            socket.info.usernameUpdatedOn = Math.floor( new Date() / 1000 );
+            socket.info.session_id = info.session_id;
+            socket.info.session_user_id = info.session_user_id;
+            callback( socket.info );
+        });
+
+        socket.on('get-user-info', function( userid, callback ) {
+            console.log('userid : ' + userid);
+            var s = getSocketByUserID( userid );
+            try {
+
+                console.log(s);
+                callback( s.info );
+            }
+            catch ( e ) {}
+        });
+
+
+        socket.on('user-list', function( callback ) {
+            var userList = [];
+            for ( var socket_id in chat ) {
+                userList.push( chat[ socket_id ].info );
+            }
+            callback( userList );
+        });
+
+
+        socket.on('room-list', function(callback) {
+
+            //var rooms = io.sockets.adapter.rooms;
+            var rooms = io.sockets.manager.rooms;
+            var roomList = {};
+
+            //console.log(rooms);
+
+            /**
+             * @Attention in Socket.IO version 1.x.x it has leading '/#' on ever room. Check what if room name that begins with '/#'
+             *
+             */
+            for( var id in rooms ) {
+                if ( id.indexOf('/#') != -1 ) continue; // for socket.io 1.x.x
+                if ( id == '' ) continue;
+
+                var socketIDs = rooms[id];
+                //console.log(socketIDs);
+                var users = [];
+                for ( var i in socketIDs ) {
+                    var s = socketIDs[i];
+                    users.push(chat[s].info);
+                }
+                id = id.replace( /^\//, '' );
+                roomList[id] = users;
+            }
+
+            //console.log(roomList);
+
+            callback( roomList );
+
+        });
+
+
+
+        socket.on('join-room', function( roomname, callback ) {
+            // console.log(socket);
+            socket.info.roomname = roomname;
+            socket.info.roomJoinedOn = Math.floor( new Date() / 1000 );
+            var username = socket.info.username;
+            // console.log( username + " joins " + roomname);
+            socket.join( roomname, function( err ) {
+                callback( roomname );
+            } );
+            io.sockets.in( roomname ).emit( 'user-join', socket.info );
+        } );
+
+        socket.on('send-message', function( data, callback ) {
+            // Version diff.
+            // 0.9.x must use 'io.sockets.in' instead of 'io.to'
+            io.sockets.in( data.room ).emit('recv-message', data );
+            callback(data);
+        });
+
+    } // eo onConnection(socket)
+
+    function getNumberChatClients() {
+        return Object.keys(chat).length;
     }
+
+    function removeChatClient( id ) {
+        var s = chat[ id ]; // socket
+        delete chat[ id ];
+    }
+
+
+    function getClientNames() {
+        var names = '';
+        for( var id in chat ) {
+            var socket = chat[id];
+            names += socket.info.username + ', ';
+        }
+        return names;
+    }
+
+
 };

@@ -1,2 +1,2 @@
-var socketURL = '//www.videocenter.co.kr:10443';
+var socketURL = '//www.onfis.com:10443';
 
