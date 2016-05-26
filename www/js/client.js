@@ -202,6 +202,9 @@ client.joined = function () {
     client.setUsername( client.getUsername() );
     client.joinLobby( function( data ) { console.log( data ); });
 
+    /// 여기서 부터...
+    /// 접속하면 자동으로 lobby 에 들어가고, ... 다른 방에 들어가면 lobby 에서 자동으로 나가는 것.
+    
 
 
 
