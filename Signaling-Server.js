@@ -9,7 +9,7 @@ module.exports = exports = function(app, socketCallback) {
 
     var chat = []; // 인덱싱을 socket.id 로 한다.
 
-    
+
     var io = require('socket.io');
 
     try {
@@ -414,7 +414,7 @@ module.exports = exports = function(app, socketCallback) {
             console.log("chat client count: " + getNumberChatClients() + "client names: " + getClientNames() );
         });
 
-        socket.on('set-user-info', function ( info, callback ) {
+        socket.on('chat-set-user-info', function ( info, callback ) {
             socket.info.username = info.username;
             socket.info.usernameUpdatedOn = Math.floor( new Date() / 1000 );
             socket.info.session_id = info.session_id;
@@ -422,7 +422,7 @@ module.exports = exports = function(app, socketCallback) {
             callback( socket.info );
         });
 
-        socket.on('get-user-info', function( userid, callback ) {
+        socket.on('chat-get-user-info', function( userid, callback ) {
             console.log('userid : ' + userid);
             var s = getSocketByUserID( userid );
             try {
@@ -434,7 +434,9 @@ module.exports = exports = function(app, socketCallback) {
         });
 
 
-        socket.on('user-list', function( callback ) {
+        // -------------------------------------------------------------------
+        //
+        socket.on('chat-user-list', function( callback ) {
             var userList = [];
             for ( var socket_id in chat ) {
                 userList.push( chat[ socket_id ].info );
@@ -442,43 +444,21 @@ module.exports = exports = function(app, socketCallback) {
             callback( userList );
         });
 
-
-        socket.on('room-list', function(callback) {
-
-            //var rooms = io.sockets.adapter.rooms;
-            var rooms = io.sockets.manager.rooms;
-            var roomList = {};
-
-            //console.log(rooms);
-
-            /**
-             * @Attention in Socket.IO version 1.x.x it has leading '/#' on ever room. Check what if room name that begins with '/#'
-             *
-             */
-            for( var id in rooms ) {
-                if ( id.indexOf('/#') != -1 ) continue; // for socket.io 1.x.x
-                if ( id == '' ) continue;
-
-                var socketIDs = rooms[id];
-                //console.log(socketIDs);
-                var users = [];
-                for ( var i in socketIDs ) {
-                    var s = socketIDs[i];
-                    users.push(chat[s].info);
-                }
-                id = id.replace( /^\//, '' );
-                roomList[id] = users;
-            }
-
-            //console.log(roomList);
-
+        // -------------------------- R O O M ---------------------------------
+        //
+        socket.on('chat-room-list', function(callback) {
+            var roomList = getRoomListOf();
             callback( roomList );
-
         });
 
+        socket.on('chat-room-info', function( roomname, callback ) {
+            callback( getRoomListOf( roomname ) );
+        });
+        socket.on('chat-roomname-list', function( callback ) {
+            callback( getRoomNameList() );
+        });
 
-
-        socket.on('join-room', function( roomname, callback ) {
+        socket.on('chat-join-room', function( roomname, callback ) {
             // console.log(socket);
             socket.info.roomname = roomname;
             socket.info.roomJoinedOn = Math.floor( new Date() / 1000 );
@@ -490,13 +470,13 @@ module.exports = exports = function(app, socketCallback) {
             io.sockets.in( roomname ).emit( 'user-join', socket.info );
         } );
 
-        socket.on('send-message', function( data, callback ) {
+        socket.on('chat-send-message', function( data, callback ) {
             // Version diff.
             // 0.9.x must use 'io.sockets.in' instead of 'io.to'
-            io.sockets.in( data.room ).emit('recv-message', data );
+            io.sockets.in( data.room ).emit('chat-recv-message', data );
             callback(data);
         });
-
+        
     } // eo onConnection(socket)
 
     function getNumberChatClients() {
@@ -518,5 +498,63 @@ module.exports = exports = function(app, socketCallback) {
         return names;
     }
 
+
+    /**
+     * Returns room list only without user information
+     * @returns {Array}
+     */
+    function getRoomNameList() {
+        // var rooms = io.sockets.adapter.rooms; // for version 1.x.x
+        var rooms = io.sockets.manager.rooms;
+        var roomList = [];
+        for( var id in rooms ) {
+            if ( id.indexOf('/#') != -1 ) continue; // for socket.io 1.x.x
+            if ( id == '' ) continue;
+            id = id.replace( /^\//, '' );
+            roomList.push( id );
+        }
+        return roomList;
+    }
+
+    /**
+     * Returns room list with its users information.
+     *
+     * @param roomname - room name. if it is 'undefined', it returns all room information.
+     * @returns {{}}
+     */
+    function getRoomListOf( roomname ) {
+
+        //var rooms = io.sockets.adapter.rooms;
+        var rooms = io.sockets.manager.rooms;
+        var roomList = {};
+
+        //console.log(rooms);
+
+        /**
+         * @Attention in Socket.IO version 1.x.x it has leading '/#' on ever room. Check what if room name that begins with '/#'
+         *
+         */
+        for( var id in rooms ) {
+            if ( id.indexOf('/#') != -1 ) continue; // for socket.io 1.x.x
+            if ( id == '' ) continue;
+            var org_id = id.replace( /^\//, '' );
+
+            if ( roomname && roomname != org_id ) continue;
+
+            var socketIDs = rooms[id];
+            //console.log(socketIDs);
+            var users = [];
+            for ( var i in socketIDs ) {
+                var s = socketIDs[i];
+                users.push(chat[s].info);
+            }
+            if ( roomname ) return users;
+            roomList[org_id] = users;
+        }
+
+        //console.log(roomList);
+
+        return roomList;
+    }
 
 };

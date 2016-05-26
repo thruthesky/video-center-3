@@ -5,6 +5,12 @@ Video Conference System By Withcenter, Inc.
 
 # TODO
 
+* 접속하면 자동으로 chat-join-lobby 방에 들어가면 자동으로 chat-leave-lobby 를 둘 것.
+    * lobby 에서 채팅을 하면 lobby 에 있는 사람들끼리만 보인다.
+* chat 프로토콜을 unit testing 할 것.
+
+
+
 * 사용자 이름 A, B, C 가 있는 경우,
 
     A 가 오픈을 하면 sessionid 는 아래와 같이 연결 된다.
@@ -49,6 +55,21 @@ Video Conference System By Withcenter, Inc.
         connection.updateExtraData();
         connection.openOrJoin( roomname );
 
+
+# 명령
+
+## 채팅 명령이다.
+
+socket.emit('roomname-list', function(r) { console.log(r); }); // 모든 방 이름만 배열로 추출. 사용자 정보 없음.
+socket.emit('chat-room-list', function(r) { console.log(r); }); // 모든 방 정보 객체로 추출. 사용자 정보가 들어가 있음.
+socket.emit('room-info', 'Room huh', function(r) { console.log(r); }); // 방 이름을 전달하면, 해당 방의 사용자 목록을 객체(배열)로 리턴한다.
+socket.emit('chat-user-list', function(r) { console.log(r); }); // 모든 사용자정보를 추출 한다.
+
+
+
+
+
+# 기타
 
 
 

@@ -306,7 +306,7 @@
     function chat_setUsername ( username ) {
         if ( ! username ) return;
         console.log('Updating username : ' + username);
-        socket.emit('set-user-info', { username : username, session_user_id: connection.userid, session_id : connection.sessionid }, function( info ) {
+        socket.emit('chat-set-user-info', { username : username, session_user_id: connection.userid, session_id : connection.sessionid }, function( info ) {
             Cookies.set('username', username, { expires: 365 });
             console.log(connection.userid);
             console.log(info);

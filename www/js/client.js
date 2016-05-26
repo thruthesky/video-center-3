@@ -15,12 +15,12 @@ socket.on( 'disconnect', function() {
 socket.on( 'reconnect', function() {
 
 } );
-socket.on ('recv-message', function( data ) {
+socket.on ('chat-recv-message', function( data ) {
     console.info('socket.on("recv-message") : ', data);
     client.recvMessage( data );
 });
 
-socket.on ('user-join', function( username ) {
+socket.on ('chat-user-join', function( username ) {
     //console.log('new user joined : ' + username);
     client.userJoin( username );
 });
@@ -28,7 +28,7 @@ socket.on ('user-join', function( username ) {
 client.userLeave = function (info) {
     client.addMessage( info.username + ' leaves');
 };
-socket.on ('room-leave', function( info ) {
+socket.on ('chat-room-leave', function( info ) {
     // console.error( 'socket.on("room-leave")', info );
     client.userLeave( info );
 });
@@ -53,12 +53,9 @@ client.status = function() {
     return $('section#status');
 };
 
-
-
 client.roomList = function (callback) {
-    socket.emit('room-list', callback);
+    socket.emit('chat-room-list', callback);
 };
-
 
 /**
  * Leave entire room
@@ -79,7 +76,134 @@ client.leaveRoom = function () {
 
 
 
+/**
+ * @Attention It sets 'connection.userid', 'connection.sessionid' also.
+ * @param username
+ */
+client.setUsername = function ( username ) {
+    if ( ! username ) return;
+    console.log('Going to set my name: client.setUsername : ', username);
+    var info = {
+        username : username,
+        session_user_id: connection.userid,
+        session_id : connection.sessionid
+    };
+    //console.log( info );
+    socket.emit('chat-set-user-info', info, function( info ) {
+        console.log('My name is set on chat server.  callback client.setUsername', info);
+        Cookies.set('username', info.username, { expires: 365 });
+        client.box().find('[name="username"]').val( info.username );
+        //console.log('callback setUsername : -----------');
+        //console.log(connection.userid);
+        //console.log(info);
+    });
+};
+
+client.userList = function( callback ) {
+    socket.emit('chat-user-list', callback);
+};
+
+/**
+ *
+ * @param roomname
+ * @param callback
+ */
+client.joinRoom = function (roomname, callback) {
+
+    if ( client.joined() ) return alert('Leave current room before you join another room');
+    var username = client.getUsername();
+    console.info( username + ' joins into : ' + roomname );
+    socket.emit('chat-join-room', roomname, function(data) {
+        client.setUsername( client.getUsername() );
+        client.setRoomName( roomname );
+        connection.extra.socket_id = socket.id;
+        connection.extra.username = username;
+        connection.updateExtraData();
+        setTimeout(function() {
+            connection.openOrJoin( roomname );
+        }, 100);
+        callback(data);
+    });
+};
+
+client.joinLobby = function( callback ) {
+    socket.emit('chat-join-room', 'lobby', function(data) {
+        callback( data );
+    });
+};
+
+
+/**
+ *
+ * @param info
+ */
+client.userJoin = function (info) {
+    console.log('user info: ', info);
+    //client.users[ info.session_user_id ] = info;
+    client.addMessage( info.username + ' has joined.');
+    // connection.join( info.session_user_id );
+};
+
+client.sendMessage = function (data, callback) {
+    //console.info('client.sendMessage : ', data);
+    if ( ! client.joined() ) return alert('Join a room before you message');
+    socket.emit('chat-send-message', data, callback);
+    client.chat().find('input').val('');
+};
+
+
+
+client.recvMessage = function ( data ) {
+    //console.log('recvMessage() : ', data);
+
+
+    var message = '<div class="message">' + data.username + ' : ' + data.text + '</div>';
+    client.addMessage( message );
+};
+
+
+client.addMessage = function( message ) {
+    client.messages().append( '<div>' + message + '</div>' );
+    //$room.find('.messages').append('<div class="message">'+ data.username + ':' + data.text+'</div>');
+};
+client.setRoomName = function( name ) {
+    client.chat().find('.name').text( name );
+    client.updateStatus();
+};
+client.getRoomName = function() {
+    return client.chat().find('.name').text();
+};
+
+client.updateStatus = function() {
+    var roomname = client.getRoomName();
+    var str = '';
+    if ( roomname ) {
+        str += 'room: ' + roomname;
+    }
+    else {
+        str += 'No room';
+    }
+    client.status().text( str );
+};
+
+client.getUsername = function () {
+    var username = Cookies.get('username');
+    if ( username ) return username;
+    else this.box().find('.username input').val();
+};
+
+client.joined = function () {
+    return !!client.getRoomName();
+};
+
+
 (client.init = function() {
+
+    client.setUsername( client.getUsername() );
+    client.joinLobby( function( data ) { console.log( data ); });
+
+
+
 
     var $body = $('body');
 
@@ -175,116 +299,5 @@ client.leaveRoom = function () {
     });
 
 
-})();
+})(); // eo init
 
-
-/**
- * @Attention It sets 'connection.userid', 'connection.sessionid' also.
- * @param username
- */
-client.setUsername = function ( username ) {
-    if ( ! username ) return;
-    //console.log('client.setUsername : ', username);
-    var info = {
-        username : username,
-        session_user_id: connection.userid,
-        session_id : connection.sessionid
-    };
-    //console.log( info );
-    socket.emit('set-user-info', info, function( info ) {
-        //console.log('callback client.setUsername', info);
-        Cookies.set('username', info.username, { expires: 365 });
-        client.box().find('[name="username"]').val( info.username );
-        //console.log('callback setUsername : -----------');
-        //console.log(connection.userid);
-        //console.log(info);
-    });
-};
-
-client.userList = function( callback ) {
-    socket.emit('user-list', callback);
-};
-
-/**
- *
- * @param roomname
- * @param callback
- */
-client.joinRoom = function (roomname, callback) {
-
-    if ( client.joined() ) return alert('Leave current room before you join another room');
-    var username = client.getUsername();
-    console.info( username + ' joins into : ' + roomname );
-    socket.emit('join-room', roomname, function(data) {
-        client.setRoomName( roomname );
-        connection.extra.socket_id = socket.id;
-        connection.extra.username = username;
-        connection.updateExtraData();
-        connection.openOrJoin( roomname );
-        callback(data);
-    });
-};
-
-
-/**
- *
- * @param info
- */
-client.userJoin = function (info) {
-    console.log('user info: ', info);
-    //client.users[ info.session_user_id ] = info;
-    client.addMessage( info.username + ' has joined.');
-    // connection.join( info.session_user_id );
-};
-
-client.sendMessage = function (data, callback) {
-    //console.info('client.sendMessage : ', data);
-    if ( ! client.joined() ) return alert('Join a room before you message');
-    socket.emit('send-message', data, callback);
-    client.chat().find('input').val('');
-};
-
-
-
-client.recvMessage = function ( data ) {
-    //console.log('recvMessage() : ', data);
-
-
-    var message = '<div class="message">' + data.username + ' : ' + data.text + '</div>';
-    client.addMessage( message );
-};
-
-
-client.addMessage = function( message ) {
-    client.messages().append( '<div>' + message + '</div>' );
-    //$room.find('.messages').append('<div class="message">'+ data.username + ':' + data.text+'</div>');
-};
-client.setRoomName = function( name ) {
-    client.chat().find('.name').text( name );
-    client.updateStatus();
-};
-client.getRoomName = function() {
-    return client.chat().find('.name').text();
-};
-
-client.updateStatus = function() {
-    var roomname = client.getRoomName();
-    var str = '';
-    if ( roomname ) {
-        str += 'room: ' + roomname;
-    }
-    else {
-        str += 'No room';
-    }
-    client.status().text( str );
-};
-
-client.getUsername = function () {
-    var username = Cookies.get('username');
-    if ( username ) return username;
-    else this.box().find('.username input').val();
-};
-
-client.joined = function () {
-    return !!client.getRoomName();
-};
