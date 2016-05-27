@@ -4,7 +4,76 @@
     <meta charset="UTF-8">
     <title>WebRTC Peer Connection</title>
     <style>
+        body { margin: 0; padding: 0; }
+        #videocenter { position: relative; }
         #status { background-color: grey; }
+        #room { position: relative; background-color:#5f9ea0; }
+        #room .content { position: relative; }
+        #room .videos { position: relative; background-color: #777777; }
+        #room .videos .user { position: relative;  }
+        #room .videos .user video { object-fit: fill; width: 99%; }
+        #room .videos .user .userid { position: absolute; display: inline-block; top: 4px; left: 4px; padding: 2px 4px; border-radius: 2px; background-color: rgba(200, 200, 200, .5); color: #111122; }
+
+        #room .chat { position: relative; }
+
+
+
+        #room .chat .messages { height: 50px; background-color: #efefef; }
+        #room .chat input { width: 100%; }
+
+        #room .content .whiteboard { display: none; background-color: #e1e1e1; }
+
+        #room.whiteboard-layout .whiteboard { display: block; }
+        /** Layout break point */
+        @media all and ( min-width: 546px ){
+            #room { background-color: #19469D; }
+            #room .videos {
+                position: absolute;
+                z-index: 100;
+                margin-left: 246px;
+            }
+            #room .chat { width: 246px; }
+            #room .chat .messages { height: 180px; }
+
+            #room.whiteboard-layout { }
+            #room.whiteboard-layout .videos {
+                position: relative;
+                margin: 0;
+                width: 246px;
+            }
+            #room.whiteboard-layout .whiteboard {
+                position: absolute;
+                z-index: 100;
+                top: 0;
+                margin-left: 246px;
+                width: 300px; /** 이 너비는 모든 채팅 상대방과 맞추어야 함. 개발 문서 참고. */
+            }
+        }
+
+
+        #room .videos.metro { overflow: auto; }
+        #room .videos.metro .user video {
+            position: relative;
+            z-index: 0;
+            float: left;
+            width: 50%;
+            height: auto
+
+        }
+        #room .videos.list .user video {
+            position : relative;
+            z-index : 0;
+            width : 100%;
+            height : auto;
+        }
+
+
+        #room .whiteboard {
+            width: 340px;
+            height: 420px;
+        }
+
+        /*
         #lobby {
             position: relative;
         }
@@ -20,6 +89,8 @@
         #room .chat input { width: 100%; }
         .room-list { padding: 16px; background-color: #dfdfdf; }
         .room-list .room .name { padding: 0 16px 0 0; cursor:pointer; }
+        */
+
     </style>
     <script>
         var socketURL = '//www.onfis.com:10443';
@@ -129,30 +200,6 @@
         $('[userid="'+userid+'"]').parent().remove();
     };
 
-    /**
-     *
-     * rtc.open() 은 userid 를 자동으로 connection.sessoinid 에 추가한다.
-     * @param userid
-     * @returns {boolean}
-     */
-    function rtc_open_room( userid ) {
-        if ( typeof userid == 'undefined' || userid == '' ) {
-            alert('Input userid : ' + userid);
-            return false;
-        }
-        connection.open( userid, true );
-    }
-    //
-    function rtc_leave_room(callback) {
-
-        // to leave entire room
-        connection.getAllParticipants().forEach(function(participantId) {
-            connection.disconnectWith(participantId, function() {
-                console.log( 'disconnectedWith: ' + participantId );
-                callback();
-            });
-        });
-    }
 
 </script>
 
@@ -184,11 +231,11 @@
         }
     };
     /*
-    vc.displayVideoCenter = function() {
-        var m = _.template($('#video-center-template').html())();
-        videocenter().html( m );
-    };
-    */
+     vc.displayVideoCenter = function() {
+     var m = _.template($('#video-center-template').html())();
+     videocenter().html( m );
+     };
+     */
 
 
     vc.openRoom = function() {
@@ -225,11 +272,11 @@
                 .append('<div class="userid" userid="'+userid+'">'+ username +'</div>');
 
         /**
-        socket.emit( 'get-user-info', userid, function( info ) {
+         socket.emit( 'get-user-info', userid, function( info ) {
             console.log(info);
             $('[userid="'+info.userid+'"]').text( info.username );
         });
-        */
+         */
     }
 
     /**
@@ -239,7 +286,7 @@
     function videoLayout( style ) {
         if ( style == 'list' ) videoLayout_list();
         else if ( style == 'metro' ) videoLayout_metro();
-        else videoLayout_list();
+        else videoLayout_metro();
 
     }
 
@@ -250,12 +297,8 @@
     function videoLayout_list() {
         Cookies.set('video-list-style', 'list');
         var $videos = client.room().find('.videos');
-        $videos.find('.user').css ({
-            'position' : 'relative',
-            'zindex' : 0,
-            'width' : '100%',
-            'height' : 'auto'
-        });
+        $videos.removeClass('metro');
+        $videos.addClass('list');
     }
 
     /**
@@ -265,14 +308,45 @@
     function videoLayout_metro() {
         Cookies.set('video-list-style', 'metro');
         var $videos = client.room().find('.videos');
-        $videos.find('video').parent().css ({
-            'position' : 'relative',
-            'zindex' : 0,
+        $videos.removeClass('list');
+        $videos.addClass('metro');
+    }
+
+
+    /**
+     * 큰 화면이 하나 있고, 나머지는 작은 화면으로 overlap 된다.
+     *
+     * @todo 작은 동영상을 클릭하면, 크게 나오도록 한다.
+     * 단순히 css 를 잘 조정하면 된다.
+     */
+
+    function videoLayout_overlay() {
+        vc.options.videoLayout = 'overlay';
+        var $videos = room().find('.videos');
+        $videos.find('[who="i"]').parent().css ({
             'float' : 'left',
-            'width' : '50%',
+            'width' : '25%',
+            'height' : 'auto'
+        });
+
+        $videos.find('[who="other"]').parent().css ({
+            'position' : 'static',
+            'float' : 'left',
+            'z-index' : 0,
+            'width' : '25%',
+            'height' : 'auto'
+        });
+
+        $videos.find('[who="other"]').parent().last().css ({
+            'position' : 'absolute',
+            'z-index' : -1,
+            'top' : 0,
+            'left' : 0,
+            'width' : '100%',
             'height' : 'auto'
         });
     }
+
 
     /**
      * .........................................................
@@ -281,40 +355,6 @@
      *
      * .........................................................
      */
-
-
-    /**
-     *
-     * @todo 마지막 남은 video 태그가 몇개인지 보고, 1개 밖에 없으면, 자기 자신만 남았으니 그 때, reload 한다.
-     *
-     */
-    /*
-    $body.on('click', '#room .leave', function() {
-        console.log('leave');
-        rtc_leave_room(function(){
-            // time delay
-            setTimeout(reload, 200);
-        });
-    });
-    */
-
-
-    /**
-     * ........................ TEST CODE .......................
-     */
-    /*
-    vc.test.open_room = function (name) {
-        lobby().find('[name="room_name"]').val(name);
-        lobby().find('form').submit();
-    };
-    vc.test.join_room = function (name) { connection.join( name ) };
-    vc.test.openOrJoin = function (name) { connection.openOrJoin( name ) };
-
-    function rtc_becomePublicModerator() {
-        connection.becomePublicModerator();
-    }
-    */
-
 
 
     $(function(){
@@ -328,12 +368,15 @@
 
 
         /**
-        setTimeout(function() {
+         setTimeout(function() {
             $('.join-room input').val('Apple is delicious!');
             $('.join-room button').click();
         }, 200);
          */
 
+        /**
+         * 이 코드는 재 접속을 할 때, 자동으로 이전 룸에 다시 접속하게 하는 코드이다.
+         */
         if ( typeof q['mode'] != 'undefined' && q['mode'] == 'reconnect' ) {
             setTimeout(function() {
                 q['room'] = decodeURI(q['room']);
@@ -342,7 +385,11 @@
                 $('.join-room button').click();
             }, 200);
         }
-
+        /*
+         setTimeout( function() {
+         client.toggleWhiteboard();
+         }, 100);
+         */
     });
 
 </script>

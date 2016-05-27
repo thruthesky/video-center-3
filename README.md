@@ -9,6 +9,8 @@ Video Conference System By Withcenter, Inc.
     * lobby 에서 채팅을 하면 lobby 에 있는 사람들끼리만 보인다.
 * chat 프로토콜을 unit testing 할 것.
 
+* 이름이 없으면 빨간색 X, 이름을 업데이트하면 gif loader, 이름이 업데이트 되면, 초록색 OK 체크.
+
 
 
 * 사용자 이름 A, B, C 가 있는 경우,
@@ -64,6 +66,29 @@ socket.emit('roomname-list', function(r) { console.log(r); }); // 모든 방 이
 socket.emit('chat-room-list', function(r) { console.log(r); }); // 모든 방 정보 객체로 추출. 사용자 정보가 들어가 있음.
 socket.emit('room-info', 'Room huh', function(r) { console.log(r); }); // 방 이름을 전달하면, 해당 방의 사용자 목록을 객체(배열)로 리턴한다.
 socket.emit('chat-user-list', function(r) { console.log(r); }); // 모든 사용자정보를 추출 한다.
+
+
+# 전자칠판
+
+* 전자칠판의 경우 서로 너비와 높이를 맞추어야 한다.
+
+    그렇지 않으면 한쪽에서 그림을 그렸는데, 다른쪽에서는 그림이 짤리는 현상이 발생한다.
+
+* canvas 를 100% 와 같이 % 로 지정하지 않는다.
+
+    왜냐하면 상대방이 안드로이드를 사용하고 나는 컴퓨터를 사용하면 너비가 틀리기 때문이다.
+
+    * 단, canvas 안에 들어가는 내용은 100% 로 해도 된다.
+
+    * cavas 위에 그리기 때문에 canvas 크기만 맞추면 된다.
+
+    * 300 x 400
+    * 340 x 420
+    * 480 x 640
+    * 600 x 720
+    * 700 x 960
+    * 800 x 1000
+
 
 
 

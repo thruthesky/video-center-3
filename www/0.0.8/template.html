@@ -22,14 +22,15 @@
     </div>
 </section>
 
-<section id="room">
+<section id="room" class="whiteboard-layout">
     <header>
         <button class="leave">Leave</button>
         <button class="reconnect">Re-connect</button>
         Display :
         <button class="video-layout-list" onclick="videoLayout_list();">List</button>
         <button class="video-layout-Metro" onclick="videoLayout_metro();">Metro</button>
-        <!--<button class="video-layout-overlay" onclick="videoLayout_overlay();">Overlay</button>-->
+        <button class="video-layout-overlay" onclick="videoLayout_overlay();">Overlay</button>
+        <button class="button-whiteboard" onclick="client.toggleWhiteboard();">WhiteBoard</button>
     </header>
     <div class="content">
         <div class="videos">
@@ -37,13 +38,40 @@
         <div class="chat">
             <form>
                 <div class="name"></div>
-                <div class="messages"></div>
+                <div class="messages">You have entered a room</div>
                 <div class="input"><input type="text" name="message"></div>
-                <div>
-                    Leave
+                <div class="users">
+                    <div class="title">Users</div>
+                    <div class="content"></div>
                 </div>
             </form>
         </div>
-        <div class="whiteboard"></div>
+        <div class="whiteboard">
+            <nav>
+                <label for="canvas-size">
+                    <select id="canvas-size" name="canvas_size">
+                        <option value="">Canvas Size</option>
+                        <option value="xs">Extra Small</option>
+                        <option value="sm">Small</option>
+                        <option value="md">Medium</option>
+                        <option value="lg">Large</option>
+                        <option value="xg">Extra Large</option>
+                    </select>
+                </label>
+                <label for="font-size">
+                    <select id="font-size" name="font-size">
+                        <option value="">Font Size</option>
+                        <option value="xs">Extra Small</option>
+                        <option value="sm">Small</option>
+                        <option value="md">Medium</option>
+                        <option value="lg">Large</option>
+                        <option value="xg">Extra Large</option>
+                    </select>
+                </label>
+            </nav>
+            <h1>White Board</h1>
+            This is whiteboard.
+            Okay.
+        </div>
     </div>
 </section>

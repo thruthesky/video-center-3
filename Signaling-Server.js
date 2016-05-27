@@ -384,7 +384,7 @@ module.exports = exports = function(app, socketCallback) {
 
 
         var info = {};
-        info.username = 'No Username, yet';
+        info.username = 'Anonymous';
         info.connectedOn = Math.floor( new Date() / 1000 );
         info.socket_id = socket.id;
         socket.info = info;
@@ -464,11 +464,15 @@ module.exports = exports = function(app, socketCallback) {
             socket.info.roomJoinedOn = Math.floor( new Date() / 1000 );
             var username = socket.info.username;
             // console.log( username + " joins " + roomname);
-            socket.join( roomname, function( err ) {
-                callback( roomname );
-            } );
+            socket.join( roomname );
+            callback( roomname, socket.info );
             io.sockets.in( roomname ).emit( 'user-join', socket.info );
         } );
+
+        socket.on('chat-room-leave', function(roomname, callback) {
+            socket.leave( roomname );
+            callback( roomname, socket.ino );
+        });
 
         socket.on('chat-send-message', function( data, callback ) {
             // Version diff.
