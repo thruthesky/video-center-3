@@ -7,7 +7,7 @@ var client = app = {};
 
 
 socket.on('connect', function () {
-    client.updateStatus();
+
 });
 socket.on( 'disconnect', function() {
 
@@ -50,9 +50,7 @@ client.chat = function () {
 client.messages = function () {
     return this.chat().find('.messages');
 };
-client.status = function() {
-    return $('section#status');
-};
+
 
 client.roomList = function (callback) {
     socket.emit('chat-room-list', callback);
@@ -173,23 +171,12 @@ client.addMessage = function( message ) {
 };
 client.setRoomName = function( name ) {
     client.chat().find('.name').text( name );
-    client.updateStatus();
 };
 client.getRoomName = function() {
     return client.chat().find('.name').text();
 };
 
-client.updateStatus = function() {
-    var roomname = client.getRoomName();
-    var str = '';
-    if ( roomname ) {
-        str += 'room: ' + roomname;
-    }
-    else {
-        str += 'No room';
-    }
-    client.status().text( str );
-};
+
 
 client.getUsername = function () {
     var username = Cookies.get('username');
