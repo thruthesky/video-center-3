@@ -43,6 +43,7 @@ client.box = function() { return $('#videocenter'); };
 client.room = function () {
     return $('section#room');
 };
+client.roomContent = function() { return client.room().find('.content'); };
 client.chat = function () {
     return client.room().find('.chat');
 };
@@ -56,6 +57,7 @@ client.status = function() {
 client.roomList = function (callback) {
     socket.emit('chat-room-list', callback);
 };
+client.whiteboard = function () { return client.room().find('.whiteboard'); };
 
 /**
  * Leave entire room
@@ -123,6 +125,9 @@ client.joinRoom = function (roomname, callback) {
             connection.openOrJoin( roomname );
         }, 100);
         callback(data);
+
+        // 방에 입장하면, 전자칠판을 다시 그린다.
+        socket.emit('get-whiteboard-draw-line', client.getRoomName() );
     });
 };
 
@@ -244,8 +249,12 @@ client.onRoomUpdate = function( room ) {
     client.chatUsers().html( users );
 };
 
+/**
+ * whiteboard 를 보였다 숨겼다 한다.
+ */
 client.toggleWhiteboard = function () {
-    client.room().toggleClass('whiteboard-layout');
+    client.room().find('.whiteboard').toggle();
+    client.room().toggleClass('has-whiteboard')
 };
 
 /**
@@ -256,19 +265,10 @@ client.inLobbyRoom = function () {
     return client.getRoomName().toLowerCase() == 'lobby';
 };
 
-(client.init = function() {
-
-    client.setUsername( client.getUsername() );
-    client.joinLobby( client.postJoinRoom );
-
+client.addEventHandlers = function () {
 
 
     var $body = $('body');
-
-    // display video center HTML markup
-    $.get('template.html', function( m ) {
-        client.box().html( m );
-    });
 
     // username update button
     $body.on('click', '.username button', function() {
@@ -315,12 +315,6 @@ client.inLobbyRoom = function () {
     });
 
 
-
-    ( function getRoomListLoop() {
-        client.roomList( client.onRoomListUpdate );
-        setTimeout(getRoomListLoop, 5000);
-    })();
-
     $body.on('click', '#room .leave', function() {
         console.log('leave');
         client.leaveRoom();
@@ -348,6 +342,201 @@ client.inLobbyRoom = function () {
     });
 
 
-})(); // eo init
+};
 
+
+/**
+ * 화면 너비/높이가 변경 될 때, 각종 레이아웃을 재 조정한다.
+ * 이 함수는 수동으로 마우스 클릭하여 조정되는 것 뿐만아니라
+ * #room .content 의 항목이 (비디오 등의 추가/삭제) 변경 될 때마다 호출 되어야 한다.
+ * 즉, #room .content 의 너비가 변경 될 때 마다 호출 되는 것이 좋다.
+ *
+ *
+ */
+client.reLayout = function () {
+
+    if ( client.room().hasClass('has-whiteboard') ) {
+
+        var w = client.whiteboard().width();
+        var wh = $(window).height() - 100;
+        var h = Math.floor(w * 1.4);
+        if ( h > wh ) h = wh;
+        client.whiteboard().height( h );
+
+        /**
+         * 여기서 반드시 canvas width/height 을 지정해야 한다.
+         * @type {Element}
+         */
+        client.canvas = document.getElementById("whiteboard-canvas");
+        client.canvas.width = w;
+        client.canvas.height = h;
+
+        // 화면을 재 조정하면 다시 그린다.
+        socket.emit('get-whiteboard-draw-line', client.getRoomName() );
+    }
+
+};
+function onMousemove(e){
+    var m_posx = 0, m_posy = 0, e_posx = 0, e_posy = 0,
+        obj = this;
+    //get mouse position on document crossbrowser
+    if (!e){e = window.event;}
+    if (e.pageX || e.pageY){
+        m_posx = e.pageX;
+        m_posy = e.pageY;
+    } else if (e.clientX || e.clientY){
+        m_posx = e.clientX + document.body.scrollLeft
+            + document.documentElement.scrollLeft;
+        m_posy = e.clientY + document.body.scrollTop
+            + document.documentElement.scrollTop;
+    }
+    //get parent element position in document
+    if (obj.offsetParent){
+        do {
+            e_posx += obj.offsetLeft;
+            e_posy += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+    }
+    // mouse position minus elm position is mouseposition relative to element:
+    dbg.innerHTML = ' X Position: ' + (m_posx-e_posx)
+        + ' Y Position: ' + (m_posy-e_posy);
+}
+
+
+/**
+ * Whiteboard 초기화 : 페이지 로딩 시 한번만 호출 되어야 한다.
+ */
+client.initWhiteboard = function () {
+    client.mouse = {
+        click: false,
+        move: false,
+        pos: { x:0, y:0 },
+        pos_prev: { x: 0, y: 0 }
+    };
+    var $canvas = client.whiteboard().find('canvas');
+    //client.canvas = $canvas[0];
+    client.canvas = document.getElementById("whiteboard-canvas");
+    client.canvas_context = client.canvas.getContext('2d');
+
+    client.canvas.onmousedown = function ( e ) {
+        client.mouse.click = true;
+        client.mouse.pos_prev = {x: -12345, y: -12345};
+    };
+    client.canvas.onmouseup = function( e ) {
+        client.mouse.click = false;
+        client.mouse.pos_prev = {x: -12345, y: -12345};
+    };
+    $canvas.mouseleave( function() {
+        client.mouse.click = false;
+        client.mouse.pos_prev = {x: -12345, y: -12345}
+    });
+    client.whiteboard_draw_line = function( data ) {
+        var w = client.whiteboard().width();
+        var h = client.whiteboard().height();
+        var line = data.line;
+        var ox = line[0].x * w;
+        var oy = line[0].y * h;
+        var dx = line[1].x * w;
+        var dy = line[1].y * h;
+        client.canvas_context.beginPath();
+        client.canvas_context.moveTo( ox, oy);
+        client.canvas_context.lineTo( dx, dy);
+        client.canvas_context.strokeStyle="red";
+        client.canvas_context.stroke();
+
+        console.log( ox, oy );
+        console.log( dx, dy );
+    };
+    socket.on('whiteborad-draw-line', client.whiteboard_draw_line);
+
+    /**
+     * whiteboard 의 상대적 마우스 포인트를 얻는다.
+     * @param e
+     */
+    client.canvas.onmousemove = function ( e ) {
+        if ( ! client.mouse.click ) return;
+
+        var m_posx = 0, m_posy = 0, e_posx = 0, e_posy = 0,
+            obj = this;
+        //get mouse position on document crossbrowser
+        if ( ! e ) e = window.event;
+        if (e.pageX || e.pageY){
+            m_posx = e.pageX;
+            m_posy = e.pageY;
+        } else if (e.clientX || e.clientY){
+            m_posx = e.clientX + document.body.scrollLeft
+                + document.documentElement.scrollLeft;
+            m_posy = e.clientY + document.body.scrollTop
+                + document.documentElement.scrollTop;
+        }
+        //get parent element position in document
+        if ( obj.offsetParent){
+            do {
+                e_posx += obj.offsetLeft;
+                e_posy += obj.offsetTop;
+            } while ( obj = obj.offsetParent);
+        }
+        var x = m_posx-e_posx;
+        var y = m_posy-e_posy;
+
+        var w = client.whiteboard().width();
+        var h = client.whiteboard().height();
+        var rx = (x / w);//.toFixed(4);
+        var ry = (y / h);//.toFixed(4);
+        //console.log('relative x: ' + rx + ', y: ' + ry);
+
+        client.mouse.pos.x = rx;
+        client.mouse.pos.y = ry;
+
+        if ( client.mouse.pos_prev.x == -12345 ) {
+            client.mouse.pos_prev.x = client.mouse.pos.x;
+            client.mouse.pos_prev.y = client.mouse.pos.y;
+        }
+
+        console.log( 'prev', client.mouse.pos_prev );
+        console.log( client.mouse.pos );
+
+        var data =  { line : [client.mouse.pos, client.mouse.pos_prev] };
+        data.roomname = client.getRoomName();
+        socket.emit('whiteborad-draw-line', data);
+
+        client.whiteboard_draw_line( data );
+
+        client.mouse.pos_prev.x = client.mouse.pos.x;
+        client.mouse.pos_prev.y = client.mouse.pos.y;
+
+
+    };
+};
+client.init = function() {
+
+    client.setUsername( client.getUsername() );
+    client.joinLobby( client.postJoinRoom );
+
+    // display video center HTML markup
+    $.get('template.html', function( m ) {
+        client.box().html( m );
+        client.initWhiteboard();
+    });
+
+    client.addEventHandlers();
+
+    ( function getRoomListLoop() {
+        client.roomList( client.onRoomListUpdate );
+        setTimeout(getRoomListLoop, 5000);
+    })();
+
+
+    $(window).resize( _.debounce( client.reLayout, 200 ) );
+
+
+    setTimeout( client.toggleWhiteboard, 200 ); // 시작 할 때, WhiteBoard 를 표시한다.
+
+    setTimeout( client.reLayout, 500 ); // 시작 할 때, 레이아웃 조정
+
+}; // eo init
+
+$(function() {
+    client.init();
+});
 

@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <title>WebRTC Peer Connection</title>
     <style>
+        /**
+         *
+         *  L A Y O U T    : DON'T DESIGN HERE
+         *
+         */
         body { margin: 0; padding: 0; }
         #videocenter { position: relative; }
         #status { background-color: grey; }
@@ -16,39 +21,12 @@
 
         #room .chat { position: relative; }
 
-
-
         #room .chat .messages { height: 50px; background-color: #efefef; }
         #room .chat input { width: 100%; }
 
         #room .content .whiteboard { display: none; background-color: #e1e1e1; }
 
-        #room.whiteboard-layout .whiteboard { display: block; }
-        /** Layout break point */
-        @media all and ( min-width: 546px ){
-            #room { background-color: #19469D; }
-            #room .videos {
-                position: absolute;
-                z-index: 100;
-                margin-left: 246px;
-            }
-            #room .chat { width: 246px; }
-            #room .chat .messages { height: 180px; }
-
-            #room.whiteboard-layout { }
-            #room.whiteboard-layout .videos {
-                position: relative;
-                margin: 0;
-                width: 246px;
-            }
-            #room.whiteboard-layout .whiteboard {
-                position: absolute;
-                z-index: 100;
-                top: 0;
-                margin-left: 246px;
-                width: 300px; /** 이 너비는 모든 채팅 상대방과 맞추어야 함. 개발 문서 참고. */
-            }
-        }
+        #room.has-whiteboard .whiteboard { display: block; }
 
 
         #room .videos.metro { overflow: auto; }
@@ -68,28 +46,80 @@
         }
 
 
-        #room .whiteboard {
-            width: 340px;
-            height: 420px;
+/** Video Layout - Overlay */
+/**
+@todo 비디오 영상을 5개 이상으로 테스트.
+기본적으로 맨 마지막에 추가된 video 태그가
+.videos.overlay .user.selected 클래스를 가지고 있고,
+만약, 임의 선택을 했다면 그 video 태그에 고정을 한다.
+*/
+        #room .videos.overlay { }
+        #room .videos.overlay .user {
+            position:absolute;
+            z-index: 17;
+            display:inline-block;
+            float: left;
+            width: 25%;
+            height: auto;
+        }
+        #room .videos.overlay .user:last-child {
+            position: relative;
+            z-index: 9;
+            float: none;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width:100%;
+            height: auto;
+        }
+        #room .videos.overlay .user:last-child .userid {
+            top: auto;
+            bottom: 4px;
+            left: 4px;
         }
 
-        /*
-        #lobby {
+
+        /** White Board Design */
+        #room .content .whiteboard {
             position: relative;
+            width: 100%;
+            height: 340px;
+            background-color: #AEBDCC;
         }
-        video { object-fit: fill; width: 99%; }
-        #lobby .room-name { cursor: pointer; }
-        #room { position: relative; background-color: #5f9ea0; }
-        #room .videos { margin-left: 200px; min-height: 400px; background-color: #777777; }
-        #room .videos .user { position: relative;  }
-        #room .videos .user .userid { position: absolute; top: 4px; left: 4px; }
-        #room .chat { position: absolute; top: 26px; width: 200px; }
-        #room .chat .name { background-color: #cdcdcd; color: white; }
-        #room .chat .messages { min-height: 20em; background-color: #efefef; }
-        #room .chat input { width: 100%; }
-        .room-list { padding: 16px; background-color: #dfdfdf; }
-        .room-list .room .name { padding: 0 16px 0 0; cursor:pointer; }
-        */
+        #room .content .whiteboard nav { position: absolute; }
+        #room .content .whiteboard canvas { width:100%; height: 100%; }
+
+
+
+        /** Layout break point */
+        @media all and ( min-width: 546px ){
+            #room { background-color: #19469D; }
+            #room .videos {
+                position: absolute;
+                z-index: 100;
+                margin-left: 246px;
+            }
+            #room .chat { width: 246px; }
+            #room .chat .messages { height: 180px; }
+
+
+
+            #room.has-whiteboard .content .videos {
+                position: relative;
+                margin: 0;
+                width: 246px;
+            }
+
+            #room .content .whiteboard {
+                position: absolute;
+                z-index: 100;
+                top: 0;
+                right: 0;
+                left: 246px;
+                width: auto;
+            }
+        }
 
     </style>
     <script>
@@ -171,27 +201,9 @@
         //console.log('connection id: ' + connection.userid);
         //console.log('event id: ' + event.userid);
         //console.log(connection);
-        console.log(event);
-        var video = event.mediaElement;
-        var $v = $(video);
-        $v.prop('controls', false);
-        if ( connection.userid == event.userid ) { // 나의 비디오 인가?
-            $v.attr('who', 'i');
-
-        }
-        else {
-            $v.attr('who', 'other');
-        }
-        //$('body').append($v);
-        //lobby().hide();
-        //room().show();
-
-        // 기존에 남아있는 ( 또는 잘못추가된 ) video 태그를 삭제
-        var userid = event.userid;
-        $('[userid="'+userid+'"]').parent().remove();
 
         ///
-        roomAddVideo(event, $v);
+        roomAddVideo( event );
         videoLayout( Cookies.get('video-list-style') );
     };
     connection.onstreamended = function(e) {
@@ -263,20 +275,35 @@
     function roomAddVideo(event, $v) {
         video_count ++;
         //console.log(event);
+
+
+        console.log(event);
+
+        // 변수들
+        var video = event.mediaElement;
         var userid = event.userid;
         var username = event.extra.username;
-        var $videos = client.box().find('.videos');
-        $videos.append('<div class="user" no="'+video_count+'"></div>');
+
+        var $videos = client.box().find('.videos'); // .videos 박스
+        var $v = $(video);
+
+        // 기존에 남아있는 ( 또는 잘못추가된 ) video 태그를 삭제
+        $('[userid="'+userid+'"]').remove();
+
+        $v.prop('controls', false);
+        var who = '';
+        if ( connection.userid == event.userid ) { // 나의 비디오 인가?
+            who = 'i';
+
+        }
+        else {
+            who = 'other';
+        }
+
+        $videos.append('<div class="user" who="'+who+'" no="'+video_count+'"></div>');
         $videos.find('[no="'+video_count+'"]')
                 .append($v)
                 .append('<div class="userid" userid="'+userid+'">'+ username +'</div>');
-
-        /**
-         socket.emit( 'get-user-info', userid, function( info ) {
-            console.log(info);
-            $('[userid="'+info.userid+'"]').text( info.username );
-        });
-         */
     }
 
     /**
@@ -286,6 +313,7 @@
     function videoLayout( style ) {
         if ( style == 'list' ) videoLayout_list();
         else if ( style == 'metro' ) videoLayout_metro();
+        else if ( style == 'overlay' ) videoLayout_overlay();
         else videoLayout_metro();
 
     }
@@ -298,6 +326,7 @@
         Cookies.set('video-list-style', 'list');
         var $videos = client.room().find('.videos');
         $videos.removeClass('metro');
+        $videos.removeClass('overlay');
         $videos.addClass('list');
     }
 
@@ -309,6 +338,7 @@
         Cookies.set('video-list-style', 'metro');
         var $videos = client.room().find('.videos');
         $videos.removeClass('list');
+        $videos.removeClass('overlay');
         $videos.addClass('metro');
     }
 
@@ -321,30 +351,13 @@
      */
 
     function videoLayout_overlay() {
-        vc.options.videoLayout = 'overlay';
-        var $videos = room().find('.videos');
-        $videos.find('[who="i"]').parent().css ({
-            'float' : 'left',
-            'width' : '25%',
-            'height' : 'auto'
-        });
+        Cookies.set('video-list-style', 'overlay');
+        var $videos = client.room().find('.videos');
+        $videos
+                .removeClass('list')
+                .removeClass('metro')
+                .addClass('overlay');
 
-        $videos.find('[who="other"]').parent().css ({
-            'position' : 'static',
-            'float' : 'left',
-            'z-index' : 0,
-            'width' : '25%',
-            'height' : 'auto'
-        });
-
-        $videos.find('[who="other"]').parent().last().css ({
-            'position' : 'absolute',
-            'z-index' : -1,
-            'top' : 0,
-            'left' : 0,
-            'width' : '100%',
-            'height' : 'auto'
-        });
     }
 
 

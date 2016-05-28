@@ -10,6 +10,9 @@ module.exports = exports = function(app, socketCallback) {
     var chat = []; // 인덱싱을 socket.id 로 한다.
 
 
+    // whiteboard
+    var line_history = [];
+
     var io = require('socket.io');
 
     try {
@@ -390,6 +393,8 @@ module.exports = exports = function(app, socketCallback) {
         socket.info = info;
 
 
+
+
         //console.log(chat);
 
         console.log('New connection on chat. No. of clients : ' + getNumberChatClients());
@@ -467,6 +472,9 @@ module.exports = exports = function(app, socketCallback) {
             socket.join( roomname );
             callback( roomname, socket.info );
             io.sockets.in( roomname ).emit( 'user-join', socket.info );
+
+
+
         } );
 
         socket.on('chat-room-leave', function(roomname, callback) {
@@ -480,7 +488,27 @@ module.exports = exports = function(app, socketCallback) {
             io.sockets.in( data.room ).emit('chat-recv-message', data );
             callback(data);
         });
-        
+
+
+        /**
+         * White Board
+         */
+
+        socket.on('whiteborad-draw-line', function( data ) {
+            // add received line to history
+            line_history.push(data);
+            // send line to all clients
+            io.sockets.in( data.roomname ).emit('whiteborad-draw-line', data);
+        });
+        socket.on('get-whiteboard-draw-line', function( roomname ) {
+
+            // @todo 속도를 빠르게 하기 우해서는 방별로 기록을 해야 한다
+            // first send the history to the new client
+            for (var i in line_history) {
+                var data = line_history[i];
+                io.sockets.in(roomname).emit('whiteborad-draw-line', data );
+            }
+        });
     } // eo onConnection(socket)
 
     function getNumberChatClients() {
