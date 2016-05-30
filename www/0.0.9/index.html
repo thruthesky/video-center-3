@@ -11,6 +11,12 @@
          */
         body { margin: 0; padding: 0; }
         #videocenter { position: relative; }
+
+        #entrance { padding: 2em; }
+
+        #lobby { display: none; }
+        #room { display: none; }
+
         #status { background-color: grey; }
         #room { position: relative; background-color:#5f9ea0; }
         #room .content { position: relative; }
@@ -87,10 +93,19 @@
             height: 340px;
             background-color: #AEBDCC;
         }
-        #room .content .whiteboard nav { position: absolute; }
-        #room .content .whiteboard canvas { width:100%; height: 100%; }
-
-
+        #room .content .whiteboard nav {
+            position: absolute;
+            z-index: 500;
+            top: 4px;
+            right: 4px;
+        }
+        #room .content .whiteboard section { position: absolute; z-index: -50; top: 0; left: 0; right: 0; bottom: 0; }
+        #room .content .whiteboard canvas {
+            position:relative;
+            z-index: 200;
+            width:100%;
+            height: 100%;
+        }
 
         /** Layout break point */
         @media all and ( min-width: 546px ){
@@ -143,7 +158,7 @@
 <script src="../js/js.cookie.js"></script>
 <script src="../dist/rmc3.js"></script>
 <script src="../dist/rmc3.fbr.js"></script>
-<script src="../0.0.9/functions.js"></script>
+<script src="functions.js"></script>
 
 
 <script>
@@ -152,6 +167,8 @@
     // Variables
     // .......................................................
     var connection = new RTCMultiConnection();
+
+
 
     // ......................................................
     // RTC Multi Connection Code
@@ -172,6 +189,9 @@
     connection.iceServers.push({
         url: 'stun:videocenter.co.kr:3478'
     });
+
+
+
     /**
      * @todo username 과 credential 이 틀려도 접속이 된다. 확인을 해 볼 것.
      */
@@ -184,6 +204,8 @@
     console.log( 'default connection.userid: ' + connection.userid );
     var socket = connection.getSocket();
 
+
+
     $('body').on('click', '.room-name', function(){
         var $this = $(this);
         var person = $this.text();
@@ -191,6 +213,8 @@
         //connection.join( person );
         vc.joinRoom( person );
     });
+
+
 
     /**
      *
@@ -213,202 +237,15 @@
     };
 
 
-</script>
 
 
-<script>
-    var $body = $('body');
-
-    /**
-     * ........................................................................
-     *
-     *  vc 클래스는 RTCMultiConnection 코드와 전혀 상관이 없다.
-     *  관련된 코드를 전혀 담지 않는다.
-     *  단, 호출은 가능하다.
-     *
-     * ........................................................................
-     */
-    var vc = {
-        options : {
-            videoLayout : 'list'
-        },
-        lobby: {
-            get : function() { return $('#lobby'); }
-        },
-        room: {
-            get : function() { return $('#room'); }
-        },
-        test : {
-
-        }
-    };
-    /*
-     vc.displayVideoCenter = function() {
-     var m = _.template($('#video-center-template').html())();
-     videocenter().html( m );
-     };
-     */
-
-
-    vc.openRoom = function() {
-        rtc_open_room( getUserID() );
-    };
-    function rtc_join_room(person) {
-        console.log( connection.userid + ' connects to ' + person );
-        connection.join( person );
-    }
-    vc.joinRoom = function (person) {
-        rtc_join_room( person );
-    };
-
-    var rtc_open_or_join = function (userid) {
-        connection.userid = getUserID();
-        connection.openOrJoin(userid);
-    };
-
-    /**
-     *
-     * @param event
-     * @param $v 는 video 객체로 *객체 그대로* 사용을 해야한다.
-     *
-     */
-    function roomAddVideo(event, $v) {
-        video_count ++;
-        //console.log(event);
-
-
-        console.log(event);
-
-        // 변수들
-        var video = event.mediaElement;
-        var userid = event.userid;
-        var username = event.extra.username;
-
-        var $videos = client.box().find('.videos'); // .videos 박스
-        var $v = $(video);
-
-        // 기존에 남아있는 ( 또는 잘못추가된 ) video 태그를 삭제
-        $('[userid="'+userid+'"]').remove();
-
-        $v.prop('controls', false);
-        var who = '';
-        if ( connection.userid == event.userid ) { // 나의 비디오 인가?
-            who = 'i';
-
-        }
-        else {
-            who = 'other';
-        }
-
-        $videos.append('<div class="user" who="'+who+'" no="'+video_count+'"></div>');
-        $videos.find('[no="'+video_count+'"]')
-                .append($v)
-                .append('<div class="userid" userid="'+userid+'">'+ username +'</div>');
-    }
-
-    /**
-     * 방에 접속하는 사람 수에 따라 자동으로 layout 수정한다.
-     *
-     */
-    function videoLayout( style ) {
-        if ( style == 'list' ) videoLayout_list();
-        else if ( style == 'metro' ) videoLayout_metro();
-        else if ( style == 'overlay' ) videoLayout_overlay();
-        else videoLayout_metro();
-
-    }
-
-
-    /**
-     * 한 행에 비디오를 1 개 씩 표시.
-     */
-    function videoLayout_list() {
-        Cookies.set('video-list-style', 'list');
-        var $videos = client.room().find('.videos');
-        $videos.removeClass('metro');
-        $videos.removeClass('overlay');
-        $videos.addClass('list');
-    }
-
-    /**
-     * 한 행에 비디오를 2개 또는 3개, 4개씩 표시.
-     *
-     */
-    function videoLayout_metro() {
-        Cookies.set('video-list-style', 'metro');
-        var $videos = client.room().find('.videos');
-        $videos.removeClass('list');
-        $videos.removeClass('overlay');
-        $videos.addClass('metro');
-    }
-
-
-    /**
-     * 큰 화면이 하나 있고, 나머지는 작은 화면으로 overlap 된다.
-     *
-     * @todo 작은 동영상을 클릭하면, 크게 나오도록 한다.
-     * 단순히 css 를 잘 조정하면 된다.
-     */
-
-    function videoLayout_overlay() {
-        Cookies.set('video-list-style', 'overlay');
-        var $videos = client.room().find('.videos');
-        $videos
-                .removeClass('list')
-                .removeClass('metro')
-                .addClass('overlay');
-
-    }
-
-
-    /**
-     * .........................................................
-     *
-     * Initialization
-     *
-     * .........................................................
-     */
-
-
-    $(function(){
-
-        var q = getQueryString();
-        if ( typeof q['reload'] != 'undefined' ) {
-            $('.join-room input').val('Apple is delicious!');
-            $('.join-room button').click();
-            setTimeout( reload, q['reload'] * 1000 );
-        }
-
-
-        /**
-         setTimeout(function() {
-            $('.join-room input').val('Apple is delicious!');
-            $('.join-room button').click();
-        }, 200);
-         */
-
-        /**
-         * 이 코드는 재 접속을 할 때, 자동으로 이전 룸에 다시 접속하게 하는 코드이다.
-         */
-        if ( typeof q['mode'] != 'undefined' && q['mode'] == 'reconnect' ) {
-            setTimeout(function() {
-                q['room'] = decodeURI(q['room']);
-                console.log('reconnecting: ' + q['room']);
-                $('.join-room input').val( q['room'] );
-                $('.join-room button').click();
-            }, 200);
-        }
-        /*
-         setTimeout( function() {
-         client.toggleWhiteboard();
-         }, 100);
-         */
-    });
 
 </script>
 
 
-<script src="../0.0.9/client.js"></script>
+
+
+<script src="client.js"></script>
 </body>
 </html>
 

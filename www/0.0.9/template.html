@@ -1,4 +1,3 @@
-
 <header>Video Center v3 by Withcenter, Inc.</header>
 <div>
     <a href="../index.html">Index HTML</a>
@@ -6,24 +5,32 @@
     <a href="?reload=10">Reload</a>
 </div>
 
+<section id="entrance">
+     <span class="username">
+         User ID : <input name="username" placeholder="Input user name" size="10"><button>Submit</button>
+     </span>
+</section>
 <section id="lobby">
     <h1>Lobby</h1>
-
-
-    <div class="join-room">
-        <input type="text" name="roomname" placeholder="Input room name to join">
-        <button>Join Chat Room</button>
-    </div>
-
+    <nav>
+        <button class="update-user-name">Update Username</button>
         <span class="username">
-            User ID : <input name="username" placeholder="Input user name" size="10"><button>Update Username</button>
+            User ID : <input name="username" placeholder="Input user name" size="10"><button>Submit</button>
         </span>
+
+        <button class="create-room">Create Room</button>
+        <span class="join-room">
+            <input type="text" name="roomname" placeholder="Input room name to join">
+            <button>Join Chat Room</button>
+        </span>
+
+    </nav>
+
     <div class="room-list">
         Room List
         <div class="content"></div>
     </div>
 </section>
-
 <section id="room" class="">
     <header>
 
@@ -33,7 +40,21 @@
         <button class="video-layout-list" onclick="videoLayout_list();">List</button>
         <button class="video-layout-Metro" onclick="videoLayout_metro();">Metro</button>
         <button class="video-layout-overlay" onclick="videoLayout_overlay();">Overlay</button>
-        </form>
+        <button class="button-whiteboard" onclick="client.toggleWhiteboard();">WhiteBoard</button>
+    </header>
+    <div class="content">
+        <div class="videos">
+        </div>
+        <div class="chat">
+            <form>
+                <div class="name"></div>
+                <div class="messages">You have entered a room</div>
+                <div class="input"><input type="text" name="message"></div>
+                <div class="users">
+                    <div class="title">Users</div>
+                    <div class="content"></div>
+                </div>
+            </form>
         </div>
         <div class="document">
             Document 1<br>
@@ -44,6 +65,8 @@
         </div>
         <div class="whiteboard">
             <nav>
+                <button class="">Clear Whiteboard</button>
+                <button class="">Eraser</button>
                 <label for="canvas-size">
                     <select id="canvas-size" name="canvas_size">
                         <option value="">Canvas Size</option>
@@ -65,7 +88,28 @@
                     </select>
                 </label>
             </nav>
+            <section class="markup">
+
+                <h2>
+                    You are in Lobby
+                </h2>
+
+            </section>
             <canvas id="whiteboard-canvas"></canvas>
         </div>
+    </div>
+        <button class="button-whiteboard" onclick="client.toggleWhiteboard();">WhiteBoard</button>
+    </header>
+    <div class="content">
+        <div class="videos">
+        </div>
+        <div class="chat">
+            <form>
+                <div class="name"></div>
+                <div class="messages">You have entered a room</div>
+                <div class="input"><input type="text" name="message"></div>
+                <div class="users">
+        <div class="title">Users</div>
+        <div class="content"></div>
         </div>
 </section>

@@ -40,6 +40,8 @@ socket.on ('chat-room-leave', function( info ) {
 // C H A T    C L I E N T   C O D E
 // ----------------------------------------------------------------------------
 client.box = function() { return $('#videocenter'); };
+client.entrance = function() { return $('#entrance'); };
+client.lobby = function() { return $('#lobby'); };
 client.room = function () {
     return $('section#room');
 };
@@ -75,7 +77,11 @@ client.leaveRoom = function () {
 };
 
 
-
+client.showVideocenter = function () {
+    client.entrance().hide();
+    client.lobby().show();
+    client.room().show();
+};
 /**
  * @Attention It sets 'connection.userid', 'connection.sessionid' also.
  * @param username
@@ -96,6 +102,9 @@ client.setUsername = function ( username ) {
         //console.log('callback setUsername : -----------');
         //console.log(connection.userid);
         //console.log(info);
+
+        
+        client.showVideocenter();
     });
 };
 
@@ -440,6 +449,7 @@ client.initWhiteboard = function () {
      * whiteboard 의 상대적 마우스 포인트를 얻는다.
      * @param e
      */
+
     client.canvas.onmousemove = function ( e ) {
         if ( ! client.mouse.click ) return;
 
@@ -497,12 +507,25 @@ client.initWhiteboard = function () {
 };
 client.init = function() {
 
+    var username = client.getUsername();
+
     client.setUsername( client.getUsername() );
     client.joinLobby( client.postJoinRoom );
 
     // display video center HTML markup
     $.get('template.html', function( m ) {
         client.box().html( m );
+
+        if ( username ) {
+            client.entrance().hide();
+            client.lobby().show();
+            client.room().show();
+        }
+        else {
+
+        }
+
+
         client.initWhiteboard();
     });
 
@@ -525,5 +548,37 @@ client.init = function() {
 
 $(function() {
     client.init();
+
+
+
+    /**
+     * .........................................................
+     *
+     * Initialization
+     *
+     * .........................................................
+     */
+
+
+
+    var q = getQueryString();
+    if ( typeof q['reload'] != 'undefined' ) {
+        $('.join-room input').val('Apple is delicious!');
+        $('.join-room button').click();
+        setTimeout( reload, q['reload'] * 1000 );
+    }
+
+    /**
+     * 이 코드는 재 접속을 할 때, 자동으로 이전 룸에 다시 접속하게 하는 코드이다.
+     */
+    if ( typeof q['mode'] != 'undefined' && q['mode'] == 'reconnect' ) {
+        setTimeout(function() {
+            q['room'] = decodeURI(q['room']);
+            console.log('reconnecting: ' + q['room']);
+            $('.join-room input').val( q['room'] );
+            $('.join-room button').click();
+        }, 200);
+    }
+
 });
 
