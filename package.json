@@ -5,4 +5,9 @@
 , "main" : "server.js"
 , "repository" : "https://github.com/thruthesky/video-center-3.git"
 , "license" : "SEE LICENSE IN <README.md>"
+, "dependencies": {
+  "socket.io": "0.9.17",
+  "sqlite3" : "*",
+  "util" : "*"
+}
 }
