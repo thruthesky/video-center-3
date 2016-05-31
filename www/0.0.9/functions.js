@@ -120,6 +120,25 @@ function videoLayout_overlay() {
         .removeClass('list')
         .removeClass('metro')
         .addClass('overlay');
-
 }
+$('body').on('click', '.videos.overlay .user', function(){
+    console.log('clicked on user of overlay style');
+    var $this = $(this);
+
+    //var $videos = client.room().find('.videos .user:last-child').find('video').prop('src', src);
+
+    var $videos = client.room().find('.videos');
+
+     $videos.append( $this );
+
+
+    var video = $this.find('video')[0];
+    video.play(); // This prints an error in console. People says it's a bug of chrome.
+
+
+
+    // $this.replaceWith( client.room().find('.videos .user:last-child') );
+
+    //if ( $this )
+});
 

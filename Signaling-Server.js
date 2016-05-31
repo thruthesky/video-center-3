@@ -11,7 +11,7 @@ module.exports = exports = function(app, socketCallback) {
 
 
     // whiteboard
-    var line_history = [];
+    var whiteboard_line_history = [];
 
     var io = require('socket.io');
 
@@ -393,6 +393,8 @@ module.exports = exports = function(app, socketCallback) {
         socket.info = info;
 
 
+        cleanWhiteboardHistory();
+
 
 
         //console.log(chat);
@@ -416,6 +418,8 @@ module.exports = exports = function(app, socketCallback) {
             }
             removeChatClient( socket.id );
             //chat.splice( chat.indexOf( socket ), 1 );
+
+            cleanWhiteboardHistory();
             console.log("chat client count: " + getNumberChatClients() + "client names: " + getClientNames() );
         });
 
@@ -472,9 +476,6 @@ module.exports = exports = function(app, socketCallback) {
             socket.join( roomname );
             callback( roomname, socket.info );
             io.sockets.in( roomname ).emit( 'user-join', socket.info );
-
-
-
         } );
 
         socket.on('chat-room-leave', function(roomname, callback) {
@@ -493,22 +494,52 @@ module.exports = exports = function(app, socketCallback) {
         /**
          * White Board
          */
-
         socket.on('whiteborad-draw-line', function( data ) {
             // add received line to history
-            line_history.push(data);
+            if ( typeof whiteboard_line_history[data.roomname] == 'undefined' ) whiteboard_line_history[data.roomname] = [];
+            whiteboard_line_history[data.roomname].push(data);
             // send line to all clients
             io.sockets.in( data.roomname ).emit('whiteborad-draw-line', data);
         });
-        socket.on('get-whiteboard-draw-line', function( roomname ) {
-
-            // @todo 속도를 빠르게 하기 우해서는 방별로 기록을 해야 한다
+        /**
+         * 그림 기록 정보를 자기 자신만 받는다.
+         */
+        socket.on('get-whiteboard-draw-line-history', function( roomname ) {
             // first send the history to the new client
-            for (var i in line_history) {
-                var data = line_history[i];
-                io.sockets.in(roomname).emit('whiteborad-draw-line', data );
+            if ( typeof whiteboard_line_history[roomname] != 'undefined' ) {
+                var lines = whiteboard_line_history[roomname];
+                for (var i in lines ) {
+                    var data = lines[i];
+                    socket.emit('whiteborad-draw-line-history', data );
+                }
             }
         });
+
+        /**
+         *
+         */
+        socket.on('whiteboard-clear', function( roomname ) {
+            io.sockets.in( roomname ).emit('whiteboard-clear', roomname);
+            if ( typeof whiteboard_line_history[roomname] != 'undefined' ) {
+                whiteboard_line_history[roomname] = [];
+                delete whiteboard_line_history[roomname];
+            }
+        });
+
+        /**
+         * 방의 참가자들에게 메세지를 broadcasting 하는 만능 이벤트 핸들러를 만든다.
+         */
+        socket.on('room-cast', function ( data ) {
+            io.sockets.in( data.roomname ).emit('room-cast', data);
+            if ( typeof data.callback != 'undefined' ) {
+                var re = data;
+                re.callback = '';
+                delete re.callback;
+                data.callback( re );
+            }
+        });
+
+
     } // eo onConnection(socket)
 
     function getNumberChatClients() {
@@ -587,6 +618,24 @@ module.exports = exports = function(app, socketCallback) {
         //console.log(roomList);
 
         return roomList;
+    }
+
+    /**
+     * 더 이상 사용하지 않는 방의 Whiteboard 의 그림 기록을 버퍼에서 비운다.
+     * 누군가 새로운 접속을 하거나 끊을 때, 그 방에 아무도 없다면 ( 즉, 방이 존재하지 않는 다면 )
+     * whiteboard_line_history 에서 해당 방의 그림 기록을 지운다.
+     *
+     * @note 이 함수는 아무데서나 호출 될 수 있다.
+     */
+    function cleanWhiteboardHistory() {
+        console.log(getRoomNameList());
+        console.log(whiteboard_line_history);
+        var rooms = getRoomNameList();
+        for ( var i in whiteboard_line_history ) {
+            if ( rooms.indexOf(i) == -1 ) {
+                delete whiteboard_line_history[i];
+            }
+        }
     }
 
 };

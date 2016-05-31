@@ -32,8 +32,7 @@
     </div>
 </section>
 <section id="room" class="">
-    <header>
-
+    <nav>
         <button class="leave">Leave</button>
         <button class="reconnect">Re-connect</button>
         Display :
@@ -41,7 +40,7 @@
         <button class="video-layout-Metro" onclick="videoLayout_metro();">Metro</button>
         <button class="video-layout-overlay" onclick="videoLayout_overlay();">Overlay</button>
         <button class="button-whiteboard" onclick="client.toggleWhiteboard();">WhiteBoard</button>
-    </header>
+    </nav>
     <div class="content">
         <div class="videos">
         </div>
@@ -65,11 +64,12 @@
         </div>
         <div class="whiteboard">
             <nav>
-                <button class="">Clear Whiteboard</button>
-                <button class="">Eraser</button>
-                <label for="canvas-size">
-                    <select id="canvas-size" name="canvas_size">
-                        <option value="">Canvas Size</option>
+                <button class="clear">Clear Whiteboard</button>
+                <button class="eraser">Eraser</button>
+
+                <label for="line-size">
+                    <select id="line-size" name="line-size">
+                        <option value="">Line Size</option>
                         <option value="xs">Extra Small</option>
                         <option value="sm">Small</option>
                         <option value="md">Medium</option>
@@ -77,6 +77,11 @@
                         <option value="xg">Extra Large</option>
                     </select>
                 </label>
+                <label for="line-color">
+                    <button id="line-color">Line Color</button>
+                </label>
+
+
                 <label for="font-size">
                     <select id="font-size" name="font-size">
                         <option value="">Font Size</option>
@@ -87,6 +92,10 @@
                         <option value="xg">Extra Large</option>
                     </select>
                 </label>
+                <label for="font-color">
+                    <button id="font-color">Font Color</button>
+                </label>
+
             </nav>
             <section class="markup">
 
@@ -98,18 +107,4 @@
             <canvas id="whiteboard-canvas"></canvas>
         </div>
     </div>
-        <button class="button-whiteboard" onclick="client.toggleWhiteboard();">WhiteBoard</button>
-    </header>
-    <div class="content">
-        <div class="videos">
-        </div>
-        <div class="chat">
-            <form>
-                <div class="name"></div>
-                <div class="messages">You have entered a room</div>
-                <div class="input"><input type="text" name="message"></div>
-                <div class="users">
-        <div class="title">Users</div>
-        <div class="content"></div>
-        </div>
 </section>

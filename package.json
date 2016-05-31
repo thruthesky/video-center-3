@@ -1,0 +1,8 @@
+{
+  "name" : "video-center-3"
+, "version" : "0.6.2"
+, "description" : "Video Center v3 server package."
+, "main" : "server.js"
+, "repository" : "https://github.com/thruthesky/video-center-3.git"
+, "license" : "SEE LICENSE IN <README.md>"
+}

@@ -78,10 +78,11 @@ client.leaveRoom = function () {
 
 
 client.showVideocenter = function () {
-    client.entrance().hide();
-    client.lobby().show();
-    client.room().show();
+    if ( client.entrance().css('display') != 'none' ) client.entrance().hide();
+    if ( client.lobby().css('display') == 'none' ) client.lobby().show();
+    if ( client.room().css('display') == 'none' ) client.room().show();
 };
+
 /**
  * @Attention It sets 'connection.userid', 'connection.sessionid' also.
  * @param username
@@ -104,7 +105,7 @@ client.setUsername = function ( username ) {
         //console.log(info);
 
         
-        client.showVideocenter();
+         client.showVideocenter();
     });
 };
 
@@ -121,9 +122,14 @@ client.joinRoom = function (roomname, callback) {
 
     if ( client.joined() ) {
         if ( client.inLobbyRoom() ) {
-            socket.emit('chat-room-leave', 'lobby', function( roomname, my_info ) {
-                console.log('chat-room-leave : ' + roomname, my_info);
-            });
+            if ( roomname == 'Lobby' ) {
+                return alert("You cannot join Lobby.");
+            }
+            else {
+                socket.emit('chat-room-leave', 'Lobby', function( roomname, my_info ) {
+                    console.log('chat-room-leave : ' + roomname, my_info);
+                });
+            }
         }
         else return alert('Leave current room before you join another room');
     }
@@ -134,12 +140,12 @@ client.joinRoom = function (roomname, callback) {
         callback(data);
 
         // 방에 입장하면, 전자칠판을 다시 그린다.
-        socket.emit('get-whiteboard-draw-line', client.getRoomName() );
+        socket.emit('get-whiteboard-draw-line-history', client.getRoomName() );
     });
 };
 
 client.joinLobby = function( callback ) {
-    socket.emit('chat-join-room', 'lobby', function(data) {
+    socket.emit('chat-join-room', 'Lobby', function(data) {
         callback( data );
     });
 };
@@ -167,7 +173,6 @@ client.sendMessage = function (data, callback) {
 
 client.recvMessage = function ( data ) {
     //console.log('recvMessage() : ', data);
-
 
     var message = '<div class="message">' + data.username + ' : ' + data.text + '</div>';
     client.addMessage( message );
@@ -207,6 +212,10 @@ client.postJoinRoom = function ( roomname_joined ) {
     connection.extra.socket_id = socket.id;
     connection.extra.username = username;
     connection.updateExtraData();
+
+    client.clear_canvas();
+    client.whiteboard().find('.markup').html('<h2>You are in ' + roomname_joined + '</h2>');
+
 };
 
 /**
@@ -247,10 +256,18 @@ client.onRoomUpdate = function( room ) {
 
 /**
  * whiteboard 를 보였다 숨겼다 한다.
+ * @note Whiteboard 를 숨기거나 보이기를 하면 상대방의 화면에서 whiteboard 를 똑같이 숨겼다 보였다 해야 한다.
  */
 client.toggleWhiteboard = function () {
-    client.room().find('.whiteboard').toggle();
-    client.room().toggleClass('has-whiteboard')
+    client.room().toggleClass('has-whiteboard');
+    if ( client.room().find('.has-whiteboard') ) {
+        client.room().addClass('.whiteboard');
+        socket.emit('room-cast', { 'command' : 'whiteboard-show', 'roomname' : client.getRoomName() });
+    }
+    else {
+        client.room().removeClass('.whiteboard');
+        socket.emit('room-cast', { 'command' : 'whiteboard-hide', 'roomname' : client.getRoomName() });
+    }
 };
 
 /**
@@ -326,7 +343,7 @@ client.addEventHandlers = function () {
     $body.on('click', '#room .reconnect', function() {
         if ( client.joined() ) {
             if ( client.inLobbyRoom() ) {
-                alert("Refresh the page instead of reconnect since you are in lobby.");
+                alert("Refresh the page instead of reconnect since you are in Lobby.");
             }
             else {
                 location.href = "?mode=reconnect&room=" + client.getRoomName();
@@ -352,11 +369,10 @@ client.addEventHandlers = function () {
 client.reLayout = function () {
 
     if ( client.room().hasClass('has-whiteboard') ) {
-
         var w = client.whiteboard().width();
-        var wh = $(window).height() - 100;
-        var h = Math.floor(w * 1.4);
-        if ( h > wh ) h = wh;
+        var wh = $(window).height() - 100; // 윈도우 세로 크기에서 100을 뺀다. ( 그냥 뺀다. 별 이유 없다 )
+        var h = Math.floor(w * 1.4); // whiteboard 넓이의 1.4 배.
+        if ( h > wh ) h = wh; // 윈도우 세로 크기에서 100 뺀 값과 whiteboard 너비의 1.4 배 중에서 작은 값을 캔버스 높이로 지정한다. ( 왜? 그냥 ... 적절할 까봐서 )
         client.whiteboard().height( h );
 
         /**
@@ -367,8 +383,10 @@ client.reLayout = function () {
         client.canvas.width = w;
         client.canvas.height = h;
 
+        // clear drawing history count
+        client.whiteboard_draw_line_count = 0;
         // 화면을 재 조정하면 다시 그린다.
-        socket.emit('get-whiteboard-draw-line', client.getRoomName() );
+        socket.emit('get-whiteboard-draw-line-history', client.getRoomName() );
     }
 
 };
@@ -399,6 +417,23 @@ function onMousemove(e){
 }
 
 
+client.setWhiteboardErase = function () {
+    client.draw = 'e';
+    client.whiteboard().css('cursor', 'pointer'); // apply first
+    client.whiteboard().css('cursor', '-webkit-grab'); // apply web browser can.
+};
+
+client.clear_canvas = function () {
+    // Store the current transformation matrix
+    client.canvas_context.save();
+    // Use the identity matrix while clearing the canvas
+    client.canvas_context.setTransform(1, 0, 0, 1, 0, 0);
+    client.canvas_context.clearRect(0, 0, client.canvas.width, client.canvas.height);
+    // Restore the transform
+    client.canvas_context.restore();
+    // clear drawing history count
+    client.whiteboard_draw_line_count = 0;
+};
 /**
  * Whiteboard 초기화 : 페이지 로딩 시 한번만 호출 되어야 한다.
  */
@@ -409,6 +444,16 @@ client.initWhiteboard = function () {
         pos: { x:0, y:0 },
         pos_prev: { x: 0, y: 0 }
     };
+    /**
+     * client.draw can have lower 'L' as 'line', 'e' as 'eraser', 't' as 'text'
+     * @type {string}
+     */
+    client.draw = 'l';
+
+
+    client.whiteboard_draw_line_count = 0;
+
+    var $body = $('body');
     var $canvas = client.whiteboard().find('canvas');
     //client.canvas = $canvas[0];
     client.canvas = document.getElementById("whiteboard-canvas");
@@ -417,6 +462,19 @@ client.initWhiteboard = function () {
     client.canvas.onmousedown = function ( e ) {
         client.mouse.click = true;
         client.mouse.pos_prev = {x: -12345, y: -12345};
+
+        /**
+         * @note 그림을 너무 많이 그리면 부하가 걸리므로 총 3천5백 점(선)으로 그릴 수 있도록 제한한다.
+         * 이렇게하면 클라이어트(채팅 상대) 마다 약간씩 점의 수치가 틀린데, ( 이것은 각 컴퓨터 사용자 마다 화면 너비가 틀리고, 넓은 화면에서는 10개의 점을 찍어야 하지만, 좁은 화면에서는 4개의 점만 찍어도 가능한 것 때문은 아닐까? 아니다. 왜냐하면 정확히 그리는 사람의 점의 갯수 만큼 상대방의 캔버스에 그리기 때문이다.
+         * 서버에서 하면 정확하겠지만, 서버에 무리가 갈 수 있으므로
+         * 여기서 제한 한다.
+         * 점을 그리는 것과 지우는 것도 필요하므로,
+         * 총 3,500 개의 선(점)을 그릴 수 있게 하면 충분한 것 같다.
+         */
+        if ( client.whiteboard_draw_line_count > 3500 ) {
+            alert('Too much draw on whiteboard. Please clear whiteboard before you draw more.');
+            client.mouse.click = false;
+        }
     };
     client.canvas.onmouseup = function( e ) {
         client.mouse.click = false;
@@ -426,24 +484,78 @@ client.initWhiteboard = function () {
         client.mouse.click = false;
         client.mouse.pos_prev = {x: -12345, y: -12345}
     });
+    /**
+     * 누군가가 방에 접속을 해서 또는 누군가가 그림을 그리고 있는 도중에
+     * whiteboard clear 를 하면 정상적으로 (깨끗하지 않게) clear 될 수 있다.
+     */
+    $body.on('click', '.whiteboard button.clear', function() {
+        //console.log('1. send clear request 2. get clear request 3. clear');
+        socket.emit('whiteboard-clear', client.getRoomName());
+    });
+    socket.on('whiteboard-clear', function(roomname) {
+        console.log('whiteboard-clear: ' + roomname);
+        client.clear_canvas();
+    });
+
+    $body.on('click', '.whiteboard button.eraser', client.setWhiteboardErase);
+
     client.whiteboard_draw_line = function( data ) {
         var w = client.whiteboard().width();
         var h = client.whiteboard().height();
         var line = data.line;
+        //console.log( line );
         var ox = line[0].x * w;
         var oy = line[0].y * h;
         var dx = line[1].x * w;
         var dy = line[1].y * h;
-        client.canvas_context.beginPath();
-        client.canvas_context.moveTo( ox, oy);
-        client.canvas_context.lineTo( dx, dy);
-        client.canvas_context.strokeStyle="red";
-        client.canvas_context.stroke();
 
-        console.log( ox, oy );
-        console.log( dx, dy );
+        if ( data.draw == 'e' ) {
+            var radius = 10; // or whatever
+            //var fillColor = '#ff0000';
+            client.canvas_context.globalCompositeOperation = 'destination-out';
+            //client.canvas_context.fillCircle(dx, dy, radius, fillColor);
+            client.canvas_context.fillStyle = '#ff0000';
+            client.canvas_context.beginPath();
+            client.canvas_context.moveTo(dx, dy);
+            client.canvas_context.arc( dx, dy, radius, 0, Math.PI * 2, false );
+            client.canvas_context.fill();
+
+        }
+        else {
+            client.canvas_context.beginPath();
+            client.canvas_context.moveTo( ox, oy);
+            client.canvas_context.lineTo( dx, dy);
+            client.canvas_context.strokeStyle="red";
+            client.canvas_context.stroke();
+            client.whiteboard_draw_line_count ++;
+        }
+        //console.log('client.whiteboard_draw_line_count:' + client.whiteboard_draw_line_count);
     };
-    socket.on('whiteborad-draw-line', client.whiteboard_draw_line);
+
+    /**
+     *
+     * 내가 그림을 그리는 경우, 상대방이  그림을 그릴 때, delay 를 0.1 초 준다. 왜? 그냥...
+     * 너무 많이 delay 시키면 실제로 상대방의 전자칠판에 그림이 늦게 그려진다.
+     */
+    socket.on('whiteborad-draw-line', function(data){
+        setTimeout(function(){
+            client.whiteboard_draw_line(data);
+        },100);
+    });
+
+    /**
+     *
+     * 방에 처음 접속 할 때, 또는 화면을 resize 할 때, 서버로 부터 기존 그림 정보를 받는다.
+     * 그릴 그림이 많은 경우, ( 방에 처음 접속 했을 때, 서버에서 받는 그림 정보 기록이 많은 경우 )
+     * 부하를 많이 먹으므로 1.45 초 딜레이 시킨다.
+     *
+     */
+    socket.on('whiteborad-draw-line-history', function(data) {
+        setTimeout(function(){
+            client.whiteboard_draw_line(data);
+        },1450);
+    });
+
 
     /**
      * whiteboard 의 상대적 마우스 포인트를 얻는다.
@@ -478,8 +590,11 @@ client.initWhiteboard = function () {
 
         var w = client.whiteboard().width();
         var h = client.whiteboard().height();
-        var rx = (x / w);//.toFixed(4);
-        var ry = (y / h);//.toFixed(4);
+        //var rx = (x / w);//.toFixed(4);
+        //var ry = (y / h);//.toFixed(4);
+
+        var rx = (x / w).toFixed(4);
+        var ry = (y / h).toFixed(4);
         //console.log('relative x: ' + rx + ', y: ' + ry);
 
         client.mouse.pos.x = rx;
@@ -490,13 +605,14 @@ client.initWhiteboard = function () {
             client.mouse.pos_prev.y = client.mouse.pos.y;
         }
 
-        console.log( 'prev', client.mouse.pos_prev );
-        console.log( client.mouse.pos );
+        //console.log( 'prev', client.mouse.pos_prev );
+        //console.log( client.mouse.pos );
 
         var data =  { line : [client.mouse.pos, client.mouse.pos_prev] };
         data.roomname = client.getRoomName();
-        socket.emit('whiteborad-draw-line', data);
+        data.draw = client.draw;
 
+        socket.emit('whiteborad-draw-line', data);
         client.whiteboard_draw_line( data );
 
         client.mouse.pos_prev.x = client.mouse.pos.x;
@@ -517,9 +633,7 @@ client.init = function() {
         client.box().html( m );
 
         if ( username ) {
-            client.entrance().hide();
-            client.lobby().show();
-            client.room().show();
+             client.showVideocenter();
         }
         else {
 
