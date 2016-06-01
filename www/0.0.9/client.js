@@ -653,7 +653,6 @@ client.init = function() {
 
     $(window).resize( _.debounce( client.reLayout, 200 ) );
 
-
     setTimeout( client.toggleWhiteboard, 200 ); // 시작 할 때, WhiteBoard 를 표시한다.
 
     setTimeout( client.reLayout, 500 ); // 시작 할 때, 레이아웃 조정
