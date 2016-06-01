@@ -537,7 +537,7 @@ client.initWhiteboard = function () {
      * 내가 그림을 그리는 경우, 상대방이  그림을 그릴 때, delay 를 0.1 초 준다. 왜? 그냥...
      * 너무 많이 delay 시키면 실제로 상대방의 전자칠판에 그림이 늦게 그려진다.
      */
-    socket.on('whiteborad-draw-line', function(data){
+    socket.on('whiteboard-draw-line', function(data){
         setTimeout(function(){
             client.whiteboard_draw_line(data);
         },100);
@@ -550,7 +550,7 @@ client.initWhiteboard = function () {
      * 부하를 많이 먹으므로 1.45 초 딜레이 시킨다.
      *
      */
-    socket.on('whiteborad-draw-line-history', function(data) {
+    socket.on('whiteboard-draw-line-history', function(data) {
         setTimeout(function(){
             client.whiteboard_draw_line(data);
         },1450);
@@ -612,7 +612,7 @@ client.initWhiteboard = function () {
         data.roomname = client.getRoomName();
         data.draw = client.draw;
 
-        socket.emit('whiteborad-draw-line', data);
+        socket.emit('whiteboard-draw-line', data);
         client.whiteboard_draw_line( data );
 
         client.mouse.pos_prev.x = client.mouse.pos.x;

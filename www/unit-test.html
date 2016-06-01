@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .request {
+            padding: 1em;
+        }
+        .response {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+<script src="config.js"></script>
+<script src="/dist/rmc3.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/jquery-2.2.3.min.js"></script>
+
+<h1>Unit Test on Video Center</h1>
+<div>
+    - Create two room with 3 users to get the best result of unit test.
+</div>
+<div class="output" style="width: 100%; background-color: #dfdfdf; ">
+
+</div>
+<script>
+    var connection = new RTCMultiConnection();
+    connection.socketURL = socketURL;
+    var socket = connection.getSocket();
+
+
+    _req('chat-set-user-info');
+    var info = {
+        username : 'test-name',
+        session_user_id: connection.userid,
+        session_id : connection.sessionid
+    };
+    console.log(info);
+    socket.emit('chat-set-user-info', info, function( info ) {
+        console.log('My name is set on chat server.  callback client.setUsername', info);
+    });
+
+    _req('room-join-lobby');
+    socket.emit('chat-join-room', 'Lobby', function(data) {
+        console.log( data );
+    });
+
+    _req('chat-room-leave');
+    socket.emit('chat-room-leave', 'Lobby', function(info) {
+        console.log( 'chat room leave ok : ', info );
+    });
+
+
+    _req('room-join-lobby again');
+    socket.emit('chat-join-room', 'Lobby', function(data) {
+        console.log( data );
+    });
+
+
+
+
+
+    _req('chat-room-list');
+    socket.emit('chat-room-list', function( rooms ){
+        console.log( rooms );
+        for ( var r in rooms ) {
+            if ( ! rooms.hasOwnProperty(r) ) continue;
+            var room = rooms[r];
+            var msg = r + '( ';
+
+            for( var u in room ) {
+                var user = room[u];
+                msg += user.username;
+                msg += ', ';
+            }
+            msg += ' )';
+            _res('chat-room-list', msg);
+        }
+    });
+
+    _req('chat-user-list');
+    var roomname;
+    socket.emit('chat-user-list', function( users ){
+        console.log( users );
+        for ( var u in users ) {
+            if ( ! users.hasOwnProperty(u) ) continue;
+            var user = users[u];
+            var msg = user.username;
+            if ( user.roomname ) msg += " ( " + user.roomname + " ) ";
+            _res( 'chat-user-list', msg );
+            roomname = u;
+        }
+    });
+
+
+
+    _req('chat-room-info');
+    socket.emit('chat-room-info', roomname, function( rooms ){
+        console.log(rooms);
+    });
+
+    _req('chat-roomname-list');
+    socket.emit('chat-room-info', function( rooms ){
+        console.log(rooms);
+    });
+
+
+    function _req( msg ) {
+        $('.output').prepend('<div class="request '+msg+'"><b>' + msg + '</div>');
+    }
+    function _res( event, msg ) {
+        $('.request.'+event).append('<div class="response">' + msg + '</div>');
+    }
+</script>
+</body>
+</html>

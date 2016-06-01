@@ -5,6 +5,22 @@ Video Conference System By Withcenter, Inc.
 
 # TODO
 
+
+* 로비에서는 채팅창, 문서창, 전자칠판을 보여주지 않는다.
+
+
+* https://domain@videocenter.co.kr/ 과 같이 접속을 하도록 한다.
+* video relay server 는 사무실 안에서 같은 네트워크를 사용해야 한다. 그래야 빨리 데이터 송수신이 가능하다.
+
+* Sqlite3 에
+    * 기본 설정
+        * 화상 솔루션 로고, 화상 솔루션 이름, 회사 정보
+        * 최고 관리자가 각 도메인 별 인원수 제한
+    * 사용자 접속 기록,
+        * 모든 로그인 / 로그 아웃 및 로그인을 하지 않았어도 도메인 별 IP 기록 등.
+
+* 대충 완료를 위한 종료를 한다.
+
 * 버그. 캔버스에서 내용을 좀 지우고, re-connect 하면, 내용은 지워 지는데,
     * 문제는 맨 마지막에 그린 그림이 희미해 진다.
 
@@ -45,6 +61,12 @@ Video Conference System By Withcenter, Inc.
 * 지우개는 반드시 필요한다. 강사가 그림을 하나씩 그리다가 나중에는 반대로 하나씩 없애야 할 수 있다.
     * 지우개 지우는 것도 draw line history 에 적용을 해야 한다.
     * 따라서 draw line history 는 3천개 정도의 점으로 유지하는게 적당하다.
+
+
+* done - Signaling-Server.js 에 넣은 코드를 모두 빼서
+    * video-center.js 에 집어 넣어 Signaling-Server.js 로 부터 완전히 코드를 분리해서
+    * Signaling-Server.js 및 기타 소스 코드를 업데이트 한다.
+
 
 * done - 동시에 두명이 그리는 것.
 * done - 방의 그림 정보를 방에 저장한다. 그래서 방이 파괴되면 자동으로 파괴되도록 한다.
@@ -246,3 +268,11 @@ $(event.mediaElement) 와 같이 jQuery 객체를 만들어서 활용을 할 수
         $v.prop('controls', false);
         $('body').append($v);
     };
+
+# 코딩 가이드
+
+서버는 에러가 난다고 해서 stop 되어져 버리면 안된다.
+
+따라서 많은 곳에 try {} 기능을 넣는다.
+
+* 에러가 있는 경우 socket.emit('error', ...); 와 같이 해서 곧 바로 에러 정보를 클라이언트로 내 보낸다.

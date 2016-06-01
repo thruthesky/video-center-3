@@ -66,11 +66,16 @@ var app = https.createServer(options, serverHandler);
 
 app.listen(10443);
 
+
+
+var videoCenter = require('./video-center-3.js');
+
+
 var count_signaling_server = 0;
-require('./Signaling-Server.js')(app, function(socket) {
+require('./Signaling-Server.js')(app, videoCenter, function(socket) {
     count_signaling_server ++;
     //console.log('signaling server : ' + count_signaling_server);
-    try {
+    //try {
         var params = socket.handshake.query;
 
         // "socket" object is totally in your own hands!
@@ -90,5 +95,8 @@ require('./Signaling-Server.js')(app, function(socket) {
                 socket.broadcast.emit(params.socketCustomEvent, message);
             } catch (e) {}
         });
-    } catch (e) {}
+
+        videoCenter.listen( socket );
+
+    //} catch (e) {}
 });
