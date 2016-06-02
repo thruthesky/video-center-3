@@ -41,7 +41,12 @@ socket.on ('chat-room-leave', function( info ) {
 // ----------------------------------------------------------------------------
 client.box = function() { return $('#videocenter'); };
 client.entrance = function() { return $('#entrance'); };
+
 client.lobby = function() { return $('#lobby'); };
+client.lobbyMenu = function() { return $('.lobby-menu'); };
+client.lobbyMenuContent = function() { return $('.lobby-menu-content'); };
+client.lobbyMenuContentBox = function() { return client.lobbyMenuContent().find('.box'); };
+
 client.room = function () {
     return $('section#room');
 };
@@ -77,10 +82,35 @@ client.leaveRoom = function () {
 };
 
 
-client.showVideocenter = function () {
+client.initLobby = function () {
+    client.lobbyMenuContentBox().hide();
+};
+/**
+ *
+ * This shows 'room' ( including whiteboard, chat-box, document-box, videos )
+ *
+ * @attention show this when user joins a room ( not lobby room )
+ *
+ */
+client.showLobby = function () {
+
+    if ( ! client.inLobbyRoom() ) return; // return if the user is not in lobby.
+
+    console.log('client.showLobby()');
     if ( client.entrance().css('display') != 'none' ) client.entrance().hide();
+    if ( client.room().css('display') != 'none' ) client.room().hide();
+
     if ( client.lobby().css('display') == 'none' ) client.lobby().show();
+    client.reLayout();
+    client.initLobby();
+};
+client.showRoom = function () {
+    if ( client.inLobbyRoom() ) return; // return if the user is in lobby.
+    console.log('client.showRoom()');
+    if ( client.entrance().css('display') != 'none' ) client.entrance().hide();
+    if ( client.lobby().css('display') != 'none' ) client.lobby().hide();
     if ( client.room().css('display') == 'none' ) client.room().show();
+    client.reLayout();
 };
 
 /**
@@ -104,8 +134,8 @@ client.setUsername = function ( username ) {
         //console.log(connection.userid);
         //console.log(info);
 
-        
-         client.showVideocenter();
+
+        client.showLobby();
     });
 };
 
@@ -203,6 +233,11 @@ client.joined = function () {
 };
 
 
+/**
+ * Does what ever needed after join a room
+ *
+ * @param roomname_joined
+ */
 client.postJoinRoom = function ( roomname_joined ) {
     var username = client.getUsername();
     console.log( username + ' joined : ' + roomname_joined );
@@ -213,8 +248,12 @@ client.postJoinRoom = function ( roomname_joined ) {
     connection.extra.username = username;
     connection.updateExtraData();
 
-    client.clear_canvas();
-    client.whiteboard().find('.markup').html('<h2>You are in ' + roomname_joined + '</h2>');
+    if ( ! client.inLobbyRoom() ) {
+        console.log(' ----------- show room ------------');
+        client.clear_canvas();
+        client.whiteboard().find('.markup').html('<h2>You are in ' + roomname_joined + '</h2>');
+        client.showRoom();
+    }
 
 };
 
@@ -621,6 +660,10 @@ client.initWhiteboard = function () {
 
     };
 };
+
+/**
+ * Initialize videocenter
+ */
 client.init = function() {
 
     var username = client.getUsername();
@@ -632,8 +675,11 @@ client.init = function() {
     $.get('template.html', function( m ) {
         client.box().html( m );
 
+        /**
+         * User has name already?
+         */
         if ( username ) {
-             client.showVideocenter();
+             client.showLobby();
         }
         else {
 
@@ -657,6 +703,13 @@ client.init = function() {
 
     setTimeout( client.reLayout, 500 ); // 시작 할 때, 레이아웃 조정
 
+
+
+    $('body').on('click', '.lobby-menu button', function(){
+        var $this = $(this);
+        var box = $this.attr('box');
+        $(".box." + box).show();
+    });
 }; // eo init
 
 $(function() {

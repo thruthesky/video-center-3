@@ -62,6 +62,14 @@ Video Conference System By Withcenter, Inc.
     * 지우개 지우는 것도 draw line history 에 적용을 해야 한다.
     * 따라서 draw line history 는 3천개 정도의 점으로 유지하는게 적당하다.
 
+* 도메인 관리자는 자신의 강사 또는 학생에게 실시간 메세지를 보낼 수 있다.
+
+* 옵저버 모드로 접속하는 방법.
+
+
+* 칠판 너비는 100% 로 하되, 높이는 너비 비율의 1.4 로 항상 맞춘다.
+    높이 비율이 컴퓨터 마다 틀리면 그림이 이상하게 그려진다.
+
 
 * done - Signaling-Server.js 에 넣은 코드를 모두 빼서
     * video-center.js 에 집어 넣어 Signaling-Server.js 로 부터 완전히 코드를 분리해서
