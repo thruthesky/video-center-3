@@ -114,30 +114,40 @@ client.showRoom = function () {
 };
 
 /**
- * @Attention It sets 'connection.userid', 'connection.sessionid' also.
+ *
+ * Updates username on server.
+ *
+ * @Attention Jun 6, 2016 - It does not set connection info any more.
+ * @Attention Before Jun 6, 2016 - It sets 'connection.userid', 'connection.sessionid' also.
  * @param username
  */
-client.setUsername = function ( username ) {
-    if ( ! username ) return;
-    console.log('Going to set my name: client.setUsername : ', username);
-    var info = {
-        username : username,
-        session_user_id: connection.userid,
-        session_id : connection.sessionid
-    };
-    //console.log( info );
-    socket.emit('chat-set-user-info', info, function( info ) {
-        console.log('My name is set on chat server.  callback client.setUsername', info);
-        Cookies.set('username', info.username, { expires: 365 });
-        client.box().find('[name="username"]').val( info.username );
-        //console.log('callback setUsername : -----------');
-        //console.log(connection.userid);
-        //console.log(info);
-
-
-        client.showLobby();
+client.setUsername = function ( username, callback ) {
+    if (_.isEmpty( username ) ) return;
+    console.log('client.setUsername( ' + username + ' )');
+    socket.emit('chat-set-username', username, function() {
+        console.log('client.setUsername() : callback() : ' + username);
+        Cookies.set('username', username, { expires: 365 });
+        $('.username input').val(username);
+        if ( typeof callback == 'function' ) callback(username);
     });
 };
+
+/**
+ * It sets user info on server.
+ * @note connection.userid & connection.session_id will be set into server.
+ * @note more user info can be set by setUsername(), etc.
+ */
+client.setUserinfo = function ( ) {
+    console.log("setUserinfo:");
+    var info = {
+        session_user_id: connection.userid,
+        session_id: connection.session_id
+    };
+    socket.emit('chat-set-userinfo', info, function(info) {
+        console.log("Userinfo is set.");
+    });
+};
+
 
 client.userList = function( callback ) {
     socket.emit('chat-user-list', callback);
@@ -175,7 +185,9 @@ client.joinRoom = function (roomname, callback) {
 };
 
 client.joinLobby = function( callback ) {
+    console.log('client.joinLobby() : ');
     socket.emit('chat-join-room', 'Lobby', function(data) {
+        console.log('client.joinLobby() : callback() : ');
         callback( data );
     });
 };
@@ -225,7 +237,11 @@ client.getRoomName = function() {
 client.getUsername = function () {
     var username = Cookies.get('username');
     if ( username ) return username;
-    else this.box().find('.username input').val();
+    else {
+        username = client.entrance().find('.username input').val();
+        if ( _.isEmpty(username) ) username = client.box().find('.username input').val();
+    }
+    return username;
 };
 
 client.joined = function () {
@@ -240,16 +256,21 @@ client.joined = function () {
  */
 client.postJoinRoom = function ( roomname_joined ) {
     var username = client.getUsername();
-    console.log( username + ' joined : ' + roomname_joined );
-
-    client.setUsername( username );
+    console.log( 'client.postJoinRoom() : ' + username + ' joined : ' + roomname_joined );
+    // @attention is it needed here?
+    // client.setUsername( username, console.log );
     client.setRoomName( roomname_joined );
     connection.extra.socket_id = socket.id;
     connection.extra.username = username;
     connection.updateExtraData();
 
-    if ( ! client.inLobbyRoom() ) {
-        console.log(' ----------- show room ------------');
+    if ( client.isLobby( roomname_joined ) ) {
+        console.log( 'client.postJoinRoom() : client.isLobby() : ' );
+        client.showLobby();
+        client.pingRoomList();
+    }
+    else {
+        console.log( 'client.postJoinRoom() : ! client.isLobby() : ' );
         client.clear_canvas();
         client.whiteboard().find('.markup').html('<h2>You are in ' + roomname_joined + '</h2>');
         client.showRoom();
@@ -314,19 +335,37 @@ client.toggleWhiteboard = function () {
  * @returns {boolean}
  */
 client.inLobbyRoom = function () {
-    return client.getRoomName().toLowerCase() == 'lobby';
+    return client.isLobby( client.getRoomName() )
+};
+client.isLobby = function( roomname ) {
+    return roomname.toLowerCase() == 'lobby';
 };
 
 client.addEventHandlers = function () {
 
-
     var $body = $('body');
 
-    // username update button
-    $body.on('click', '.username button', function() {
-        //console.log('.username button clicked');
-        var username = $('.username input').val();
-        client.setUsername( username );
+    // username update button on #entrance
+    $body.on('click', '#entrance .username button', function() {
+        console.log('#entrance .username button click');
+        var username = $('#entrance').find('.username input').val();
+        console.log( username );
+        client.setUsername( username, function(username) {
+            console.log("username set: " + username);
+            client.box().find('[name="username"]').val( username );
+            client.showLobby();
+        } );
+    });
+
+    $body.on('click', '#lobby .username button', function() {
+        var $this = $(this);
+        var username = $('#lobby').find('.username input').val();
+        console.log('#entrance .username button click');
+        client.setUsername( username, function( my_name ) {
+            console.log('username set: ' + username);
+            $this.parent().hide();
+            client.pingRoomList();
+        } );
     });
 
     //
@@ -662,15 +701,20 @@ client.initWhiteboard = function () {
 };
 
 /**
+ * Updates room list. Call this function whenever you want to update the lobby room list.
+ */
+client.pingRoomList = function () {
+    client.roomList( client.onRoomListUpdate );
+};
+/**
  * Initialize videocenter
  */
 client.init = function() {
 
+
+
+    client.setUserinfo();
     var username = client.getUsername();
-
-    client.setUsername( client.getUsername() );
-    client.joinLobby( client.postJoinRoom );
-
     // display video center HTML markup
     $.get('template.html', function( m ) {
         client.box().html( m );
@@ -678,10 +722,13 @@ client.init = function() {
         /**
          * User has name already?
          */
-        if ( username ) {
-             client.showLobby();
+        if (_.isEmpty(username) ) {
         }
         else {
+            client.setUsername( username, function( my_name ) {
+                console.log('client.init() : client.setUsername() : ');
+                client.joinLobby( client.postJoinRoom );
+            } );
 
         }
 
@@ -692,8 +739,8 @@ client.init = function() {
     client.addEventHandlers();
 
     ( function getRoomListLoop() {
-        client.roomList( client.onRoomListUpdate );
-        setTimeout(getRoomListLoop, 5000);
+        client.pingRoomList();
+        setTimeout(getRoomListLoop, 4000);
     })();
 
 
