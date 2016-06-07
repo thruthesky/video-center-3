@@ -6,6 +6,12 @@ Video Conference System By Withcenter, Inc.
 # TODO
 
 
+* 웹 서버 기능은 모두 Nginx 로 대체한다. 그래야 멀티 도메인 443 포트를 사용 할 수 있다.
+
+
+* 모든 단계에서 setTimeout 이나, ajax, callback 등을 사용 할 때, loader 를 보여 줄 것.
+
+
 * 로비에서는 채팅창, 문서창, 전자칠판을 보여주지 않는다.
 
 

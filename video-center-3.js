@@ -262,12 +262,32 @@ vc.listen = function(socket) {
         }
     });
 
+    /**
+     * @deprecated
+     */
     socket.on('chat-set-user-info', function ( info, callback ) {
         socket.info.username = info.username;
         socket.info.usernameUpdatedOn = Math.floor( new Date() / 1000 );
         socket.info.session_id = info.session_id;
         socket.info.session_user_id = info.session_user_id;
         callback( socket.info );
+    });
+
+
+    /**
+     * Updates user info
+     */
+    socket.on('chat-set-userinfo', function( info, callback) {
+        socket.info.session_id = info.session_id;
+        socket.info.session_user_id = info.session_user_id;
+        callback( socket.info );
+    });
+
+
+    socket.on('chat-set-username', function ( username, callback ) {
+        socket.info.username = username;
+        socket.info.usernameUpdatedOn = Math.floor( new Date() / 1000 );
+        if ( typeof callback == 'function' ) callback( username );
     });
 
     socket.on('chat-get-user-info', function( userid, callback ) {
