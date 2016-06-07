@@ -8,6 +8,7 @@
 , "dependencies": {
   "socket.io": "0.9.17",
   "sqlite3" : "*",
-  "util" : "*"
+  "util" : "*",
+  "forever" : "*"
 }
 }
