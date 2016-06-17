@@ -9,9 +9,17 @@
 
 
 <section id="entrance">
-     <span class="username">
-         User ID : <input name="username" placeholder="Input user name" size="10"><button>Submit</button>
-     </span>
+    <form>
+        <input type="hidden" name="show_header" value="Y">
+        <input type="hidden" name="show_header_menu" value="Y">
+        <div class="caption">Please input username</div>
+        <div class="username">
+            <input name="username" placeholder="Input user name" size="10">
+        </div>
+        <div>
+            <input type="submit" value="Enter Video Center">
+        </div>
+    </form>
 </section><!-- #entrance -->
 
 
@@ -19,17 +27,25 @@
     <h1>Lobby</h1>
     <nav class="lobby-menu">
         <button class="update-username" box="username">Update Username</button>
+
         <button class="logout">Logout</button>
         <button class="create-room" box="join-room">Create Room</button>
     </nav>
     <div class="lobby-menu-content">
 
         <div class="box username">
-            User ID : <input name="username" placeholder="Input user name" size="10"><button>Submit</button>
+            <form>
+                <div class="caption">Username :</div>
+                <div class="text"><input name="username" placeholder="Input user name" size="10"></div>
+                <div class="button"><input type="submit" value="Update Username"></div>
+            </form>
         </div>
         <div class="box join-room">
-            <input type="text" name="roomname" placeholder="Input room name to join">
-            <button>Join Chat Room</button>
+            <form>
+                <div class="caption">Input room name and submit the form to create a room.</div>
+                <input type="text" name="roomname" placeholder="Input room name to join">
+                <div class="button"><input type="submit" value="Join Chat Room"></div>
+            </form>
         </div>
 
     </div>

@@ -7,16 +7,21 @@ Video Conference System By Withcenter, Inc.
 # TODO
 
 
-* 웹 서버 기능은 모두 Nginx 로 대체한다. 그래야 멀티 도메인 443 포트를 사용 할 수 있다.
+* 웹 서버 기능은 모두 Nginx 로 대체한다.
+
+    * 그래야 여러개의 도메인을 하나의 서버에 운영 할 때, 멀티 도메인 모두에 443 포트를 사용 할 수 있다.
+
+    * 뿐만아니라 js 를 php 로 실행하여 PHP 로 사용자 접속 수 등을 확인하고 필요한 JS 를 클라이언트로 리턴 할 수 있다.
+
 
 
 * 모든 단계에서 setTimeout 이나, ajax, callback 등을 사용 할 때, loader 를 보여 줄 것.
 
 
-* 로비에서는 채팅창, 문서창, 전자칠판을 보여주지 않는다.
-
+- Done: 로비에서는 채팅창, 문서창, 전자칠판을 보여주지 않는다.
 
 * https://domain@videocenter.co.kr/ 과 같이 접속을 하도록 한다.
+
 * video relay server 는 사무실 안에서 같은 네트워크를 사용해야 한다. 그래야 빨리 데이터 송수신이 가능하다.
 
 * Sqlite3 에
@@ -142,6 +147,14 @@ Video Conference System By Withcenter, Inc.
 
 일단 대충 사용한다.
 
+
+# 클라이언트 홈페이지에서 사용법
+
+## 접속
+
+접속을 할 때,
+http://www.videocenter.co.kr/0.0.11/index.html?room=room-name&user=user-name
+과 같이 접속을 한다.
 
 
 

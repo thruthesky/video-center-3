@@ -3,6 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>WebRTC Peer Connection</title>
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/layout.css" rel="stylesheet">
+    <link href="css/module.css" rel="stylesheet">
+    <link href="css/lobby.css" rel="stylesheet">
+    <link href="css/room.css" rel="stylesheet">
+    <link href="css/whiteboard.css" rel="stylesheet">
+    <link href="css/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/theme.css" rel="stylesheet">
     <style>
         /**
          *
@@ -11,11 +20,10 @@
          */
         body { margin: 0; padding: 0; }
         #videocenter { position: relative; }
+        #entrance, #lobby, #room, header, .header-menu { display: none; }
+
 
         #entrance { padding: 2em; }
-
-        #lobby { display: none; }
-        #room { display: none; }
 
         #status { background-color: grey; }
         #room { position: relative; background-color:#5f9ea0; }
@@ -110,8 +118,6 @@
             #room .chat { width: 246px; }
             #room .chat .messages { height: 180px; }
 
-
-
             #room.has-whiteboard .content .videos {
                 position: relative;
                 margin: 0;
@@ -127,8 +133,6 @@
                 width: auto;
             }
         }
-
-
 
         #lobby .room-list {
             margin: .4em 0;
@@ -167,94 +171,16 @@
 <script src="../js/js.cookie.js"></script>
 <script src="../dist/rmc3.js"></script>
 <script src="../dist/rmc3.fbr.js"></script>
-<script src="functions.js"></script>
-
-
-<script>
-
-    // .......................................................
-    // Variables
-    // .......................................................
-    var connection = new RTCMultiConnection();
-
-
-
-    // ......................................................
-    // RTC Multi Connection Code
-    // ......................................................
-    connection.socketURL = socketURL;
-    connection.enableFileSharing = true;
-    connection.session = {
-        audio: true,
-        video: true,
-        data : true
-    };
-    connection.sdpConstraints.mandatory = {
-        OfferToReceiveAudio: true,
-        OfferToReceiveVideo: true
-    };
-    connection.getExternalIceServers = false;
-    connection.iceServers = [];
-    connection.iceServers.push({
-        url: 'stun:videocenter.co.kr:3478'
-    });
-
-
-
-    /**
-     * @todo username 과 credential 이 틀려도 접속이 된다. 확인을 해 볼 것.
-     */
-    connection.iceServers.push({
-        urls: 'turn:videocenter.co.kr:3478',
-        username: 'test_username1',
-        credential: 'test_password1'
-    });
-
-    console.log( 'default connection.userid: ' + connection.userid );
-    var socket = connection.getSocket();
-
-
-    $('body').on('click', '.room-name', function(){
-        var $this = $(this);
-        var person = $this.text();
-        //console.log('connecting to: ' + person);
-        //connection.join( person );
-        vc.joinRoom( person );
-    });
-
-
-
-    /**
-     *
-     *
-     * @param event
-     */
-    connection.onstream = function(event) {
-        //console.log('connection id: ' + connection.userid);
-        //console.log('event id: ' + event.userid);
-        //console.log(connection);
-
-        ///
-        roomAddVideo( event );
-        videoLayout( Cookies.get('video-list-style') );
-    };
-    connection.onstreamended = function(e) {
-        console.log('onstreamended', e);
-        var userid = e.userid;
-        $('[userid="'+userid+'"]').parent().remove();
-    };
-
-
-
-
-
-</script>
-
-
-
-
-<script src="socket.js"></script>
-<script src="client.js"></script>
+<script src="js/functions.js"></script>
+<script src="js/rmc-wrapper.js"></script>
+<script src="js/socket.js"></script>
+<script src="js/element.js"></script>
+<script src="js/whiteboard.js"></script>
+<script src="js/client.js"></script>
+<script src="js/entrance.js"></script>
+<script src="js/lobby.js"></script>
+<script src="css/bootstrap/js/tether.min.js"></script>
+<script src="css/bootstrap/js/bootstrap.min.js"></script>
 </body>
 </html>
 

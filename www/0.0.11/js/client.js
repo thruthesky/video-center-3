@@ -5,12 +5,7 @@
  *
  *
  **/
-
-
-
 var client = {};
-
-
 
 // ----------------------------------------------------------------------------
 // C H A T    C L I E N T   C O D E
@@ -38,14 +33,13 @@ client.messages = function () {
 client.roomList = function (callback) {
     socket.emit('chat-room-list', callback);
 };
-client.whiteboard = function () { return client.room().find('.whiteboard'); };
 
 /**
  * Leave entire room
  * @param callback
  */
 client.leaveRoom = function () {
-    location.href = '?';
+    location.href = '?show_header=Y&show_header_menu=Y&show_entrance=Y';
     //reload();
     /**
      connection.getAllParticipants().forEach(function(participantId) {
@@ -77,14 +71,17 @@ client.showLobby = function () {
 
         return;
     }
+
+
     console.log('client.showLobby()');
     if ( client.entrance().css('display') != 'none' ) client.entrance().hide();
     if ( client.room().css('display') != 'none' ) client.room().hide();
-
     if ( client.lobby().css('display') == 'none' ) client.lobby().show();
     client.reLayout();
     client.initLobby();
 };
+
+
 client.showRoom = function () {
     if ( client.inLobbyRoom() ) return; // return if the user is in lobby.
     console.log('client.showRoom()');
@@ -94,9 +91,17 @@ client.showRoom = function () {
     client.reLayout();
 };
 
+client.showEntrance = function () {
+    client.entrance().show();
+    $('header').show();
+    $('.header-menu').show();
+    client.lobby().hide();
+    client.room().hide();
+};
+
 /**
  *
- * Updates username on server.
+ * Sets/Updates username on server and all the input box which has name="username"
  *
  * @fix June 17, 2016 - Username as empty string can be set.
  * @Attention Jun 6, 2016 - It does not set connection info any more.
@@ -112,7 +117,7 @@ client.setUsername = function ( username, callback ) {
     socket.emit('chat-set-username', username, function() {
         console.log('client.setUsername() : callback() : ' + username);
         Cookies.set('username', username, { expires: 365 });
-        $('.username input').val(username);
+        $('input[name="username"]').val(username);
         if ( typeof callback == 'function' ) callback(username);
     });
 };
@@ -259,8 +264,8 @@ client.postJoinRoom = function ( roomname_joined ) {
     }
     else {
         console.log( 'client.postJoinRoom() : ! client.isLobby() : ' );
-        client.clear_canvas();
-        client.whiteboard().find('.markup').html('<h2>You are in ' + roomname_joined + '</h2>');
+        wb.clear_canvas();
+        wb.elem().find('.markup').html('<h2>You are in ' + roomname_joined + '</h2>');
         client.showRoom();
     }
 
@@ -334,6 +339,7 @@ client.addEventHandlers = function () {
     var $body = $('body');
 
     // username button on #entrance
+/*
     $body.on('click', '#entrance .username button', function() {
         console.log('#entrance .username button click');
         var username = $('#entrance').find('.username input').val();
@@ -345,36 +351,10 @@ client.addEventHandlers = function () {
             client.joinLobby( client.postJoinRoom );
         } );
     });
+    */
 
-    // This is for updating 'username'
-    $body.on('click', '#lobby .username button', function() {
-        var $this = $(this);
-        var username = $('#lobby').find('.username input').val();
-        console.log('#entrance .username button click');
-        client.setUsername( username, function( my_name ) {
-            console.log('username set: ' + username);
-            $this.parent().hide();
-            client.pingRoomList(); // Update room information with the user's new username.
-        } );
-    });
 
-    $body.on('click', '.lobby-menu .logout', function() {
-        console.log('logout');
-        client.setUsername( '', function(my_name) {
-            reload();
-        });
-    });
-    //
-    $body.on('click', '.join-room button', function(){
-        var roomname = $('.join-room input').val();
-        //console.log( client.getUsername() + ' joins into ' + roomname);
-        client.joinRoom( roomname, client.postJoinRoom );
-    });
 
-    $body.on('click', '.room-list .name', function() {
-        var name = $(this).text();
-        client.joinRoom( name, client.postJoinRoom);
-    });
 
     $body.on('submit', '.chat form', function(e) {
         e.preventDefault();
@@ -443,257 +423,26 @@ client.addEventHandlers = function () {
 client.reLayout = function () {
 
     if ( client.room().hasClass('has-whiteboard') ) {
-        var w = client.whiteboard().width();
+        var w = wb.elem().width();
         var wh = $(window).height() - 100; // 윈도우 세로 크기에서 100을 뺀다. ( 그냥 뺀다. 별 이유 없다 )
         var h = Math.floor(w * 1.4); // whiteboard 넓이의 1.4 배.
         if ( h > wh ) h = wh; // 윈도우 세로 크기에서 100 뺀 값과 whiteboard 너비의 1.4 배 중에서 작은 값을 캔버스 높이로 지정한다. ( 왜? 그냥 ... 적절할 까봐서 )
-        client.whiteboard().height( h );
+        wb.elem().height( h );
 
         /**
          * 여기서 반드시 canvas width/height 을 지정해야 한다.
          * @type {Element}
          */
-        client.canvas = document.getElementById("whiteboard-canvas");
-        client.canvas.width = w;
-        client.canvas.height = h;
+        //wb.canvas = document.getElementById("whiteboard-canvas");
+        wb.canvas.width = w;
+        wb.canvas.height = h;
 
         // clear drawing history count
-        client.whiteboard_draw_line_count = 0;
+        wb.whiteboard_draw_line_count = 0;
         // 화면을 재 조정하면 다시 그린다.
         socket.emit('get-whiteboard-draw-line-history', client.getRoomName() );
     }
 
-};
-function onMousemove(e){
-    var m_posx = 0, m_posy = 0, e_posx = 0, e_posy = 0,
-        obj = this;
-    //get mouse position on document crossbrowser
-    if (!e){e = window.event;}
-    if (e.pageX || e.pageY){
-        m_posx = e.pageX;
-        m_posy = e.pageY;
-    } else if (e.clientX || e.clientY){
-        m_posx = e.clientX + document.body.scrollLeft
-            + document.documentElement.scrollLeft;
-        m_posy = e.clientY + document.body.scrollTop
-            + document.documentElement.scrollTop;
-    }
-    //get parent element position in document
-    if (obj.offsetParent){
-        do {
-            e_posx += obj.offsetLeft;
-            e_posy += obj.offsetTop;
-        } while (obj = obj.offsetParent);
-    }
-    // mouse position minus elm position is mouseposition relative to element:
-    dbg.innerHTML = ' X Position: ' + (m_posx-e_posx)
-        + ' Y Position: ' + (m_posy-e_posy);
-}
-
-
-client.setWhiteboardErase = function () {
-    client.draw = 'e';
-    client.whiteboard().css('cursor', 'pointer'); // apply first
-    client.whiteboard().css('cursor', '-webkit-grab'); // apply web browser can.
-};
-
-client.clear_canvas = function () {
-    // Store the current transformation matrix
-    client.canvas_context.save();
-    // Use the identity matrix while clearing the canvas
-    client.canvas_context.setTransform(1, 0, 0, 1, 0, 0);
-    client.canvas_context.clearRect(0, 0, client.canvas.width, client.canvas.height);
-    // Restore the transform
-    client.canvas_context.restore();
-    // clear drawing history count
-    client.whiteboard_draw_line_count = 0;
-};
-/**
- * Whiteboard 초기화 : 페이지 로딩 시 한번만 호출 되어야 한다.
- */
-client.initWhiteboard = function () {
-    client.mouse = {
-        click: false,
-        move: false,
-        pos: { x:0, y:0 },
-        pos_prev: { x: 0, y: 0 }
-    };
-    /**
-     * client.draw can have lower 'L' as 'line', 'e' as 'eraser', 't' as 'text'
-     * @type {string}
-     */
-    client.draw = 'l';
-
-
-    client.whiteboard_draw_line_count = 0;
-
-    var $body = $('body');
-    var $canvas = client.whiteboard().find('canvas');
-    //client.canvas = $canvas[0];
-    client.canvas = document.getElementById("whiteboard-canvas");
-    client.canvas_context = client.canvas.getContext('2d');
-
-    client.canvas.onmousedown = function ( e ) {
-        client.mouse.click = true;
-        client.mouse.pos_prev = {x: -12345, y: -12345};
-
-        /**
-         * @note 그림을 너무 많이 그리면 부하가 걸리므로 총 3천5백 점(선)으로 그릴 수 있도록 제한한다.
-         * 이렇게하면 클라이어트(채팅 상대) 마다 약간씩 점의 수치가 틀린데, ( 이것은 각 컴퓨터 사용자 마다 화면 너비가 틀리고, 넓은 화면에서는 10개의 점을 찍어야 하지만, 좁은 화면에서는 4개의 점만 찍어도 가능한 것 때문은 아닐까? 아니다. 왜냐하면 정확히 그리는 사람의 점의 갯수 만큼 상대방의 캔버스에 그리기 때문이다.
-         * 서버에서 하면 정확하겠지만, 서버에 무리가 갈 수 있으므로
-         * 여기서 제한 한다.
-         * 점을 그리는 것과 지우는 것도 필요하므로,
-         * 총 3,500 개의 선(점)을 그릴 수 있게 하면 충분한 것 같다.
-         */
-        if ( client.whiteboard_draw_line_count > 3500 ) {
-            alert('Too much draw on whiteboard. Please clear whiteboard before you draw more.');
-            client.mouse.click = false;
-        }
-    };
-    client.canvas.onmouseup = function( e ) {
-        client.mouse.click = false;
-        client.mouse.pos_prev = {x: -12345, y: -12345};
-    };
-    $canvas.mouseleave( function() {
-        client.mouse.click = false;
-        client.mouse.pos_prev = {x: -12345, y: -12345}
-    });
-    /**
-     * 누군가가 방에 접속을 해서 또는 누군가가 그림을 그리고 있는 도중에
-     * whiteboard clear 를 하면 정상적으로 (깨끗하지 않게) clear 될 수 있다.
-     */
-    $body.on('click', '.whiteboard button.clear', function() {
-        //console.log('1. send clear request 2. get clear request 3. clear');
-        socket.emit('whiteboard-clear', client.getRoomName());
-    });
-    socket.on('whiteboard-clear', function(roomname) {
-        console.log('whiteboard-clear: ' + roomname);
-        client.clear_canvas();
-    });
-
-    $body.on('click', '.whiteboard button.eraser', client.setWhiteboardErase);
-
-    client.whiteboard_draw_line = function( data ) {
-        var w = client.whiteboard().width();
-        var h = client.whiteboard().height();
-        var line = data.line;
-        //console.log( line );
-        var ox = line[0].x * w;
-        var oy = line[0].y * h;
-        var dx = line[1].x * w;
-        var dy = line[1].y * h;
-
-        if ( data.draw == 'e' ) {
-            var radius = 10; // or whatever
-            //var fillColor = '#ff0000';
-            client.canvas_context.globalCompositeOperation = 'destination-out';
-            //client.canvas_context.fillCircle(dx, dy, radius, fillColor);
-            client.canvas_context.fillStyle = '#ff0000';
-            client.canvas_context.beginPath();
-            client.canvas_context.moveTo(dx, dy);
-            client.canvas_context.arc( dx, dy, radius, 0, Math.PI * 2, false );
-            client.canvas_context.fill();
-
-        }
-        else {
-            client.canvas_context.beginPath();
-            client.canvas_context.moveTo( ox, oy);
-            client.canvas_context.lineTo( dx, dy);
-            client.canvas_context.strokeStyle="red";
-            client.canvas_context.stroke();
-            client.whiteboard_draw_line_count ++;
-        }
-        //console.log('client.whiteboard_draw_line_count:' + client.whiteboard_draw_line_count);
-    };
-
-    /**
-     *
-     * 내가 그림을 그리는 경우, 상대방이  그림을 그릴 때, delay 를 0.1 초 준다. 왜? 그냥...
-     * 너무 많이 delay 시키면 실제로 상대방의 전자칠판에 그림이 늦게 그려진다.
-     */
-    socket.on('whiteboard-draw-line', function(data){
-        setTimeout(function(){
-            client.whiteboard_draw_line(data);
-        },100);
-    });
-
-    /**
-     *
-     * 방에 처음 접속 할 때, 또는 화면을 resize 할 때, 서버로 부터 기존 그림 정보를 받는다.
-     * 그릴 그림이 많은 경우, ( 방에 처음 접속 했을 때, 서버에서 받는 그림 정보 기록이 많은 경우 )
-     * 부하를 많이 먹으므로 1.45 초 딜레이 시킨다.
-     *
-     */
-    socket.on('whiteboard-draw-line-history', function(data) {
-        setTimeout(function(){
-            client.whiteboard_draw_line(data);
-        },1450);
-    });
-
-
-    /**
-     * whiteboard 의 상대적 마우스 포인트를 얻는다.
-     * @param e
-     */
-
-    client.canvas.onmousemove = function ( e ) {
-        if ( ! client.mouse.click ) return;
-
-        var m_posx = 0, m_posy = 0, e_posx = 0, e_posy = 0,
-            obj = this;
-        //get mouse position on document crossbrowser
-        if ( ! e ) e = window.event;
-        if (e.pageX || e.pageY){
-            m_posx = e.pageX;
-            m_posy = e.pageY;
-        } else if (e.clientX || e.clientY){
-            m_posx = e.clientX + document.body.scrollLeft
-                + document.documentElement.scrollLeft;
-            m_posy = e.clientY + document.body.scrollTop
-                + document.documentElement.scrollTop;
-        }
-        //get parent element position in document
-        if ( obj.offsetParent){
-            do {
-                e_posx += obj.offsetLeft;
-                e_posy += obj.offsetTop;
-            } while ( obj = obj.offsetParent);
-        }
-        var x = m_posx-e_posx;
-        var y = m_posy-e_posy;
-
-        var w = client.whiteboard().width();
-        var h = client.whiteboard().height();
-        //var rx = (x / w);//.toFixed(4);
-        //var ry = (y / h);//.toFixed(4);
-
-        var rx = (x / w).toFixed(4);
-        var ry = (y / h).toFixed(4);
-        //console.log('relative x: ' + rx + ', y: ' + ry);
-
-        client.mouse.pos.x = rx;
-        client.mouse.pos.y = ry;
-
-        if ( client.mouse.pos_prev.x == -12345 ) {
-            client.mouse.pos_prev.x = client.mouse.pos.x;
-            client.mouse.pos_prev.y = client.mouse.pos.y;
-        }
-
-        //console.log( 'prev', client.mouse.pos_prev );
-        //console.log( client.mouse.pos );
-
-        var data =  { line : [client.mouse.pos, client.mouse.pos_prev] };
-        data.roomname = client.getRoomName();
-        data.draw = client.draw;
-
-        socket.emit('whiteboard-draw-line', data);
-        client.whiteboard_draw_line( data );
-
-        client.mouse.pos_prev.x = client.mouse.pos.x;
-        client.mouse.pos_prev.y = client.mouse.pos.y;
-
-
-    };
 };
 
 /**
@@ -702,10 +451,39 @@ client.initWhiteboard = function () {
 client.pingRoomList = function () {
     client.roomList( client.onRoomListUpdate );
 };
+
+
+/**
+ * 사용자 이름을 지정하면, Lobby 로 접속한다.
+ * @param username
+ */
+client.joinLobbyWithUsername = function (username) {
+    if ( username == '' ) return alert("joinLobbyWithUsername: User name is empty");
+    client.setUsername( username, function( my_name ) {
+        console.log('client.init() : client.setUsername() : ');
+        client.joinLobby( client.postJoinRoom );
+    } );
+};
+
+
+/**
+ * 방 이름과 사용자 이름을 지정하면 해당 방으로 접속한다.
+ * @param roomname
+ * @param username
+ */
+client.joinRoomWithUsername = function (roomname, username) {
+    if ( roomname == '' ) return alert("joinRoomWithUsername: Room name is empty");
+    if ( username == '' ) return alert("joinRoomWithUsername: User name is empty");
+    client.setUsername( username, function( my_name ) {
+        console.log('client.joinRoomWithUsername : ' + my_name + ', roomname: ' + roomname);
+        client.joinRoom( roomname, client.postJoinRoom );
+    } );
+};
 /**
  * Initialize videocenter
  */
-client.init = function() {
+client.init = function( o ) {
+
 
 
 
@@ -719,19 +497,25 @@ client.init = function() {
         /**
          * User has name already? then, join the lobby.
          */
+        /*
         if (_.isEmpty(username) ) {
         }
         else {
-            client.setUsername( username, function( my_name ) {
-                console.log('client.init() : client.setUsername() : ');
-                client.joinLobby( client.postJoinRoom );
-            } );
-
+            client.joinLobbyWithUsername(username);
         }
+        */
 
+        if ( o.show_header ) $('header').show();
+        if ( o.show_header_menu ) $('.header-menu').show();
+        if ( o.show_entrance ) client.entrance().show();
+
+        if (o.username) client.setUsername(o.username);
+
+        if ( o.joinLobby ) client.joinLobbyWithUsername(o.username);
+        if ( o.joinRoom ) client.joinRoomWithUsername(o.roomname, o.username);
 
         // init whiteboard even the user didn't join any room.
-        client.initWhiteboard();
+        wb.init();
     });
 
     client.addEventHandlers();
@@ -742,6 +526,7 @@ client.init = function() {
     })();
 
 
+
     $(window).resize( _.debounce( client.reLayout, 200 ) );
 
     setTimeout( client.toggleWhiteboard, 200 ); // 시작 할 때, WhiteBoard 를 표시한다.
@@ -750,17 +535,9 @@ client.init = function() {
 
 
 
-    $('body').on('click', '.lobby-menu button', function(){
-        var $this = $(this);
-        var box = $this.attr('box');
-        $(".box." + box).show();
-    });
 }; // eo init
 
 $(function() {
-    client.init();
-
-
 
     /**
      * .........................................................
@@ -790,6 +567,43 @@ $(function() {
             $('.join-room button').click();
         }, 200);
     }
+
+
+    /** 자동 로그인 & Lobby join */
+    var username = '',
+        roomname = '',
+        show_header = false,
+        show_header_menu = false,
+        show_entrance = false,
+        joinLobby = false,
+        joinRoom = false;
+    if ( typeof q['username'] != 'undefined' ) username = q['username'];
+    if ( typeof q['roomname'] != 'undefined' ) roomname = q['roomname'];
+    if ( typeof q['show_header'] != 'undefined' && q['show_header'] == 'Y' ) show_header = true;
+    if ( typeof q['show_header_menu'] != 'undefined' && q['show_header_menu'] == 'Y' ) show_header_menu = true;
+    if ( typeof q['show_entrance'] != 'undefined' && q['show_entrance'] == 'Y' ) show_entrance = true;
+    if ( typeof q['joinLobby'] != 'undefined' && q['joinLobby'] == 'Y' ) joinLobby = true;
+    if ( typeof q['joinRoom'] != 'undefined' && q['joinRoom'] == 'Y' ) joinRoom = true;
+
+
+
+    var o = {
+        'show_header'       : show_header,      // 상단 헤더 표시
+        'show_header_menu'  : show_header_menu, // 상단 헤더 메뉴 표시
+        'show_entrance'     : show_entrance,    // 대문. 로그인 페이지 보여 주기.
+        'username'          : username,         // 사용자 이름을 설정.
+        'roomname'          : roomname,         // 방이름. ( joinRoom 이 true 일 때 유효. )
+        'joinLobby'         : joinLobby,        // true 이면, 로그아웃을 하면 페이지가 reload 되고 다시 이 값이 적용되므로 자동 로그인.
+        'joinRoom'          : joinRoom          // true 이면 로그아웃을 할 때, page reload 되므로 다시 해당 방에 들어간다.
+    };
+
+    console.log(o);
+
+
+    /**
+     * 채팅 설정
+     */
+    client.init(o);
 
 });
 
