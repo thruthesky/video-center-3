@@ -3,6 +3,7 @@
 Video Conference System By Withcenter, Inc.
 
 
+
 # TODO
 
 
@@ -142,6 +143,19 @@ Video Conference System By Withcenter, Inc.
 일단 대충 사용한다.
 
 
+
+
+# 사용법
+
+## 테스트 하기
+
+### 로컬 컴퓨터에서 테스트
+
+#### Mac OS 에서 테스트
+
+* www.onfis.com 을 127.0.0.1 로 연결
+* node server.js 를 실행
+* 웹 브라우저에서 http://www.onfis.com:10443/ 로 접속
 
 
 
