@@ -4,6 +4,13 @@
  */
 
 
+
+/**
+ *
+ */
+function body() {
+    return $('body');
+}
 /**
  *
  * @returns {*|jQuery|HTMLElement}
@@ -11,6 +18,7 @@
 function lobby() {
     return $('#lobby');
 }
+
 function lobbyUsername() {
     return lobby().find('.username');
 }

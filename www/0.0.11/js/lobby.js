@@ -31,7 +31,7 @@ $body.on('submit', '#lobby .username form', function(e) {
 $body.on('click', '.lobby-menu .logout', function() {
     console.log('logout');
     client.setUsername( '', function(my_name) {
-        reload();
+        leaveRoom();
     });
 });
 //

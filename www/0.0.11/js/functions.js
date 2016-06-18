@@ -20,7 +20,7 @@ function getQueryString() {
         if ( kvs ) {
             for ( var i in kvs ) {
                 var kv = kvs[i].split('=');
-                qs[ kv[0] ] = kv[1];
+                qs[ kv[0] ] = decodeURI(kv[1]);
             }
         }
     }

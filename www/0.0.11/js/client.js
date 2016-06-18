@@ -34,22 +34,7 @@ client.roomList = function (callback) {
     socket.emit('chat-room-list', callback);
 };
 
-/**
- * Leave entire room
- * @param callback
- */
-client.leaveRoom = function () {
-    location.href = '?show_header=Y&show_header_menu=Y&show_entrance=Y';
-    //reload();
-    /**
-     connection.getAllParticipants().forEach(function(participantId) {
-        connection.disconnectWith(participantId, function() {
-            console.log( 'disconnectedWith: ' + participantId );
-            callback();
-        });
-    });
-     */
-};
+
 
 
 client.initLobby = function () {
@@ -382,31 +367,6 @@ client.addEventHandlers = function () {
     });
 
 
-    $body.on('click', '#room .leave', function() {
-        console.log('leave');
-        client.leaveRoom();
-    });
-
-
-    /**
-     *
-     *
-     * @note ...
-     *
-     */
-    $body.on('click', '#room .reconnect', function() {
-        if ( client.joined() ) {
-            if ( client.inLobbyRoom() ) {
-                alert("Refresh the page instead of reconnect since you are in Lobby.");
-            }
-            else {
-                location.href = "?mode=reconnect&room=" + client.getRoomName();
-            }
-        }
-        else {
-            alert("You cannot re-connect because you are not joined in any room.");
-        }
-    });
 
 
 };
@@ -492,7 +452,20 @@ client.init = function( o ) {
 
     // Load HTML of VC and display video center( HTML markup )
     $.get('template.html', function( m ) {
-        client.box().html( m );
+
+        var template = _.template(m);
+        var markup = template({
+            'company_name' : 'Withcenter, Inc.',
+            'ceo_name' : 'Withcenter, Inc.',
+            'phone_number' : '070-7893-1741',
+            'kakaotalk' : 'thruthesky2',
+            'email' : 'thruthesky@gmail.com',
+            'address' : '경남 김해시 대성동 대성아파트 나동 209호',
+            'Ymd' : 2016
+        });
+        console.log(markup)
+
+        client.box().html( markup );
 
         /**
          * User has name already? then, join the lobby.
@@ -504,6 +477,8 @@ client.init = function( o ) {
             client.joinLobbyWithUsername(username);
         }
         */
+
+
 
         if ( o.show_header ) $('header').show();
         if ( o.show_header_menu ) $('.header-menu').show();
