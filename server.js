@@ -6,18 +6,22 @@ var https  = require( 'https' ),
     path    = require( 'path' ),
     fs      = require( 'fs' );
 
-/*
 var options = {
     key: fs.readFileSync('ssl/videocenter/videocenter_co_kr.key'),
-    cert: fs.readFileSync('ssl/videocenter/videocenter.bundle.crt'),
-    ca: fs.readFileSync('ssl/videocenter/videocenter_co_kr.ca-bundle')
-};
-*/
 
+    cert: fs.readFileSync('ssl/videocenter/videocenter_co_kr.crt-bundle'),
+
+ //   cert: fs.readFileSync('ssl/videocenter/videocenter_co_kr.crt'),
+ //   ca: fs.readFileSync('ssl/videocenter/videocenter_co_kr.ca-bundle')
+
+};
+
+/*
 var options = {
     key: fs.readFileSync('ssl/onfis/onfis_com.key'),
     cert: fs.readFileSync('ssl/onfis/onfis_com.crt.ca-bundle')
 };
+*/
 
 
 
