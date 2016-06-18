@@ -9,7 +9,7 @@ var https  = require( 'https' ),
 var options = {
     key: fs.readFileSync('ssl/videocenter/videocenter_co_kr.key'),
 
-    cert: fs.readFileSync('ssl/videocenter/videocenter_co_kr.crt-bundle'),
+    cert: fs.readFileSync('ssl/videocenter/videocenter_co_kr.crt-ca-bundle'),
 
  //   cert: fs.readFileSync('ssl/videocenter/videocenter_co_kr.crt'),
  //   ca: fs.readFileSync('ssl/videocenter/videocenter_co_kr.ca-bundle')
@@ -19,7 +19,7 @@ var options = {
 /*
 var options = {
     key: fs.readFileSync('ssl/onfis/onfis_com.key'),
-    cert: fs.readFileSync('ssl/onfis/onfis_com.crt.ca-bundle')
+    cert: fs.readFileSync('ssl/onfis/onfis_com.crt-ca-bundle')
 };
 */
 
