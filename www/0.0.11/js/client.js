@@ -250,7 +250,7 @@ client.postJoinRoom = function ( roomname_joined ) {
     else {
         console.log( 'client.postJoinRoom() : ! client.isLobby() : ' );
         wb.clear_canvas();
-        wb.elem().find('.markup').html('<h2>You are in ' + roomname_joined + '</h2>');
+        whiteboard().find('.markup').html('<h2>You are in ' + roomname_joined + '</h2>');
         client.showRoom();
     }
 
@@ -383,11 +383,11 @@ client.addEventHandlers = function () {
 client.reLayout = function () {
 
     if ( client.room().hasClass('has-whiteboard') ) {
-        var w = wb.elem().width();
+        var w = whiteboard().width();
         var wh = $(window).height() - 100; // 윈도우 세로 크기에서 100을 뺀다. ( 그냥 뺀다. 별 이유 없다 )
         var h = Math.floor(w * 1.4); // whiteboard 넓이의 1.4 배.
         if ( h > wh ) h = wh; // 윈도우 세로 크기에서 100 뺀 값과 whiteboard 너비의 1.4 배 중에서 작은 값을 캔버스 높이로 지정한다. ( 왜? 그냥 ... 적절할 까봐서 )
-        wb.elem().height( h );
+        whiteboard().height( h );
 
         /**
          * 여기서 반드시 canvas width/height 을 지정해야 한다.

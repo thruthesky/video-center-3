@@ -1,7 +1,9 @@
-var wb = {}; // white board object
+var whiteboard = wb = function() {
+    return $('section#room .whiteboard');
+};
 
 wb.room = function () { return $('section#room'); };
-wb.whiteboard = wb.elem = function () { return client.room().find('.whiteboard'); };
+
 
 
 function onMousemove(e){
@@ -31,11 +33,37 @@ function onMousemove(e){
 }
 
 
-wb.setWhiteboardErase = function () {
-    wb.draw = 'e';
-    wb.elem().css('cursor', 'pointer'); // apply first
-    wb.elem().css('cursor', '-webkit-grab'); // apply web browser can.
+/**
+ * client.draw can have lower 'L' as 'line', 'e' as 'eraser', 't' as 'text'
+ * @type {string}
+ */
+/**
+ * Sets the drawing mode of the canvas to "Erasing".
+ *
+ *      - after calling this function, the user erases the canvas when he draws.
+ *
+ */
+whiteboard.setEraseMode = wb.setWhiteboardErase = function () {
+    console.log('wb.setWhiteboardErase()');
+    wb.drawMode = 'e';
+    whiteboard().css('cursor', 'pointer'); // apply first
+    whiteboard().css('cursor', '-webkit-grab'); // apply web browser can.
 };
+
+
+/**
+ * Sets the drawing mode of the canvas to "line (dot) drawing".
+ *
+ *      - after calling this function, the user draws line.
+ *
+ */
+whiteboard.setDrawMode = wb.setWhiteboardLine = function () {
+    console.log('wb.setWhiteboardLine()');
+    wb.drawMode = 'l';
+    whiteboard().css('cursor', 'pointer'); // apply first
+};
+
+
 
 wb.clear_canvas = function () {
     // Store the current transformation matrix
@@ -49,28 +77,92 @@ wb.clear_canvas = function () {
     wb.whiteboard_draw_line_count = 0;
 };
 
+whiteboard.getLineSize = function () {
+    return whiteboard().find('#line-size').val();
+};
+/**
+ *
+ * @param e - mouse event
+ * @param obj - 캔버스의 parent 들의 높이를 계산하기 위해서 필요.
+ */
+whiteboard.draw = function( e, obj ) {
+
+    console.log('whiteboard.draw');
+
+    var m_posx = 0, m_posy = 0, e_posx = 0, e_posy = 0;
+
+    //get mouse position on document crossbrowser
+    if ( ! e ) e = window.event;
+    if (e.pageX || e.pageY){
+        m_posx = e.pageX;
+        m_posy = e.pageY;
+    } else if (e.clientX || e.clientY){
+        m_posx = e.clientX + document.body.scrollLeft
+            + document.documentElement.scrollLeft;
+        m_posy = e.clientY + document.body.scrollTop
+            + document.documentElement.scrollTop;
+    }
+    //get parent element position in document
+    if ( obj.offsetParent){
+        do {
+            e_posx += obj.offsetLeft;
+            e_posy += obj.offsetTop;
+        } while ( obj = obj.offsetParent);
+    }
+    var x = m_posx-e_posx;
+    var y = m_posy-e_posy;
+
+    var w = whiteboard().width();
+    var h = whiteboard().height();
+    //var rx = (x / w);//.toFixed(4);
+    //var ry = (y / h);//.toFixed(4);
+
+    var rx = (x / w).toFixed(4);
+    var ry = (y / h).toFixed(4);
+    //console.log('relative x: ' + rx + ', y: ' + ry);
+
+    wb.mouse.pos.x = rx;
+    wb.mouse.pos.y = ry;
+
+    if ( wb.mouse.pos_prev.x == -12345 ) {
+        wb.mouse.pos_prev.x = wb.mouse.pos.x;
+        wb.mouse.pos_prev.y = wb.mouse.pos.y;
+    }
+
+    //console.log( 'prev', client.mouse.pos_prev );
+    //console.log( client.mouse.pos );
+
+    var data =  { line : [wb.mouse.pos, wb.mouse.pos_prev] };
+    data.lineWidth = whiteboard.getLineSize();
+    data.roomname = client.getRoomName();
+    data.drawMode = wb.drawMode;
+
+//    console.log(data);
+    socket.emit('whiteboard-draw-line', data);
+    wb.whiteboard_draw_line( data );
+
+    wb.mouse.pos_prev.x = wb.mouse.pos.x;
+    wb.mouse.pos_prev.y = wb.mouse.pos.y;
+
+};
+
 
 /**
  * Whiteboard 초기화 : 페이지 로딩 시 한번만 호출 되어야 한다.
  */
-wb.init = function () {
+whiteboard.init = function () {
     wb.mouse = {
         click: false,
         move: false,
         pos: { x:0, y:0 },
         pos_prev: { x: 0, y: 0 }
     };
-    /**
-     * client.draw can have lower 'L' as 'line', 'e' as 'eraser', 't' as 'text'
-     * @type {string}
-     */
-    wb.draw = 'l';
-
+    whiteboard.setDrawMode();
 
     wb.whiteboard_draw_line_count = 0;
 
     var $body = $('body');
-    var $canvas = wb.elem().find('canvas');
+    var $canvas = whiteboard().find('canvas');
 
     wb.canvas = document.getElementById("whiteboard-canvas");
     wb.canvas_context = wb.canvas.getContext('2d');
@@ -91,6 +183,9 @@ wb.init = function () {
             alert('Too much draw on whiteboard. Please clear whiteboard before you draw more.');
             wb.mouse.click = false;
         }
+
+        whiteboard.draw( e, this );
+
     };
     wb.canvas.onmouseup = function( e ) {
         wb.mouse.click = false;
@@ -114,44 +209,87 @@ wb.init = function () {
         wb.clear_canvas();
     });
 
-    $body.on('click', '.whiteboard button.eraser', wb.setWhiteboardErase);
+    $body.on('click', '.whiteboard button.eraser', wb.setEraseMode);
+    $body.on('click', '.whiteboard button.draw', wb.setDrawMode);
 
     wb.whiteboard_draw_line = function( data ) {
-        var w = wb.elem().width();
-        var h = wb.elem().height();
+        var w = whiteboard().width();
+        var h = whiteboard().height();
         var line = data.line;
+        if ( typeof data.lineJoin == 'undefined' ) data.lineJoin = 'round';
+        if ( typeof data.lineWidth == 'undefined' ) data.lineWidth = 3;
+        if ( typeof data.color == 'undefined' ) data.color = 'black';
         //console.log( line );
         var ox = line[0].x * w;
         var oy = line[0].y * h;
         var dx = line[1].x * w;
         var dy = line[1].y * h;
 
-        if ( data.draw == 'e' ) {
-            var radius = 10; // or whatever
-            //var fillColor = '#ff0000';
-            wb.canvas_context.globalCompositeOperation = 'destination-out';
-            //client.canvas_context.fillCircle(dx, dy, radius, fillColor);
-            wb.canvas_context.fillStyle = '#ff0000';
-            wb.canvas_context.beginPath();
-            wb.canvas_context.moveTo(dx, dy);
-            wb.canvas_context.arc( dx, dy, radius, 0, Math.PI * 2, false );
-            wb.canvas_context.fill();
+        var ctx = wb.canvas_context;
+        ctx.beginPath();
+        ctx.lineJoin = data.lineJoin;
 
+
+        if ( data.drawMode == 'e' ) {
+            ctx.globalCompositeOperation = 'destination-out';
+            data.lineWidth = 12;
+        }
+        else if ( data.drawMode == 'l' ) {
+            ctx.globalCompositeOperation = 'source-over';
+        }
+
+        // x,y 가 같으면 그냥 점을 찍는다.
+        if ( ox == dx && oy == dy ) {
+            ctx.fillStyle = data.color;
+            ctx.arc( dx, dy, data.lineWidth * 0.5, 0, Math.PI*2, true);
+            ctx.closePath();
+            ctx.fill();
         }
         else {
-            wb.canvas_context.beginPath();
-            wb.canvas_context.moveTo( ox, oy);
-            wb.canvas_context.lineTo( dx, dy);
-            wb.canvas_context.strokeStyle="red";
-            wb.canvas_context.stroke();
+            ctx.strokeStyle = data.color;
+            ctx.lineWidth = data.lineWidth;
+            ctx.moveTo( ox, oy);
+            ctx.lineTo( dx, dy);
+            ctx.stroke();
+        }
+        wb.whiteboard_draw_line_count ++;
+
+        /*
+        if ( data.drawMode == 'e' ) {
+            var radius = 10; // or whatever
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = '#ff0000';
+            ctx.moveTo(dx, dy);
+            ctx.arc( dx, dy, radius, 0, Math.PI * 2, false );
+            ctx.fill()
+
+        }
+        else if ( data.drawMode == 'l' ) {
+            ctx.lineJoin = data.lineJoin;
+            ctx.globalCompositeOperation = 'source-over';
+            // x,y 가 같으면 그냥 점을 찍는다.
+            if ( ox == dx && oy == dy ) {
+                ctx.fillStyle = "blue";
+                ctx.arc( dx, dy, data.lineWidth * 0.5, 0, Math.PI*2, true);
+                ctx.closePath();
+                ctx.fill();
+            }
+            else {
+                ctx.strokeStyle="blue";
+                ctx.lineWidth = data.lineWidth;
+                ctx.moveTo( ox, oy);
+                ctx.lineTo( dx, dy);
+                ctx.stroke();
+            }
             wb.whiteboard_draw_line_count ++;
         }
+        */
         //console.log('client.whiteboard_draw_line_count:' + client.whiteboard_draw_line_count);
     };
 
     /**
      *
-     * 내가 그림을 그리는 경우, 상대방이  그림을 그릴 때, delay 를 0.1 초 준다. 왜? 그냥...
+     * 서버로 부터 그림 그리는 정보가 내 컴퓨터로 전달 될 때, delay 를 0.1 초 준다. 왜? 그냥...
      * 너무 많이 delay 시키면 실제로 상대방의 전자칠판에 그림이 늦게 그려진다.
      */
     socket.on('whiteboard-draw-line', function(data){
@@ -181,60 +319,6 @@ wb.init = function () {
 
     wb.canvas.onmousemove = function ( e ) {
         if ( ! wb.mouse.click ) return;
-
-        var m_posx = 0, m_posy = 0, e_posx = 0, e_posy = 0,
-            obj = this;
-        //get mouse position on document crossbrowser
-        if ( ! e ) e = window.event;
-        if (e.pageX || e.pageY){
-            m_posx = e.pageX;
-            m_posy = e.pageY;
-        } else if (e.clientX || e.clientY){
-            m_posx = e.clientX + document.body.scrollLeft
-                + document.documentElement.scrollLeft;
-            m_posy = e.clientY + document.body.scrollTop
-                + document.documentElement.scrollTop;
-        }
-        //get parent element position in document
-        if ( obj.offsetParent){
-            do {
-                e_posx += obj.offsetLeft;
-                e_posy += obj.offsetTop;
-            } while ( obj = obj.offsetParent);
-        }
-        var x = m_posx-e_posx;
-        var y = m_posy-e_posy;
-
-        var w = wb.elem().width();
-        var h = wb.elem().height();
-        //var rx = (x / w);//.toFixed(4);
-        //var ry = (y / h);//.toFixed(4);
-
-        var rx = (x / w).toFixed(4);
-        var ry = (y / h).toFixed(4);
-        //console.log('relative x: ' + rx + ', y: ' + ry);
-
-        wb.mouse.pos.x = rx;
-        wb.mouse.pos.y = ry;
-
-        if ( wb.mouse.pos_prev.x == -12345 ) {
-            wb.mouse.pos_prev.x = wb.mouse.pos.x;
-            wb.mouse.pos_prev.y = wb.mouse.pos.y;
-        }
-
-        //console.log( 'prev', client.mouse.pos_prev );
-        //console.log( client.mouse.pos );
-
-        var data =  { line : [wb.mouse.pos, wb.mouse.pos_prev] };
-        data.roomname = client.getRoomName();
-        data.draw = wb.draw;
-
-        socket.emit('whiteboard-draw-line', data);
-        wb.whiteboard_draw_line( data );
-
-        wb.mouse.pos_prev.x = wb.mouse.pos.x;
-        wb.mouse.pos_prev.y = wb.mouse.pos.y;
-
-
+        whiteboard.draw( e, this );
     };
 };

@@ -1,3 +1,35 @@
+/**
+ * @file lobby.js
+ *
+ * @desc
+ *
+ */
+
+
+var lobby = function() {
+    return $('#lobby');
+};
+var lobbyUsername = lobby.username = function () {
+    return lobby().find('.username');
+};
+
+
+
+/**
+ *
+ *
+ * @code
+
+ lobbyBox().hide();
+ lobbyBox( name ).show();
+
+ * @endcode
+ */
+function lobbyBox(name) {
+    if ( typeof name == 'undefined' ) return lobby().find('.box');
+    else return lobby().find('.box.' + name);
+}
+
 
 var $body = $('body');
 
@@ -34,6 +66,8 @@ $body.on('click', '.lobby-menu .logout', function() {
         leaveRoom();
     });
 });
+
+
 //
 $body.on('submit', '.join-room form', function(e){
     e.preventDefault();
