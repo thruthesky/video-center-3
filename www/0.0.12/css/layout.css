@@ -1,0 +1,7 @@
+#videocenter {
+    position: relative;
+}
+#entrance, #lobby, #room, header, .header-menu {
+    display: none;
+}
+
