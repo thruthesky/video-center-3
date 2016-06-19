@@ -187,13 +187,11 @@ client.sendMessage = function (data, callback) {
 };
 
 
-
 client.recvMessage = function ( data ) {
     //console.log('recvMessage() : ', data);
-
-    var message = '<div class="message">' + data.username + ' : ' + data.text + '</div>';
-    client.addMessage( message );
+    chat_add_message( data );
 };
+
 
 
 client.addMessage = function( message ) {
@@ -579,6 +577,23 @@ $(function() {
      * 채팅 설정
      */
     client.init(o);
+
+
+
+    /*
+     * 자동으로 채팅 창에 채팅 메세지 입력.
+    var no = 0;
+    (
+    function say() {
+        $('.chat form [name="message"]').val("Hello, How are you? - "+ ( ++ no ));
+        $('.chat form').submit();
+        setTimeout( say, 500);
+    })
+    ();
+    */
+
+
+
 
 });
 

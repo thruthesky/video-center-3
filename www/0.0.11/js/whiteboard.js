@@ -80,6 +80,9 @@ wb.clear_canvas = function () {
 whiteboard.getLineSize = function () {
     return whiteboard().find('#line-size').val();
 };
+whiteboard.getColor = function () {
+    return whiteboard().find('#color').val();
+};
 /**
  *
  * @param e - mouse event
@@ -134,16 +137,63 @@ whiteboard.draw = function( e, obj ) {
 
     var data =  { line : [wb.mouse.pos, wb.mouse.pos_prev] };
     data.lineWidth = whiteboard.getLineSize();
+    data.color = whiteboard.getColor();
     data.roomname = client.getRoomName();
     data.drawMode = wb.drawMode;
 
 //    console.log(data);
     socket.emit('whiteboard-draw-line', data);
-    wb.whiteboard_draw_line( data );
+    wb.drawOnCanvas( data );
 
     wb.mouse.pos_prev.x = wb.mouse.pos.x;
     wb.mouse.pos_prev.y = wb.mouse.pos.y;
 
+};
+
+
+wb.drawOnCanvas = function( data ) {
+    var w = whiteboard().width();
+    var h = whiteboard().height();
+    var line = data.line;
+    if ( typeof data.lineJoin == 'undefined' ) data.lineJoin = 'round';
+    if ( typeof data.lineWidth == 'undefined' ) data.lineWidth = 3;
+    if ( typeof data.color == 'undefined' ) data.color = 'black';
+    //console.log( line );
+    var ox = line[0].x * w;
+    var oy = line[0].y * h;
+    var dx = line[1].x * w;
+    var dy = line[1].y * h;
+
+    var ctx = wb.canvas_context;
+    ctx.beginPath();
+    ctx.lineJoin = data.lineJoin;
+
+
+    if ( data.drawMode == 'e' ) {
+        ctx.globalCompositeOperation = 'destination-out';
+        data.lineWidth = 12;
+    }
+    else if ( data.drawMode == 'l' ) {
+        ctx.globalCompositeOperation = 'source-over';
+    }
+
+    // x,y 가 같으면 그냥 점을 찍는다.
+    if ( ox == dx && oy == dy ) {
+        ctx.fillStyle = data.color;
+        ctx.arc( dx, dy, data.lineWidth * 0.5, 0, Math.PI*2, true);
+        ctx.closePath();
+        ctx.fill();
+    }
+    else {
+        ctx.strokeStyle = data.color;
+        ctx.lineWidth = data.lineWidth;
+        ctx.moveTo( ox, oy);
+        ctx.lineTo( dx, dy);
+        ctx.stroke();
+    }
+    wb.whiteboard_draw_line_count ++;
+
+    //console.log('client.whiteboard_draw_line_count:' + client.whiteboard_draw_line_count);
 };
 
 
@@ -212,81 +262,6 @@ whiteboard.init = function () {
     $body.on('click', '.whiteboard button.eraser', wb.setEraseMode);
     $body.on('click', '.whiteboard button.draw', wb.setDrawMode);
 
-    wb.whiteboard_draw_line = function( data ) {
-        var w = whiteboard().width();
-        var h = whiteboard().height();
-        var line = data.line;
-        if ( typeof data.lineJoin == 'undefined' ) data.lineJoin = 'round';
-        if ( typeof data.lineWidth == 'undefined' ) data.lineWidth = 3;
-        if ( typeof data.color == 'undefined' ) data.color = 'black';
-        //console.log( line );
-        var ox = line[0].x * w;
-        var oy = line[0].y * h;
-        var dx = line[1].x * w;
-        var dy = line[1].y * h;
-
-        var ctx = wb.canvas_context;
-        ctx.beginPath();
-        ctx.lineJoin = data.lineJoin;
-
-
-        if ( data.drawMode == 'e' ) {
-            ctx.globalCompositeOperation = 'destination-out';
-            data.lineWidth = 12;
-        }
-        else if ( data.drawMode == 'l' ) {
-            ctx.globalCompositeOperation = 'source-over';
-        }
-
-        // x,y 가 같으면 그냥 점을 찍는다.
-        if ( ox == dx && oy == dy ) {
-            ctx.fillStyle = data.color;
-            ctx.arc( dx, dy, data.lineWidth * 0.5, 0, Math.PI*2, true);
-            ctx.closePath();
-            ctx.fill();
-        }
-        else {
-            ctx.strokeStyle = data.color;
-            ctx.lineWidth = data.lineWidth;
-            ctx.moveTo( ox, oy);
-            ctx.lineTo( dx, dy);
-            ctx.stroke();
-        }
-        wb.whiteboard_draw_line_count ++;
-
-        /*
-        if ( data.drawMode == 'e' ) {
-            var radius = 10; // or whatever
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.fillStyle = '#ff0000';
-            ctx.moveTo(dx, dy);
-            ctx.arc( dx, dy, radius, 0, Math.PI * 2, false );
-            ctx.fill()
-
-        }
-        else if ( data.drawMode == 'l' ) {
-            ctx.lineJoin = data.lineJoin;
-            ctx.globalCompositeOperation = 'source-over';
-            // x,y 가 같으면 그냥 점을 찍는다.
-            if ( ox == dx && oy == dy ) {
-                ctx.fillStyle = "blue";
-                ctx.arc( dx, dy, data.lineWidth * 0.5, 0, Math.PI*2, true);
-                ctx.closePath();
-                ctx.fill();
-            }
-            else {
-                ctx.strokeStyle="blue";
-                ctx.lineWidth = data.lineWidth;
-                ctx.moveTo( ox, oy);
-                ctx.lineTo( dx, dy);
-                ctx.stroke();
-            }
-            wb.whiteboard_draw_line_count ++;
-        }
-        */
-        //console.log('client.whiteboard_draw_line_count:' + client.whiteboard_draw_line_count);
-    };
-
     /**
      *
      * 서버로 부터 그림 그리는 정보가 내 컴퓨터로 전달 될 때, delay 를 0.1 초 준다. 왜? 그냥...
@@ -294,7 +269,7 @@ whiteboard.init = function () {
      */
     socket.on('whiteboard-draw-line', function(data){
         setTimeout(function(){
-            wb.whiteboard_draw_line(data);
+            wb.drawOnCanvas(data);
         },100);
     });
 
@@ -307,7 +282,7 @@ whiteboard.init = function () {
      */
     socket.on('whiteboard-draw-line-history', function(data) {
         setTimeout(function(){
-            wb.whiteboard_draw_line(data);
+            wb.drawOnCanvas(data);
         },1450);
     });
 

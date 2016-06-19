@@ -8,6 +8,7 @@
     <link href="css/base.css" rel="stylesheet">
     <link href="css/layout.css" rel="stylesheet">
     <link href="css/module.css" rel="stylesheet">
+    <link href="css/module-chat.css" rel="stylesheet">
     <link href="css/header.css" rel="stylesheet">
     <link href="css/entrance.css" rel="stylesheet">
     <link href="css/lobby.css" rel="stylesheet">
@@ -31,15 +32,9 @@
         #room .videos .user video { object-fit: fill; width: 99%; }
         #room .videos .user .userid { position: absolute; display: inline-block; top: 4px; left: 4px; padding: 2px 4px; border-radius: 2px; background-color: rgba(200, 200, 200, .5); color: #111122; }
 
-        #room .chat { position: relative; }
-
-        #room .chat .messages { height: 50px; background-color: #efefef; }
-        #room .chat input { width: 100%; }
-
         #room .content .whiteboard { display: none; background-color: #e1e1e1; }
 
         #room.has-whiteboard .whiteboard { display: block; }
-
 
         #room .videos.metro { overflow: auto; }
         #room .videos.metro .user {
@@ -57,7 +52,6 @@
             height : auto;
         }
 
-
 /** Video Layout - Overlay */
 /**
 @todo 비디오 영상을 5개 이상으로 테스트.
@@ -65,6 +59,7 @@
 .videos.overlay .user.selected 클래스를 가지고 있고,
 만약, 임의 선택을 했다면 그 video 태그에 고정을 한다.
 */
+
         #room .videos.overlay { }
         #room .videos.overlay .user {
             display:inline-block;
@@ -76,6 +71,7 @@
             width:100%;
             height: auto;
         }
+
         #room .videos.overlay .user:last-child .userid {
             top: auto;
             bottom: 4px;
@@ -113,9 +109,6 @@
                 z-index: 100;
                 margin-left: 246px;
             }
-            #room .chat { width: 246px; }
-            #room .chat .messages { height: 180px; }
-
             #room.has-whiteboard .content .videos {
                 position: relative;
                 margin: 0;
@@ -177,6 +170,7 @@
 <script src="js/entrance.js"></script>
 <script src="js/lobby.js"></script>
 <script src="js/room.js"></script>
+<script src="js/chat.js"></script>
 <script src="js/client.js"></script>
 <script src="css/bootstrap/js/tether.min.js"></script>
 <script src="css/bootstrap/js/bootstrap.min.js"></script>
