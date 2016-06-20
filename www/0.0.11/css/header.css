@@ -1,0 +1,12 @@
+header {
+    padding: 5px 10px;
+    background-color: #025aa5;
+    color: white;
+}
+header a {
+    color: white;
+}
+header .caption,
+header nav {
+    padding: 5px 0;
+}

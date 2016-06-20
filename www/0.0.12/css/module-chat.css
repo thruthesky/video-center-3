@@ -1,0 +1,25 @@
+
+#room .chat { position: relative; }
+
+#room .chat .messages {
+    overflow: hidden;
+    overflow-y: scroll;
+    height: 100px;
+    background-color: #efefef;
+}
+#room .chat input { width: 100%; }
+
+
+#room .chat .users {
+    background-color: #d58512;
+}
+
+
+@media all and ( min-width: 546px ) {
+    #room .chat {
+        width: 246px;
+    }
+    #room .chat .messages {
+        height: 180px;
+    }
+}
