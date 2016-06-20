@@ -94,7 +94,13 @@ client.initLobby = function () {
  */
 client.showLobby = function () {
 
-    if ( ! client.inLobbyRoom() ) return; // return if the user is not in lobby.
+    /**
+     *
+     * @todo find out why the user is already in lobby when the lobby is not shown.
+     * and do a better code for ...
+     *
+     */
+    // if ( ! client.inLobbyRoom() ) return; // return if the user is not in lobby.
 
     console.log('client.showLobby()');
     if ( client.entrance().css('display') != 'none' ) client.entrance().hide();
