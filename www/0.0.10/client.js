@@ -1,41 +1,14 @@
-// ----------------------------------------------------------------------------
-// S O C K E T   C O D E
-// ----------------------------------------------------------------------------
+/**
+ * @file client.js
+ *
+ *
+ *
+ *
+ **/
 
-var client = app = {};
-//client.users = {};
 
-if ( typeof socket == 'undefined' ) {
-    alert("Socket is undefined. Please check the connectivity to the socket server: " + socketURL);
-}
 
-socket.on('connect', function () {
-
-});
-socket.on( 'disconnect', function() {
-
-} );
-socket.on( 'reconnect', function() {
-
-} );
-socket.on ('chat-recv-message', function( data ) {
-    console.info('socket.on("recv-message") : ', data);
-    client.recvMessage( data );
-});
-
-socket.on ('chat-user-join', function( username ) {
-    //console.log('new user joined : ' + username);
-    client.userJoin( username );
-});
-
-client.userLeave = function (info) {
-    client.addMessage( info.username + ' leaves');
-};
-socket.on ('chat-room-leave', function( info ) {
-    // console.error( 'socket.on("room-leave")', info );
-    client.userLeave( info );
-});
-
+var client = {};
 
 
 
@@ -97,14 +70,13 @@ client.initLobby = function () {
  */
 client.showLobby = function () {
 
-    /**
-     *
-     * @todo find out why the user is already in lobby when the lobby is not shown.
-     * and do a better code for ...
-     *
-     */
-    // if ( ! client.inLobbyRoom() ) return; // return if the user is not in lobby.
+    console.log('client.showLobby()');
 
+    // return if the user is not in lobby.
+    if ( ! client.inLobbyRoom() ) {
+
+        return;
+    }
     console.log('client.showLobby()');
     if ( client.entrance().css('display') != 'none' ) client.entrance().hide();
     if ( client.room().css('display') != 'none' ) client.room().hide();
@@ -126,12 +98,16 @@ client.showRoom = function () {
  *
  * Updates username on server.
  *
+ * @fix June 17, 2016 - Username as empty string can be set.
  * @Attention Jun 6, 2016 - It does not set connection info any more.
  * @Attention Before Jun 6, 2016 - It sets 'connection.userid', 'connection.sessionid' also.
  * @param username
  */
 client.setUsername = function ( username, callback ) {
-    if (_.isEmpty( username ) ) return;
+
+    // Empty username can be set for loggout.
+    // if (_.isEmpty( username ) ) return;
+
     console.log('client.setUsername( ' + username + ' )');
     socket.emit('chat-set-username', username, function() {
         console.log('client.setUsername() : callback() : ' + username);
@@ -259,7 +235,10 @@ client.joined = function () {
 
 
 /**
- * Does what ever needed after join a room
+ * Does what ever needed after join a room.
+ *
+ * @note call this function right after one joins a room.
+ * @note it open lobby if the user joined lobby or it shows the video chat room.
  *
  * @param roomname_joined
  */
@@ -354,7 +333,7 @@ client.addEventHandlers = function () {
 
     var $body = $('body');
 
-    // username update button on #entrance
+    // username button on #entrance
     $body.on('click', '#entrance .username button', function() {
         console.log('#entrance .username button click');
         var username = $('#entrance').find('.username input').val();
@@ -362,10 +341,12 @@ client.addEventHandlers = function () {
         client.setUsername( username, function(username) {
             console.log("username set: " + username);
             client.box().find('[name="username"]').val( username );
-            client.showLobby();
+            // client.showLobby();
+            client.joinLobby( client.postJoinRoom );
         } );
     });
 
+    // This is for updating 'username'
     $body.on('click', '#lobby .username button', function() {
         var $this = $(this);
         var username = $('#lobby').find('.username input').val();
@@ -373,15 +354,21 @@ client.addEventHandlers = function () {
         client.setUsername( username, function( my_name ) {
             console.log('username set: ' + username);
             $this.parent().hide();
-            client.pingRoomList();
+            client.pingRoomList(); // Update room information with the user's new username.
         } );
     });
 
+    $body.on('click', '.lobby-menu .logout', function() {
+        console.log('logout');
+        client.setUsername( '', function(my_name) {
+            reload();
+        });
+    });
     //
     $body.on('click', '.join-room button', function(){
         var roomname = $('.join-room input').val();
         //console.log( client.getUsername() + ' joins into ' + roomname);
-        app.joinRoom( roomname, client.postJoinRoom );
+        client.joinRoom( roomname, client.postJoinRoom );
     });
 
     $body.on('click', '.room-list .name', function() {
@@ -724,12 +711,13 @@ client.init = function() {
 
     client.setUserinfo();
     var username = client.getUsername();
-    // display video center HTML markup
+
+    // Load HTML of VC and display video center( HTML markup )
     $.get('template.html', function( m ) {
         client.box().html( m );
 
         /**
-         * User has name already?
+         * User has name already? then, join the lobby.
          */
         if (_.isEmpty(username) ) {
         }
@@ -742,6 +730,7 @@ client.init = function() {
         }
 
 
+        // init whiteboard even the user didn't join any room.
         client.initWhiteboard();
     });
 

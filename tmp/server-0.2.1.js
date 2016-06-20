@@ -21,7 +21,7 @@ app.use('/private', express.static(__dirname + '/private'));
 
 
 
-require('./Signaling-Server.js')(app, function(socket) {
+require('./../Signaling-Server.js')(app, function(socket) {
     try {
         var params = socket.handshake.query;
 
