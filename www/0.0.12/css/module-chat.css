@@ -10,6 +10,10 @@
 #room .chat input { width: 100%; }
 
 
+#room .chat .users {
+    background-color: #d58512;
+}
+
 
 @media all and ( min-width: 546px ) {
     #room .chat {

@@ -5,3 +5,34 @@
     display: none;
 }
 
+
+
+
+footer .wide {
+    display: none;
+}
+
+@media all and ( min-width: 546px ) {
+    #room .videos {
+        margin-left: 246px;
+    }
+
+    #room .chat,
+    #room .document,
+    #room.has-whiteboard .content .videos {
+        width: 246px;
+    }
+
+    #room .content .whiteboard {
+        left: 246px;
+    }
+
+    footer .narrow {
+        display: none;
+    }
+    footer .wide {
+        display: block;
+    }
+
+
+}

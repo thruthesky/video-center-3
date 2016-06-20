@@ -83,6 +83,16 @@
             </form>
         </div>
         <div class="document">
+            Home |
+            <select name="books">
+                <option value="">Books</option>
+                <option value="Let's Go">Let's Go</option>
+                <option value="Side By Side">Side By Side</option>
+                <option value="Express Yourself">Express Yourself</option>
+                <option value="Speak Your Mind">Speak Your Mind</option>
+            </select> |
+            Upload<br>
+
             Document 1<br>
             Docuemnt 2<br>
             News paper 1<br>
@@ -125,12 +135,16 @@
     </div>
 </section>
 
+<nav class="navbar navbar-fixed-bottom navbar-light bg-faded">
+    <a class="navbar-brand" href="#">Fixed bottom</a>
+</nav>
 <footer>
-    <div class="copyright">
-
+    <div class="copyright narrow navbar navbar-fixed-bottom navbar-light bg-faded">
+        Company Name: <%=company_name%>
+    </div>
+    <div class="copyright wide navbar navbar-fixed-bottom navbar-light bg-faded">
         Company Name: <%=company_name%> President : <%=ceo_name%><br>
-        Phone: <%=phone_number%> Email: <%=email%> KakaoTalk: <%=kakaotalk%> Address: <%=address%><br>
+        Phone: <%=phone_number%> Address: <%=address%><br>
         Copyright (C) 2013 ~ <%=Ymd%>
-
     </div>
 </footer>

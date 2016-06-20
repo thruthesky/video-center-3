@@ -8,12 +8,16 @@
     <link href="css/base.css" rel="stylesheet">
     <link href="css/layout.css" rel="stylesheet">
     <link href="css/module.css" rel="stylesheet">
+    <link href="css/module-video.css" rel="stylesheet">
     <link href="css/module-chat.css" rel="stylesheet">
+    <link href="css/module-document.css" rel="stylesheet">
+    <link href="css/module-whiteboard.css" rel="stylesheet">
     <link href="css/header.css" rel="stylesheet">
     <link href="css/entrance.css" rel="stylesheet">
     <link href="css/lobby.css" rel="stylesheet">
     <link href="css/room.css" rel="stylesheet">
     <link href="css/whiteboard.css" rel="stylesheet">
+    <link href="css/footer.css" rel="stylesheet">
     <link href="css/theme.css" rel="stylesheet">
     <style>
         /**
@@ -23,60 +27,14 @@
          */
 
         #entrance { padding: 2em; }
-
         #status { background-color: grey; }
         #room { position: relative; background-color:#5f9ea0; }
         #room .content { position: relative; }
-        #room .videos { position: relative; background-color: #777777; }
-        #room .videos .user { position: relative;  }
-        #room .videos .user video { object-fit: fill; width: 99%; }
-        #room .videos .user .userid { position: absolute; display: inline-block; top: 4px; left: 4px; padding: 2px 4px; border-radius: 2px; background-color: rgba(200, 200, 200, .5); color: #111122; }
 
         #room .content .whiteboard { display: none; background-color: #e1e1e1; }
 
         #room.has-whiteboard .whiteboard { display: block; }
 
-        #room .videos.metro { overflow: auto; }
-        #room .videos.metro .user {
-            position: relative;
-            z-index: 0;
-            float: left;
-            width: 50%;
-            height: auto
-
-        }
-        #room .videos.list .user video {
-            position : relative;
-            z-index : 0;
-            width : 100%;
-            height : auto;
-        }
-
-/** Video Layout - Overlay */
-/**
-@todo 비디오 영상을 5개 이상으로 테스트.
-기본적으로 맨 마지막에 추가된 video 태그가
-.videos.overlay .user.selected 클래스를 가지고 있고,
-만약, 임의 선택을 했다면 그 video 태그에 고정을 한다.
-*/
-
-        #room .videos.overlay { }
-        #room .videos.overlay .user {
-            display:inline-block;
-            width: 25%;
-            height: auto;
-        }
-
-        #room .videos.overlay .user:last-child {
-            width:100%;
-            height: auto;
-        }
-
-        #room .videos.overlay .user:last-child .userid {
-            top: auto;
-            bottom: 4px;
-            left: 4px;
-        }
 
 
 
@@ -107,12 +65,10 @@
             #room .videos {
                 position: absolute;
                 z-index: 100;
-                margin-left: 246px;
             }
             #room.has-whiteboard .content .videos {
                 position: relative;
                 margin: 0;
-                width: 246px;
             }
 
             #room .content .whiteboard {
@@ -120,7 +76,6 @@
                 z-index: 100;
                 top: 0;
                 right: 0;
-                left: 246px;
                 width: auto;
             }
         }
