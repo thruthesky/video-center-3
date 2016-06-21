@@ -90,7 +90,7 @@ whiteboard.getColor = function () {
  */
 whiteboard.draw = function( e, obj ) {
 
-    console.log('whiteboard.draw');
+//    console.log('whiteboard.draw');
 
     var m_posx = 0, m_posy = 0, e_posx = 0, e_posy = 0;
 

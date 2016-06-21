@@ -259,7 +259,7 @@ vc.listen = function(socket) {
      */
     socket.on('room-cast', function ( data ) {
         //vc.io.sockets.in( data.roomname ).emit('room-cast', data);
-        vc.io.socket.broadcast.to( data.roomname ).emit('room-cast', data);
+        socket.broadcast.to( data.roomname ).emit('room-cast', data);
         if ( typeof data.callback != 'undefined' ) {
             var re = data;
             re.callback = '';
