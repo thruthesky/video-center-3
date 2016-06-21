@@ -177,7 +177,9 @@ wb.drawOnCanvas = function( data ) {
         ctx.globalCompositeOperation = 'source-over';
     }
 
-    // x,y 가 같으면 그냥 점을 찍는다.
+
+
+    // if x and y are equal, then just put a dot.
     if ( ox == dx && oy == dy ) {
         ctx.fillStyle = data.color;
         ctx.arc( dx, dy, data.lineWidth * 0.5, 0, Math.PI*2, true);
@@ -222,12 +224,7 @@ whiteboard.init = function () {
         wb.mouse.pos_prev = {x: -12345, y: -12345};
 
         /**
-         * @note 그림을 너무 많이 그리면 부하가 걸리므로 총 3천5백 점(선)으로 그릴 수 있도록 제한한다.
-         * 이렇게하면 클라이어트(채팅 상대) 마다 약간씩 점의 수치가 틀린데, ( 이것은 각 컴퓨터 사용자 마다 화면 너비가 틀리고, 넓은 화면에서는 10개의 점을 찍어야 하지만, 좁은 화면에서는 4개의 점만 찍어도 가능한 것 때문은 아닐까? 아니다. 왜냐하면 정확히 그리는 사람의 점의 갯수 만큼 상대방의 캔버스에 그리기 때문이다.
-         * 서버에서 하면 정확하겠지만, 서버에 무리가 갈 수 있으므로
-         * 여기서 제한 한다.
-         * 점을 그리는 것과 지우는 것도 필요하므로,
-         * 총 3,500 개의 선(점)을 그릴 수 있게 하면 충분한 것 같다.
+         * @see readme.md for 'too much draw'
          */
         if ( wb.whiteboard_draw_line_count > 3500 ) {
             alert('Too much draw on whiteboard. Please clear whiteboard before you draw more.');
@@ -246,8 +243,8 @@ whiteboard.init = function () {
         wb.mouse.pos_prev = {x: -12345, y: -12345}
     });
     /**
-     * 누군가가 방에 접속을 해서 또는 누군가가 그림을 그리고 있는 도중에
-     * whiteboard clear 를 하면 정상적으로 (깨끗하지 않게) clear 될 수 있다.
+     *
+     * @note if someone clears whiteboard while the other is drawing, then the whiteboard may not be cleanly cleared.
      */
     $body.on('click', '.whiteboard button.clear', function() {
         //console.log('1. send clear request 2. get clear request 3. clear');
@@ -264,10 +261,12 @@ whiteboard.init = function () {
 
     /**
      *
-     * 서버로 부터 그림 그리는 정보가 내 컴퓨터로 전달 될 때, delay 를 0.1 초 준다. 왜? 그냥...
-     * 너무 많이 delay 시키면 실제로 상대방의 전자칠판에 그림이 늦게 그려진다.
+     *
+     * When drawing data hsa delivered to me, it just delays for 0.1 seconds ( for no reason ).
+     * Don't delay too much.
      */
     socket.on('whiteboard-draw-line', function(data){
+        console.log('whiteboard-draw-line from server');
         setTimeout(function(){
             wb.drawOnCanvas(data);
         },100);
@@ -275,20 +274,23 @@ whiteboard.init = function () {
 
     /**
      *
-     * 방에 처음 접속 할 때, 또는 화면을 resize 할 때, 서버로 부터 기존 그림 정보를 받는다.
-     * 그릴 그림이 많은 경우, ( 방에 처음 접속 했을 때, 서버에서 받는 그림 정보 기록이 많은 경우 )
-     * 부하를 많이 먹으므로 1.45 초 딜레이 시킨다.
+     *
+     *
+     * When someone enters a room, it starts to get drawing data and it makes the site(page) slow.
+     * So, it gives a little delay.
+     *
      *
      */
     socket.on('whiteboard-draw-line-history', function(data) {
         setTimeout(function(){
             wb.drawOnCanvas(data);
-        },1450);
+        },1000);
     });
 
 
     /**
-     * whiteboard 의 상대적 마우스 포인트를 얻는다.
+     *
+     * Get the relative mouse piont of whiteboard.
      * @param e
      */
 
