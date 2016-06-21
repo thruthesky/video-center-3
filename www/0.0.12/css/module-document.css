@@ -1,3 +1,7 @@
 #room .document {
     background-color: #a8ef98;
 }
+
+#room .document ul li {
+    cursor: pointer;
+}

@@ -449,9 +449,10 @@ client.init = function( o ) {
     var username = client.getUsername();
 
     // Load HTML of VC and display video center( HTML markup )
-    $.get('template.html', function( m ) {
 
-        var template = _.template(m);
+
+
+        var template = _.template( $('#template').html() );
         var markup = template({
             'company_name' : 'Withcenter, Inc.',
             'ceo_name' : 'Withcenter, Inc.',
@@ -461,9 +462,10 @@ client.init = function( o ) {
             'address' : '경남 김해시 대성동 대성아파트 나동 209호',
             'Ymd' : 2016
         });
-        console.log(markup)
+        //console.log(markup);
 
         client.box().html( markup );
+
 
         /**
          * User has name already? then, join the lobby.
@@ -488,8 +490,11 @@ client.init = function( o ) {
         if ( o.joinRoom ) client.joinRoomWithUsername(o.roomname, o.username);
 
         // init whiteboard even the user didn't join any room.
+
         wb.init();
-    });
+
+
+
 
     client.addEventHandlers();
 
