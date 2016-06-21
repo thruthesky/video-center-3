@@ -256,7 +256,8 @@ client.postJoinRoom = function ( roomname_joined ) {
 
 /**
  *
- * 페이지가 로딩 될 때, setTimeout() 으로 방 목록 정보를 무한 반복적으로 업데이트 한다.
+ *
+ * When page loaded, run this method forever to update room information.
  *
  * @param roomList
  */
@@ -271,7 +272,8 @@ client.onRoomListUpdate = function (roomList) {
         }
         m += '<div class="room"><span class="name">' + i + '</span><span class="users">'+users+'</span></div>';
 
-        // 현재 입장 해 있는 방의 정보인가?
+
+        // Is it my room information?
         if ( client.getRoomName() == i ) client.onRoomUpdate( room );
     }
     $('.room-list .content').html( m );
@@ -584,7 +586,6 @@ $(function() {
     client.init(o);
 
 
-
     /*
      * 자동으로 채팅 창에 채팅 메세지 입력.
     var no = 0;
@@ -596,9 +597,6 @@ $(function() {
     })
     ();
     */
-
-
-
 
 });
 
