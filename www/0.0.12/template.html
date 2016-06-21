@@ -92,6 +92,13 @@
                 <option value="Speak Your Mind">Speak Your Mind</option>
             </select> |
             Upload<br>
+            <div class="file-upload">
+                <form enctype="multipart/form-data" action="http://work.org/book/upload.php" method="POST">
+                    <input type="hidden" name="MAX_FILE_SIZE" value="300000" />
+                    Send this file: <input name="userfile" type="file" />
+                    <input type="submit" value="Send File" />
+                </form>
+            </div>
 
             Document 1<br>
             Docuemnt 2<br>
