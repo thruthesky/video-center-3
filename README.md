@@ -343,17 +343,14 @@ $(event.mediaElement) 와 같이 jQuery 객체를 만들어서 활용을 할 수
 
 # 테스트
 
-* Remote Server 에 실제 서버(server.js)를 두고, Local host 에서 테스트 작업을 할 때에는
-
-아래와 같이 https 전용 웹 서버를 localhost 에 실행하면 된다.
-
-* index.php 에서 socketURL 은 remote server 로 하면 된다.
- 
-
-URL 주소는 https://www.onfis.com:1443/0.0.12/index.php?show_header=Y&show_header_menu=Y&show_entrance=Y 와 같이 되어야 한다.
-
+* Remote Server 에 실제 서버(server.js)를 두고, Local host 에서 테스트 작업을 할 때에는 아래와 같이 https 전용 웹 서버를 localhost 에 실행하면 된다.
 
     $ node https-web-server.js
+
+
+* 그리고 index.php 에서 socketURL 은 remote server 로 하면 된다.
+ 
+    URL 주소는 https://www.onfis.com:1443/0.0.12/index.php?show_header=Y&show_header_menu=Y&show_entrance=Y 와 같이 되어야 한다.
 
 
 
