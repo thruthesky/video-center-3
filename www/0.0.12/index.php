@@ -97,7 +97,10 @@
 
     </style>
     <script>
-        var socketURL = '//www.onfis.com:10443';
+
+
+        //var socketURL = '//www.onfis.com:10443'; // TEST Server
+        var socketURL = 'http://www.videocenter.co.kr'; // Real Server
         var video_count = 0;
         function getScript(src) {
             document.write('<' + 'script src="' + src + '"' +
