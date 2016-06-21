@@ -222,7 +222,8 @@ vc.listen = function(socket) {
         if ( typeof vc.whiteboard_line_history[data.roomname] == 'undefined' ) vc.whiteboard_line_history[data.roomname] = [];
         vc.whiteboard_line_history[data.roomname].push(data);
         // send line to all clients
-        vc.io.sockets.in( data.roomname ).emit('whiteboard-draw-line', data);
+//        vc.io.sockets.in( data.roomname ).emit('whiteboard-draw-line', data);
+        socket.broadcast.to( data.roomname ).emit('whiteboard-draw-line', data);
     });
     /**
      * 그림 기록 정보를 자기 자신만 받는다.

@@ -39,6 +39,9 @@ $(function(){
             // console.error( 'socket.on("room-leave")', info );
             client.userLeave( info );
         });
+        socket.on ('room-cast', function( data ) {
+            console.info( 'socket.on("room-cast")', data );
+        });
     }
 
 });
