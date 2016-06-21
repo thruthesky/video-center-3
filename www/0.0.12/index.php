@@ -97,7 +97,8 @@
 
     </style>
     <script>
-        var serverURL = "https://www.onfis.com:30443/book9/";
+        //var serverURL = "https://www.onfis.com:30443/book9/";
+        var serverURL = "https://www.videocenter.co.kr/book9/";
         var bookURL = serverURL + 'dir.php';
         // var socketURL = '//www.onfis.com:10443'; // TEST Server
         var socketURL = '//www.videocenter.co.kr:10443'; // Real Server ...
