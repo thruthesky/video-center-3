@@ -11,8 +11,12 @@ var vc = {};
 exports = module.exports = vc;
 
 
-
-vc.chat = []; // 인덱싱을 socket.id 로 한다.
+/**
+ *
+ * vc.chat variable is indexing on socket.id
+ * @type {Array}
+ */
+vc.chat = [];
 vc.whiteboard_line_history = [];
 
 
@@ -51,17 +55,7 @@ vc.getRoomNameList = function () {
 };
 /**
  *
- * 전자칠판 청소. 방에 아무도 없으면, 전자칠판 그림 기록을 삭제한다.
- *
- * @설명
- * 더 이상 사용하지 않는 방의 Whiteboard 의 그림 기록을 버퍼에서 비운다.
- * 누군가 새로운 접속을 하거나 끊을 때, 그 방에 아무도 없다면 ( 즉, 방이 존재하지 않는 다면 )
- * whiteboard_line_history 에서 해당 방의 그림 기록을 지운다.
- *
- * @참고 만약 방에 혼자 있는데, 그림을 그리고 나서 그 방에 재 접속을 한다면 ( 방에 아무도 남지 않게 되므로 전자칠판 기록이 삭제되어),
- *      화면에 아무것도 나타나지 않는다.
- *
- * @note 이 함수는 아무데서나 호출 될 수 있다.
+ * @see readme
  */
 vc.cleanWhiteboardHistory = function () {
 
@@ -257,10 +251,15 @@ vc.listen = function(socket) {
     });
 
     /**
-     * 방의 참가자들에게 메세지를 broadcasting 하는 만능 이벤트 핸들러를 만든다.
+     *
+     * This event-handler is all in one broadcasting event handler.
+     *
+     * This event handler sends data to all of room members.
+     *
      */
     socket.on('room-cast', function ( data ) {
-        vc.io.sockets.in( data.roomname ).emit('room-cast', data);
+        //vc.io.sockets.in( data.roomname ).emit('room-cast', data);
+        vc.io.socket.broadcast.to( data.roomname ).emit('room-cast', data);
         if ( typeof data.callback != 'undefined' ) {
             var re = data;
             re.callback = '';
