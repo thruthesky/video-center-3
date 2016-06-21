@@ -41,6 +41,8 @@ $(function(){
         });
         socket.on ('room-cast', function( data ) {
             console.info( 'socket.on("room-cast")', data );
+            if ( data['command'] == 'whiteboard-show' ) whiteboard.show();
+            else if ( data['command'] == 'whiteboard-hide' ) whiteboard.hide();
         });
     }
 

@@ -308,12 +308,19 @@ whiteboard.init = function () {
  */
 whiteboard.toggle = function () {
     client.room().toggleClass('has-whiteboard');
-    if ( client.room().find('.has-whiteboard') ) {
-        client.room().addClass('.whiteboard');
+    if ( client.room().hasClass('has-whiteboard') ) {
+        // client.room().addClass('.whiteboard');
         socket.emit('room-cast', { 'command' : 'whiteboard-show', 'roomname' : client.getRoomName() });
     }
     else {
-        client.room().removeClass('.whiteboard');
+        // client.room().removeClass('.whiteboard');
         socket.emit('room-cast', { 'command' : 'whiteboard-hide', 'roomname' : client.getRoomName() });
     }
+};
+
+whiteboard.show = function() {
+    client.room().addClass('has-whiteboard');
+};
+whiteboard.hide = function() {
+    client.room().removeClass('has-whiteboard');
 };

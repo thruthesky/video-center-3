@@ -109,7 +109,8 @@
         if ( debugMode == 'call-center-desktop' ) {
             console.info("Run 'node https-web-server.js'");
             console.info("Connect to 'https://www.onfis.com:1443/'");
-            socketURL = '//www.onfis.com:10443'; // TEST Server
+            //socketURL = '//www.onfis.com:10443'; // TEST Server
+            socketURL = '//www.videocenter.co.kr:10443'; // Real Server ...
         }
         else {
             socketURL = '//www.videocenter.co.kr:10443'; // Real Server ...
