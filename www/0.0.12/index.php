@@ -97,11 +97,27 @@
 
     </style>
     <script>
-        //var serverURL = "https://www.onfis.com:30443/book9/";
-        var serverURL = "https://www.videocenter.co.kr/book9/";
-        var bookURL = serverURL + 'dir.php';
-        // var socketURL = '//www.onfis.com:10443'; // TEST Server
-        var socketURL = '//www.videocenter.co.kr:10443'; // Real Server ...
+
+
+        //
+        var debugMode = 'call-center-desktop';
+
+
+        //var bookServerURL = "https://www.onfis.com:30443/book9/";
+        var bookServerURL = "https://www.videocenter.co.kr/book9/";
+
+        if ( debugMode == 'call-center-desktop' ) {
+            console.info("Run 'node https-web-server.js'");
+            console.info("Connect to 'https://www.onfis.com:1443/'");
+            socketURL = '//www.onfis.com:10443'; // TEST Server
+        }
+        else {
+            socketURL = '//www.videocenter.co.kr:10443'; // Real Server ...
+        }
+
+        var bookURL = bookServerURL + 'dir.php';
+
+
         var video_count = 0;
         function getScript(src) {
             document.write('<' + 'script src="' + src + '"' +
@@ -181,7 +197,7 @@
             <button class="video-layout-list" onclick="videoLayout_list();">List</button>
             <button class="video-layout-Metro" onclick="videoLayout_metro();">Metro</button>
             <button class="video-layout-overlay" onclick="videoLayout_overlay();">Overlay</button>
-            <button class="button-whiteboard" onclick="client.toggleWhiteboard();">WhiteBoard</button>
+            <button class="button-whiteboard" onclick="whiteboard.toggle();">WhiteBoard</button>
         </nav>
         <div class="content">
             <div class="videos">

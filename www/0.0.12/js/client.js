@@ -292,21 +292,6 @@ client.onRoomUpdate = function( room ) {
     client.chatUsers().html( users );
 };
 
-/**
- * whiteboard 를 보였다 숨겼다 한다.
- * @note Whiteboard 를 숨기거나 보이기를 하면 상대방의 화면에서 whiteboard 를 똑같이 숨겼다 보였다 해야 한다.
- */
-client.toggleWhiteboard = function () {
-    client.room().toggleClass('has-whiteboard');
-    if ( client.room().find('.has-whiteboard') ) {
-        client.room().addClass('.whiteboard');
-        socket.emit('room-cast', { 'command' : 'whiteboard-show', 'roomname' : client.getRoomName() });
-    }
-    else {
-        client.room().removeClass('.whiteboard');
-        socket.emit('room-cast', { 'command' : 'whiteboard-hide', 'roomname' : client.getRoomName() });
-    }
-};
 
 /**
  * 사용자가 대기실에 있는지 확인한다.
@@ -509,7 +494,7 @@ client.init = function( o ) {
 
     $(window).resize( _.debounce( client.reLayout, 200 ) );
 
-    setTimeout( client.toggleWhiteboard, 200 ); // 시작 할 때, WhiteBoard 를 표시한다.
+    setTimeout( whiteboard.toggle(), 200 ); // 시작 할 때, WhiteBoard 를 표시한다.
 
     setTimeout( client.reLayout, 500 ); // 시작 할 때, 레이아웃 조정
 

@@ -60,7 +60,7 @@ $(function(){
     var $content = $('.document-content');
     $content.html( $loader );
 
-    $('.document form').prop('action', serverURL + 'upload.php');
+    $('.document form').prop('action', bookServerURL + 'upload.php');
     loadBook();
 
     $body.on('click', '.books', function() {
@@ -73,7 +73,7 @@ $(function(){
     $body.on('click', '.file-name', function() {
         var $this = $(this);
         var dec = ($this.attr('data-file'));
-        var url = serverURL + dec;
+        var url = bookServerURL + dec;
         console.log(url);
         $('.whiteboard').css( 'background-image', 'url("'+url+'")');
     });

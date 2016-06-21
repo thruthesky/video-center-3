@@ -299,3 +299,21 @@ whiteboard.init = function () {
         whiteboard.draw( e, this );
     };
 };
+
+
+/**
+ * Shows / Hides whiteboard.
+ *
+ * @note when on shows/hides his whiteboard, all participant whiteboard must follow.
+ */
+whiteboard.toggle = function () {
+    client.room().toggleClass('has-whiteboard');
+    if ( client.room().find('.has-whiteboard') ) {
+        client.room().addClass('.whiteboard');
+        socket.emit('room-cast', { 'command' : 'whiteboard-show', 'roomname' : client.getRoomName() });
+    }
+    else {
+        client.room().removeClass('.whiteboard');
+        socket.emit('room-cast', { 'command' : 'whiteboard-hide', 'roomname' : client.getRoomName() });
+    }
+};
