@@ -32,7 +32,7 @@ function loadBook(path) {
             catch ( e ) {
                 alert( "Error : " + e.message );
             }
-            console.log(data);
+            //console.log(data);
             var m = '<ul class="dirs">';
             for ( var i in data['dirs'] ) {
                 var dir = data['dirs'][i];
@@ -51,6 +51,10 @@ function loadBook(path) {
 
         }, 300);
     });
+}
+
+function showBook( url ) {
+    $('.whiteboard').css( 'background-image', 'url("'+url+'")');
 }
 
 $(function(){
@@ -74,8 +78,8 @@ $(function(){
         var $this = $(this);
         var dec = ($this.attr('data-file'));
         var url = bookServerURL + dec;
-        console.log(url);
-        $('.whiteboard').css( 'background-image', 'url("'+url+'")');
+        showBook( url );
+        socket.emit('room-cast', { 'command' : 'whiteboard-image', 'roomname' : client.getRoomName(), 'url': url });
     });
 
 });
