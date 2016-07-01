@@ -358,6 +358,22 @@ $(event.mediaElement) 와 같이 jQuery 객체를 만들어서 활용을 할 수
     URL 주소는 https://www.onfis.com:1443/0.0.12/index.php?show_header=Y&show_header_menu=Y&show_entrance=Y 와 같이 되어야 한다.
 
 
+# HOW TO RUN
+
+* User must access index.php through PHP enabled HTTPS web server like nginx or apache.
+
+    * On the call center desktop computer of Mr. Song,
+    
+        * run nginx like below;
+            start c:\apps\nginx\nginx.exe
+        * run php-fpm like below;
+            start C:\apps\apm\php-7.0.7\php-cgi.exe -b 127.0.0.1:9000
+        * access like below;
+            https://www.onfis.com:30443/video-center-3/www/
+
+
+
+
 
 
 
