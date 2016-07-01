@@ -324,3 +324,8 @@ whiteboard.show = function() {
 whiteboard.hide = function() {
     client.room().removeClass('has-whiteboard');
 };
+
+
+whiteboard.image = function ( url ) {
+    $('.whiteboard').css( 'background-image', 'url("'+url+'")');
+};

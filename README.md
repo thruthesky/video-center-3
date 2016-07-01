@@ -2,6 +2,11 @@
 
 Video Conference System By Withcenter, Inc.
 
+# Issues - 문제 티켓 트래킹 시스템.
+
+
+https://github.com/thruthesky/x5/issues
+
 
 # TODO
 

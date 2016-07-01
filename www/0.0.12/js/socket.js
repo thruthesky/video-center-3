@@ -43,6 +43,7 @@ $(function(){
             console.info( 'socket.on("room-cast")', data );
             if ( data['command'] == 'whiteboard-show' ) whiteboard.show();
             else if ( data['command'] == 'whiteboard-hide' ) whiteboard.hide();
+            else if ( data['command'] == 'whiteboard-image' ) whiteboard.image( data['url'] );
         });
     }
 

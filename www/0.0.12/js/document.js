@@ -53,9 +53,6 @@ function loadBook(path) {
     });
 }
 
-function showBook( url ) {
-    $('.whiteboard').css( 'background-image', 'url("'+url+'")');
-}
 
 $(function(){
 
@@ -78,7 +75,7 @@ $(function(){
         var $this = $(this);
         var dec = ($this.attr('data-file'));
         var url = bookServerURL + dec;
-        showBook( url );
+        whiteboard.image( url );
         socket.emit('room-cast', { 'command' : 'whiteboard-image', 'roomname' : client.getRoomName(), 'url': url });
     });
 
