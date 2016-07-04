@@ -1,7 +1,37 @@
 #room .document {
-    background-color: #a8ef98;
+    position: relative;
+    height: 331px;
+    background-color: #1abc9c;
+    border-right: 1px solid #b3b3b3;
 }
-
+#room .books {
+    position: absolute;
+    display: inherit;
+    padding: 3px 5px 3px 15px;
+    width: 100%;
+    color: #fff;
+    background-color: #16a085;
+}
+#room .container {
+    padding: 40px 0 0 10px;
+}
+#room .container .folder_up {
+    background-color: #fff;
+    padding: 4px 16px;
+}
+#room .container .file-upload {
+    margin-top: 10px;
+}
+#room .container input[name='userfile'] {
+    width: 100%;
+}
+#room .document-content {
+    height: 191px;
+    padding-top: 10px;
+    border-top: 1px solid #16a085;
+    overflow: hidden;
+    overflow-y: scroll;
+}
 #room .document ul li {
     cursor: pointer;
 }

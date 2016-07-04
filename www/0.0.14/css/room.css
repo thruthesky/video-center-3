@@ -1,0 +1,108 @@
+#room {
+    position: relative;
+    background-color:#19b5fe;
+}
+#room nav {
+    overflow: hidden;
+}
+#room nav .left {
+    float: left;
+    border: 0;
+    height: 30px;
+    background-color: #0399e0;
+    padding: 0 35px;
+    margin-right: 1px;
+    color: #ffffff;
+}
+#room nav .active {
+    background-color: #19b5fe;
+}
+#room nav .right {
+    float: right;
+    border: 0;
+    height: 30px;
+    padding: 0 25px;
+    background-color: #19b5fe;
+    color: #ffffff;
+    font-weight: 600;
+}
+#room .content { position: relative; }
+
+#room .content .name {
+    padding: 5px 0 5px 15px;
+    font-weight: 600;
+    background-color: #e9e8e8;
+    border-bottom: 1px solid #8c8c8c;
+}
+
+#room .content .whiteboard { display: none; background-color: #e1e1e1; }
+
+#room.has-whiteboard .whiteboard { display: block; }
+
+
+/** White Board Design */
+#room .content .whiteboard {
+    position: relative;
+    width: 100%;
+    height: 340px;
+    background-color: #f1f1f1;
+}
+#room .content .whiteboard nav {
+    position: absolute;
+    z-index: 500;
+    top: 10px;
+    right: 10px;
+}
+#room .content .whiteboard .clear:before {
+    content: '\f016';
+    font-family: FontAwesome;
+}
+#room .content .whiteboard .eraser:before {
+    content: '\f12d';
+    font-family: FontAwesome;
+}
+#room .content .whiteboard .draw:before {
+    content: '\f040';
+    font-family: FontAwesome;
+}
+#room .content .whiteboard .size,
+#room .content .whiteboard .color {
+    padding: 9px 16px;
+}
+#room .content .whiteboard section {
+    position: absolute;
+    z-index: -50;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+#room .content .whiteboard canvas {
+    position:relative;
+    z-index: 200;
+    width:100%;
+    height: 100%;
+}
+
+
+
+
+/** Layout break point */
+@media all and ( min-width: 546px ){
+    #room .videos {
+        position: absolute;
+        z-index: 100;
+    }
+    #room.has-whiteboard .content .videos {
+        position: relative;
+        margin: 0;
+    }
+
+    #room .content .whiteboard {
+        position: absolute;
+        z-index: 100;
+        top: 0;
+        right: 0;
+        width: auto;
+    }
+}

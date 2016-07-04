@@ -38,75 +38,6 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
          *  L A Y O U T    : DON'T DESIGN HERE
          *
          */
-        #entrance { padding: 2em; }
-        #status { background-color: grey; }
-        #room { position: relative; background-color:#5f9ea0; }
-        #room .content { position: relative; }
-
-        #room .content .whiteboard { display: none; background-color: #e1e1e1; }
-
-        #room.has-whiteboard .whiteboard { display: block; }
-
-
-
-
-        /** White Board Design */
-        #room .content .whiteboard {
-            position: relative;
-            width: 100%;
-            height: 340px;
-            background-color: #AEBDCC;
-        }
-        #room .content .whiteboard nav {
-            position: absolute;
-            z-index: 500;
-            top: 4px;
-            right: 4px;
-        }
-        #room .content .whiteboard section { position: absolute; z-index: -50; top: 0; left: 0; right: 0; bottom: 0; }
-        #room .content .whiteboard canvas {
-            position:relative;
-            z-index: 200;
-            width:100%;
-            height: 100%;
-        }
-
-        /** Layout break point */
-        @media all and ( min-width: 546px ){
-            #room { background-color: #19469D; }
-            #room .videos {
-                position: absolute;
-                z-index: 100;
-            }
-            #room.has-whiteboard .content .videos {
-                position: relative;
-                margin: 0;
-            }
-
-            #room .content .whiteboard {
-                position: absolute;
-                z-index: 100;
-                top: 0;
-                right: 0;
-                width: auto;
-            }
-        }
-
-        #lobby .room-list {
-            margin: .4em 0;
-        }
-        #lobby .room-list .room {
-            margin: .1em 0;
-            padding: 1em;
-            background-color: #5f9ea0;
-            color: white;
-        }
-        #lobby .room-list .room .name {
-            display: block;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
     </style>
     <script>
 
@@ -131,72 +62,99 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
 
     <header>
         <div class="caption">
-            Video Center v3 by Withcenter, Inc.
+            <span class="logo">LOGO</span>
+            <span class="logo-title">Video Center v3 by Withcenter, Inc.</span>
         </div>
         <nav class="header-menu">
             <div>
-                <a href="../index.html">Index HTML</a>
-                <a href="?">Lobby</a>,
-                <a href="?reload=10">Reload</a>
+                <a href="../index.html"><img src="img/home.png"><span>Home</span></img></a>
+                <a href="?"><img src="img/door.png"><span>Lobby</span></img></a>
+                <a href="?reload=10"><img src="img/refresh.png  "><span>Reload</span></img></a>
             </div>
         </nav>
-    </header>
+    </header><!-- #header -->
 
     <section id="entrance">
-        <form>
-            <input type="hidden" name="show_header" value="Y">
-            <input type="hidden" name="show_header_menu" value="Y">
-            <div class="caption">Please input username</div>
-            <div class="username">
-                <input name="username" placeholder="Input user name" size="10">
+        <div>
+            <div class="row">
+                <div class="col-sm-6 left">
+                    <form>
+                        <input type="hidden" name="show_header" value="Y">
+                        <input type="hidden" name="show_header_menu" value="Y">
+                        <!--div class="caption">Please input username</div-->
+                        <div class="username">
+                            <input name="username" placeholder="Input Username" size="10">
+                        </div>
+                        <div>
+                            <input type="submit" class="btn btn-primary" value="ENTER VIDEO CENTER">
+                        </div>
+                    </form>
+                </div>
+                <div class="col-sm-6 right">
+                    <div class="title">Video Center Guidelines</div>
+                    <div class="desc">
+                        <div>-Vivamus bibendum elit non mollis egestas.</div>
+                        <div>-Nam molestie, purus a malesuada</div>
+                        <div>-hendrerit, nulla odio congue magna, at</div>
+                        <div>-volutpat justo urna vel velit. Duis nunc</div>
+                        <div>-velit, commodo at risus nec, commodo</div>
+                        <div>-tincidunt diam. Nulla quis felis justo. Etiam</div>
+                        <div>-eleifend gravida orci, nec faucibus mauris</div>
+                        <div>-eget. Sed laoreet augue erat, vel volutpat</div>
+                        <div>-massa euismod et. Fusce eu sapien iaculis, s</div>
+                        <div>-celerisque tortor et, fermentum quam.</div>
+                    </div>
+                </div>
             </div>
-            <div>
-                <input type="submit" value="Enter Video Center">
-            </div>
-        </form>
+        </div>
     </section><!-- #entrance -->
 
 
     <section id="lobby">
-        <h1>Lobby</h1>
-        <nav class="lobby-menu">
-            <button class="update-username" box="username">Update Username</button>
+        <div>
+            <div class="lobby-header">
+                <h1>Lobby</h1>
+                <nav class="lobby-menu">
+                    <button class="update-username" box="username">Update Username</button>
+                    <button class="create-room" box="join-room">Create Room</button>
+                    <button class="logout">Logout</button>
+                </nav>
 
-            <button class="logout">Logout</button>
-            <button class="create-room" box="join-room">Create Room</button>
-        </nav>
-        <div class="lobby-menu-content">
+                <div class="lobby-menu-content">
+                    <div class="box username">
+                        <form>
+                            <!--div class="caption">Username :</div-->
+                            <input name="username" placeholder="Input user name" size="10">
+                            <input type="submit" value="Update Username">
+                        </form>
+                    </div>
+                    <div class="box join-room">
+                        <form>
+                            <!--div class="caption">Input room name and submit the form to create a room.</div-->
+                            <input type="text" name="roomname" placeholder="Input room name to join">
+                            <input type="submit" value="Join Chat Room">
+                        </form>
+                    </div>
+                </div>
 
-            <div class="box username">
-                <form>
-                    <div class="caption">Username :</div>
-                    <div class="text"><input name="username" placeholder="Input user name" size="10"></div>
-                    <div class="button"><input type="submit" value="Update Username"></div>
-                </form>
+                <div class="room-list">
+                    Room List
+                    <div class="content"></div>
+                </div>
             </div>
-            <div class="box join-room">
-                <form>
-                    <div class="caption">Input room name and submit the form to create a room.</div>
-                    <input type="text" name="roomname" placeholder="Input room name to join">
-                    <div class="button"><input type="submit" value="Join Chat Room"></div>
-                </form>
-            </div>
-
         </div>
-        <div class="room-list">
-            Room List
-            <div class="content"></div>
-        </div>
-    </section>
+    </section><!-- #lobby -->
+    
+    
     <section id="room" class="">
         <nav>
-            <button class="leave">Leave</button>
-            <button class="reconnect">Re-connect</button>
-            Display :
-            <button class="video-layout-list" onclick="videoLayout_list();">List</button>
-            <button class="video-layout-Metro" onclick="videoLayout_metro();">Metro</button>
-            <button class="video-layout-overlay" onclick="videoLayout_overlay();">Overlay</button>
-            <button class="button-whiteboard" onclick="whiteboard.toggle();">WhiteBoard</button>
+            <!--Display : -->
+            <button class="video-layout-list left" onclick="videoLayout_list();">List</button>
+            <button class="video-layout-Metro left" onclick="videoLayout_metro();">Metro</button>
+            <button class="video-layout-overlay left" onclick="videoLayout_overlay();">Overlay</button>
+            <button class="button-whiteboard left" onclick="whiteboard.toggle();">WhiteBoard</button>
+            <button class="reconnect right">Re-connect</button>
+            <button class="leave right">Leave</button>
         </nav>
         <div class="content">
             <div class="videos">
@@ -213,36 +171,40 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
                 </form>
             </div>
             <div class="document">
-                <span class="books">Books</span> |
-                <span class="" title="One folder up">Up</span> |
-                <select name="books">
-                    <option value="">Books</option>
-                    <option value="Let's Go">Let's Go</option>
-                    <option value="Side By Side">Side By Side</option>
-                    <option value="Express Yourself">Express Yourself</option>
-                    <option value="Speak Your Mind">Speak Your Mind</option>
-                </select> |
-                Upload<br>
-                <div class="file-upload">
-                    <form target="_hidden_file_upload_frame" enctype="multipart/form-data" action="<?php echo $url_server?>upload.php" method="POST">
-                        <input type="hidden" name="MAX_FILE_SIZE" value="300000" />
-                        Send this file: <input name="userfile" type="file" onchange="submit();" />
-                        <input type="submit" value="Send File" style="width:0; height: 0; opacity: 0.01;"/>
-                    </form>
-                </div>
+                <span class="books">Books</span>
+                <div class="container">
+                    <select name="books" class="btn">
+                        <option value="">Books</option>
+                        <option value="Let's Go">Let's Go</option>
+                        <option value="Side By Side">Side By Side</option>
+                        <option value="Express Yourself">Express Yourself</option>
+                        <option value="Speak Your Mind">Speak Your Mind</option>
+                    </select>
 
-                <div class="document-content">
-
+                    <a class="btn folder_up">
+                        <i class="fa fa-level-up" title="One folder up" aria-hidden="true"></i>
+                        <span class="sr-only">One folder up</span>
+                    </a>
+                    <div class="file-upload">
+                        <form target="_hidden_file_upload_frame" enctype="multipart/form-data" action="<?php echo $url_server?>upload.php" method="POST">
+                            <input type="hidden" name="MAX_FILE_SIZE" value="300000" />
+                            <input name="userfile" type="file" onchange="submit();" />
+                            <input type="submit" value="Send File" style="width:0; height: 0; opacity: 0.01;"/>
+                        </form>
+                    </div>
                 </div>
+                    <div class="document-content">
+
+                    </div>
 
             </div>
             <div class="whiteboard">
                 <nav>
-                    <button class="clear">Clear Whiteboard</button>
-                    <button class="eraser">Eraser</button>
-                    <button class="draw">Draw</button>
+                    <button class="clear btn btn-primary"> Clear Whiteboard</button>
+                    <button class="eraser btn btn-primary"> Eraser</button>
+                    <button class="draw btn btn-primary"> Draw</button>
                     <label for="line-size">
-                        <select id="line-size" name="line-size">
+                        <select id="line-size" name="line-size" class="btn size">
                             <option value="1">Extra Small</option>
                             <option value="2">Small</option>
                             <option value="3">Medium</option>
@@ -251,7 +213,7 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
                         </select>
                     </label>
                     <label for="color">
-                        <select id="color" name="color">
+                        <select id="color" name="color" class="btn color">
                             <option value="black">Black</option>
                             <option value="red">Red</option>
                             <option value="blue">Blue</option>
@@ -270,21 +232,21 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
                 <canvas id="whiteboard-canvas"></canvas>
             </div>
         </div>
-    </section>
+    </section><!-- #room -->
 
-    <nav class="navbar navbar-fixed-bottom navbar-light bg-faded">
+    <!--nav class="navbar navbar-fixed-bottom navbar-light bg-faded">
         <a class="navbar-brand" href="#">Fixed bottom</a>
-    </nav>
+    </nav-->
     <footer>
-        <div class="copyright narrow navbar navbar-fixed-bottom navbar-light bg-faded">
+        <div class="copyright">
             Company Name: <%=company_name%>
         </div>
-        <div class="copyright wide navbar navbar-fixed-bottom navbar-light bg-faded">
+        <div class="copyright">
             Company Name: <%=company_name%> President : <%=ceo_name%><br>
             Phone: <%=phone_number%> Address: <%=address%><br>
             Copyright (C) 2013 ~ <%=Ymd%>
         </div>
-    </footer>
+    </footer><!-- #footer -->
 
 
 </script>

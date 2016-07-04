@@ -270,7 +270,7 @@ client.onRoomListUpdate = function (roomList) {
             var info = room[u];
             users += info.username + ' ';
         }
-        m += '<div class="room"><span class="name">' + i + '</span><span class="users">'+users+'</span></div>';
+        m += '<div class="room"><img src="img/room-list-door.png"><span class="name">' + i + '</span><span class="users">'+users+'</span></div>';
 
 
         // Is it my room information?

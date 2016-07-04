@@ -1,5 +1,8 @@
 
-#room .chat { position: relative; }
+#room .chat {
+    position: relative;
+    border-right: 1px solid #b3b3b3;
+}
 
 #room .chat .messages {
     overflow: hidden;
