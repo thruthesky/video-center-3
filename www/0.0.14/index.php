@@ -66,8 +66,8 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
         </div>
         <nav class="header-menu">
             <div>
-                <a href="?"><i class="fa fa-home" aria-hidden="true"></i><span> Lobby</span></img></a>
-                <a href="?reload=10"><i class="fa fa-refresh" aria-hidden="true"></i><span> Reload</span></img></a>
+                <a href="?"><i class="fa fa-home" aria-hidden="true"></i> <span>Lobby</span></img></a>
+                <a href="?reload=10"><i class="fa fa-refresh" aria-hidden="true"> </i><span>Reload</span></img></a>
             </div>
         </nav>
     </header><!-- #header -->
@@ -194,9 +194,9 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
             </div>
             <div class="whiteboard">
                 <nav>
-                    <button class="clear btn btn-primary btn-sm"><i class="fa fa-file-o" aria-hidden="true"></i><span> Clear Whiteboard</span></button>
-                    <button class="eraser btn btn-primary btn-sm"><i class="fa fa-eraser" aria-hidden="true"></i><span> Eraser</span></button>
-                    <button class="draw btn btn-primary btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i><span> Draw</span></button>
+                    <button class="clear btn btn-primary btn-sm"><i class="fa fa-file-o" aria-hidden="true"></i> <span>Clear Whiteboard</span></button>
+                    <button class="eraser btn btn-primary btn-sm"><i class="fa fa-eraser" aria-hidden="true"></i> <span>Eraser</span></button>
+                    <button class="draw btn btn-primary btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i> <span>Draw</span></button>
                     <label for="line-size">
                         <select id="line-size" name="line-size" class="btn size">
                             <option value="1">Extra Small</option>
