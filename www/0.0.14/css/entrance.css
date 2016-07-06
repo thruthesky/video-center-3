@@ -1,6 +1,6 @@
 #entrance > div {
-    padding: 125px 0;
-    width: 980px;
+    padding: 100px 0;
+    max-width: 980px;
     margin: auto;
 }
 #entrance .row {
