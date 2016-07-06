@@ -1,37 +1,41 @@
 header {
     position: relative;
-    padding: 5px 10px;
     border-bottom: 2px solid #008ed0;
-    height: 125px;
+    height: 45px;
     background-color: #19b5fe;
     color: white;
 }
 header a {
     display: inline-block;
-    margin-left: 15px;
+    padding: 0 15px;
     color: white;
 }
 header .caption,
 header nav {
     display: inline-block;
-    padding: 5px 0;
 }
 header .caption {
-    margin-left: 35px;
+    margin-left: 5px;
 }
 header .caption .logo {
-    font-size: 56px;
-    line-height: 1.3;
-}
-header .caption .logo-title {
-    display: block;
+    font-size: 40px;
+    line-height: normal;
 }
 header .header-menu {
     position: absolute;
-    top: 17px;
-    right: 45px;
+    top: 10px;
+    right: 15px;
 }
 header .header-menu span {
-    display: block;
-    text-align: center;
+    display: none;
+}
+@media all and ( min-width: 480px ){
+    header .caption {
+        margin-left: 35px;
+    }
+}
+@media all and ( min-width: 600px ){
+    header .header-menu span {
+        display: inline-block;
+    }
 }

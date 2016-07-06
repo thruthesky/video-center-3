@@ -63,13 +63,11 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
     <header>
         <div class="caption">
             <span class="logo">LOGO</span>
-            <span class="logo-title">Video Center v3 by Withcenter, Inc.</span>
         </div>
         <nav class="header-menu">
             <div>
-                <a href="../index.html"><img src="img/home.png"><span>Home</span></img></a>
-                <a href="?"><img src="img/door.png"><span>Lobby</span></img></a>
-                <a href="?reload=10"><img src="img/refresh.png  "><span>Reload</span></img></a>
+                <a href="?"><i class="fa fa-home" aria-hidden="true"></i><span> Lobby</span></img></a>
+                <a href="?reload=10"><i class="fa fa-refresh" aria-hidden="true"></i><span> Reload</span></img></a>
             </div>
         </nav>
     </header><!-- #header -->
@@ -81,7 +79,6 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
                     <form>
                         <input type="hidden" name="show_header" value="Y">
                         <input type="hidden" name="show_header_menu" value="Y">
-                        <!--div class="caption">Please input username</div-->
                         <div class="username">
                             <input name="username" placeholder="Input Username" size="10">
                         </div>
@@ -123,14 +120,12 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
                 <div class="lobby-menu-content">
                     <div class="box username">
                         <form>
-                            <!--div class="caption">Username :</div-->
                             <input name="username" placeholder="Input user name" size="10">
                             <input type="submit" value="Update Username">
                         </form>
                     </div>
                     <div class="box join-room">
                         <form>
-                            <!--div class="caption">Input room name and submit the form to create a room.</div-->
                             <input type="text" name="roomname" placeholder="Input room name to join">
                             <input type="submit" value="Join Chat Room">
                         </form>
@@ -148,13 +143,12 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
     
     <section id="room" class="">
         <nav>
-            <!--Display : -->
-            <button class="video-layout-list left" onclick="videoLayout_list();">List</button>
-            <button class="video-layout-Metro left" onclick="videoLayout_metro();">Metro</button>
-            <button class="video-layout-overlay left" onclick="videoLayout_overlay();">Overlay</button>
-            <button class="button-whiteboard left show" onclick="whiteboard.toggle();">WhiteBoard</button>
-            <button class="reconnect right">Re-connect</button>
-            <button class="leave right">Leave</button>
+            <button class="video-layout-list left" onclick="videoLayout_list();"><i class="fa fa-list" aria-hidden="true"></i> <span>List</span></button>
+            <button class="video-layout-Metro left" onclick="videoLayout_metro();"><i class="fa fa-cubes" aria-hidden="true"></i> <span>Metro</span></button>
+            <button class="video-layout-overlay left" onclick="videoLayout_overlay();"><i class="fa fa-object-ungroup" aria-hidden="true"></i> <span>Overlay</span></button>
+            <button class="button-whiteboard left show" onclick="whiteboard.toggle();"><i class="fa fa-television" aria-hidden="true"></i> <span>WhiteBoard</span></button>
+            <!--button class="reconnect right">Re-connect</button>
+            <button class="leave right">Leave</button-->
         </nav>
         <div class="content">
             <div class="videos">
@@ -200,9 +194,9 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
             </div>
             <div class="whiteboard">
                 <nav>
-                    <button class="clear btn btn-primary"> Clear Whiteboard</button>
-                    <button class="eraser btn btn-primary"> Eraser</button>
-                    <button class="draw btn btn-primary"> Draw</button>
+                    <button class="clear btn btn-primary btn-sm"><i class="fa fa-file-o" aria-hidden="true"></i><span> Clear Whiteboard</span></button>
+                    <button class="eraser btn btn-primary btn-sm"><i class="fa fa-eraser" aria-hidden="true"></i><span> Eraser</span></button>
+                    <button class="draw btn btn-primary btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i><span> Draw</span></button>
                     <label for="line-size">
                         <select id="line-size" name="line-size" class="btn size">
                             <option value="1">Extra Small</option>
