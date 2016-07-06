@@ -66,8 +66,7 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
         </div>
         <nav class="header-menu">
             <div>
-                <a href="?"><i class="fa fa-home" aria-hidden="true"></i> <span>Lobby</span></img></a>
-                <a href="?reload=10"><i class="fa fa-refresh" aria-hidden="true"> </i><span>Reload</span></img></a>
+                <?php /* Add some menu here if you want */ ?>
             </div>
         </nav>
     </header><!-- #header -->
@@ -147,8 +146,13 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
             <button class="video-layout-Metro left" onclick="videoLayout_metro();"><i class="fa fa-cubes" aria-hidden="true"></i> <span>Metro</span></button>
             <button class="video-layout-overlay left" onclick="videoLayout_overlay();"><i class="fa fa-object-ungroup" aria-hidden="true"></i> <span>Overlay</span></button>
             <button class="button-whiteboard left show" onclick="whiteboard.toggle();"><i class="fa fa-television" aria-hidden="true"></i> <span>WhiteBoard</span></button>
+
+            <button class="room-leave"><i class="fa fa-home" aria-hidden="true"></i> <span>Lobby</span></button>
+            <button class="room-reconnect"><i class="fa fa-refresh" aria-hidden="true"></i> Reload</button>
+
             <!--button class="reconnect right">Re-connect</button>
             <button class="leave right">Leave</button-->
+
         </nav>
         <div class="content">
             <div class="videos">

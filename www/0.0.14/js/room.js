@@ -29,7 +29,7 @@ function joinLobby() {
 }
 
 
-body().on('click', '#room .leave', function() {
+body().on('click', '.room-leave', function() {
     console.log('leave');
 
     joinLobby();
@@ -54,13 +54,13 @@ body().on('click', '#room .leave', function() {
  *
  * 재접속을 한다.
  */
-$body.on('click', '#room .reconnect', function() {
+$body.on('click', '.room-reconnect', function() {
     if ( client.joined() ) {
         if ( client.inLobbyRoom() ) {
             alert("Refresh the page instead of reconnect since you are in Lobby.");
         }
         else {
-            location.href = "?joinRoom=Y&roomname=" + client.getRoomName() + '&username=' + client.getUsername();
+            location.href = "?show_header=Y&show_header_menu=Y&joinRoom=Y&roomname=" + client.getRoomName() + '&username=' + client.getUsername();
         }
     }
     else {

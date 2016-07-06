@@ -77,7 +77,7 @@ $body.on('submit', '.join-room form', function(e){
     return false;
 });
 
-$body.on('click', '.room-list .name', function() {
-    var name = $(this).text();
+$body.on('click', '.room-list .room', function() {
+    var name = $(this).find('.name').text();
     client.joinRoom( name, client.postJoinRoom );
 });

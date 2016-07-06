@@ -50,11 +50,11 @@
     color: #0399e0;
     border: 2px solid #0399e0;
     border-radius: 3px;
+    cursor: pointer;
 }
 #lobby .room-list .room .name {
     padding: .5rem;
     font-weight: bold;
-    cursor: pointer;
 }
 
 
