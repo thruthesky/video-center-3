@@ -308,12 +308,15 @@ whiteboard.init = function () {
  */
 whiteboard.toggle = function () {
     client.room().toggleClass('has-whiteboard');
+    var $btnActive = client.room().find('.button-whiteboard');
     if ( client.room().hasClass('has-whiteboard') ) {
         // client.room().addClass('.whiteboard');
+        $btnActive.addClass('show');
         socket.emit('room-cast', { 'command' : 'whiteboard-show', 'roomname' : client.getRoomName() });
     }
     else {
         // client.room().removeClass('.whiteboard');
+        $btnActive.removeClass('show');
         socket.emit('room-cast', { 'command' : 'whiteboard-hide', 'roomname' : client.getRoomName() });
     }
 };

@@ -87,14 +87,14 @@ function videoLayout( style ) {
  */
 function videoLayout_list() {
     Cookies.set('video-list-style', 'list');
-    var $this = client.room().find('.video-layout-list');
+    var $thisbtn = client.room().find('.video-layout-list');
     var $btnActive = client.room().find('button.active');
     var $videos = client.room().find('.videos');
     $videos.removeClass('metro');
     $videos.removeClass('overlay');
     $videos.addClass('list');
     $btnActive.removeClass('active');
-    $this.addClass('active');
+    $thisbtn.addClass('active');
 }
 
 /**
@@ -103,14 +103,14 @@ function videoLayout_list() {
  */
 function videoLayout_metro() {
     Cookies.set('video-list-style', 'metro');
-    var $this = client.room().find('.video-layout-Metro');
+    var $thisbtn = client.room().find('.video-layout-Metro');
     var $btnActive = client.room().find('button.active');
     var $videos = client.room().find('.videos');
     $videos.removeClass('list');
     $videos.removeClass('overlay');
     $videos.addClass('metro');
     $btnActive.removeClass('active');
-    $this.addClass('active');
+    $thisbtn.addClass('active');
 }
 
 
@@ -123,7 +123,7 @@ function videoLayout_metro() {
 
 function videoLayout_overlay() {
     Cookies.set('video-list-style', 'overlay');
-    var $this = client.room().find('.video-layout-overlay');
+    var $thisbtn = client.room().find('.video-layout-overlay');
     var $btnActive = client.room().find('button.active');
     var $videos = client.room().find('.videos');
     $videos
@@ -131,7 +131,7 @@ function videoLayout_overlay() {
         .removeClass('metro')
         .addClass('overlay');
     $btnActive.removeClass('active');
-    $this.addClass('active');
+    $thisbtn.addClass('active');
 }
 $('body').on('click', '.videos.overlay .user', function(){
     console.log('clicked on user of overlay style');

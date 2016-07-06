@@ -152,7 +152,7 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
             <button class="video-layout-list left" onclick="videoLayout_list();">List</button>
             <button class="video-layout-Metro left" onclick="videoLayout_metro();">Metro</button>
             <button class="video-layout-overlay left" onclick="videoLayout_overlay();">Overlay</button>
-            <button class="button-whiteboard left" onclick="whiteboard.toggle();">WhiteBoard</button>
+            <button class="button-whiteboard left show" onclick="whiteboard.toggle();">WhiteBoard</button>
             <button class="reconnect right">Re-connect</button>
             <button class="leave right">Leave</button>
         </nav>

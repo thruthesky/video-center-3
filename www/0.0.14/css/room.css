@@ -14,7 +14,8 @@
     margin-right: 1px;
     color: #ffffff;
 }
-#room nav .active {
+#room nav .active,
+#room nav .show {
     background-color: #19b5fe;
 }
 #room nav .right {
