@@ -121,7 +121,7 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
                     <div class="box username">
                         <form>
                             <input name="username" placeholder="Input user name" size="10">
-                            <input type="submit" value="Update Username">
+                            <input type="submit" value="Update">
                         </form>
                     </div>
                     <div class="box join-room">

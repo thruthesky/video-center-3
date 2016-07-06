@@ -1,5 +1,5 @@
 #lobby > div {
-    padding: 125px 0;
+    padding: 30px 0;
     max-width: 980px;
     margin: auto;
 }
@@ -9,6 +9,7 @@
 #lobby > div .lobby-header {
     max-width: 500px;
     margin: auto;
+    padding: 0 5px;
 }
 #lobby > div .lobby-header .lobby-menu {
     overflow: hidden;
@@ -25,19 +26,19 @@
     width: 20%;
 }
 #lobby > div .lobby-header .lobby-menu-content .box.username,
-#lobby > div .lobby-header .lobby-menu-content .box.join-room{
+#lobby > div .lobby-header .lobby-menu-content .box.join-room {
     background-color: #d8d8d8;
-    padding: 14px 30px 14px 15px;
+    padding: 15px;
 }
 #lobby > div .lobby-header .lobby-menu-content input[type='text'],
 #lobby > div .lobby-header .lobby-menu-content input[name='username'] {
-    width: 290px;
+    width: 58%;
     height: 40px;
     padding-left: 15px;
 }
 #lobby > div .lobby-header .lobby-menu-content input[type='submit'] {
     float: right;
-    width: 150px;
+    width: 40%;
     height: 40px;
 }
 #lobby .room-list {
@@ -54,4 +55,11 @@
     padding: .5rem;
     font-weight: bold;
     cursor: pointer;
+}
+
+
+@media all and ( min-width: 544px ){
+    #lobby > div {
+        padding: 100px 0;
+    }
 }

@@ -1,5 +1,5 @@
 #entrance > div {
-    padding: 100px 0;
+    padding: 30px 0;
     max-width: 980px;
     margin: auto;
 }
@@ -28,9 +28,6 @@
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
-#entrance .left {
-    padding-top: 100px;
-}
 #entrance .title {
     font-size: 2rem;
     margin-bottom: 20px;
@@ -38,5 +35,14 @@
 }
 #entrance .desc {
     padding-left: 10px;
+}
+
+@media all and ( min-width: 544px ){
+    #entrance > div {
+        padding: 100px 0;
+    }
+    #entrance .left {
+        padding-top: 100px;
+    }
 }
 
