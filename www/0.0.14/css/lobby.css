@@ -1,13 +1,13 @@
 #lobby > div {
     padding: 125px 0;
-    width: 980px;
+    max-width: 980px;
     margin: auto;
 }
 #lobby > div h1 {
     font-size: 2rem;
 }
 #lobby > div .lobby-header {
-    width: 500px;
+    max-width: 500px;
     margin: auto;
 }
 #lobby > div .lobby-header .lobby-menu {
