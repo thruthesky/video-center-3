@@ -11,6 +11,11 @@ function receiver(e) {
         var re = e.data['re'];
         if ( re == '1' ) {
             loadBook('data/book/Uploads');
+            $('.file-upload').append('<div class="uploaded-loader"><i class="fa fa-spinner fa-spin fa-fw"></i> File uploaded ...</div>');
+            setTimeout(function(){
+                $('.uploaded-loader').remove();
+            }, 1000);
+
         }
         else {
             alert(e.data['message']);

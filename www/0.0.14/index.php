@@ -187,7 +187,6 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
                         <form target="_hidden_file_upload_frame" enctype="multipart/form-data" action="<?php echo $url_server?>upload.php" method="POST">
                             <input type="hidden" name="MAX_FILE_SIZE" value="300000" />
                             <input name="userfile" type="file" onchange="submit();" />
-                            <input type="submit" value="Send File" style="width:0; height: 0; opacity: 0.01;"/>
                         </form>
                     </div>
                 </div>
@@ -245,7 +244,7 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
 
 </script>
 <div id="videocenter" class="vc"></div>
-<iframe name="_hidden_file_upload_frame" src="javascript:;" style="width: 0; height: 0; opacity: .01;"></iframe>
+<iframe name="_hidden_file_upload_frame" src="javascript:;" style="display:none; width: 0; height: 0; opacity: .01;"></iframe>
 
 
 <script src="<?php echo $urlSocketServer?>/socket.io/socket.io.js"></script>
