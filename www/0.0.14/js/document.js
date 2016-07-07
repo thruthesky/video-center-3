@@ -7,12 +7,14 @@
 
 window.addEventListener('message', receiver, false);
 function receiver(e) {
-    var re = e.data['re'];
-    if ( re == '1' ) {
-        loadBook('data/book/Uploads');
-    }
-    else {
-        alert('Failed Upload ...');
+    if ( typeof e.data['re'] !== 'undefined' ) {
+        var re = e.data['re'];
+        if ( re == '1' ) {
+            loadBook('data/book/Uploads');
+        }
+        else {
+            alert(e.data['message']);
+        }
     }
 }
 
@@ -26,6 +28,7 @@ function loadBook(path) {
         setTimeout(function(){
             var $content = $('.document-content');
             $content.find('.loader').remove();
+            if ( typeof re == 'undefined' || re == '' ) return alert('No files uploaded...');
             try {
                 var data = JSON.parse( re );
             }
