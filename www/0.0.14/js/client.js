@@ -248,7 +248,7 @@ client.postJoinRoom = function ( roomname_joined ) {
     else {
         console.log( 'client.postJoinRoom() : ! client.isLobby() : ' );
         wb.clear_canvas();
-        whiteboard().find('.markup').html('<h2>You are in ' + roomname_joined + '</h2>');
+        //whiteboard().find('.markup').html('<h2>You are in ' + roomname_joined + '</h2>');
         client.showRoom();
     }
 

@@ -5,7 +5,7 @@
 #room nav {
     overflow: hidden;
     position: absolute;
-    right: 110px;
+    right: 5px;
     top: -45px;
 }
 #room nav .left {
@@ -19,8 +19,7 @@
 }
 #room nav .active,
 #room nav .show {
-    background-color: #0399e0;
-    border: 2px inset;
+    background-color: rgba(20, 159, 248, 0.72);
 }
 #room nav .right {
     float: right;
@@ -102,9 +101,7 @@
     }
 }
 @media all and ( min-width: 600px ){
-    #room nav {
-        right: 205px;
-    }
+
 }
 @media all and ( min-width: 800px ){
     #room nav button span {

@@ -147,8 +147,8 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
             <button class="video-layout-overlay left" onclick="videoLayout_overlay();"><i class="fa fa-object-ungroup" aria-hidden="true"></i> <span>Overlay</span></button>
             <button class="button-whiteboard left show" onclick="whiteboard.toggle();"><i class="fa fa-television" aria-hidden="true"></i> <span>WhiteBoard</span></button>
 
-            <button class="room-leave"><i class="fa fa-home" aria-hidden="true"></i> <span>Lobby</span></button>
-            <button class="room-reconnect"><i class="fa fa-refresh" aria-hidden="true"></i> Reload</button>
+            <button class="room-leave left"><i class="fa fa-users" aria-hidden="true"></i> <span>Lobby</span></button>
+            <button class="room-reconnect left"><i class="fa fa-refresh" aria-hidden="true"></i> <span>Reload</span></button>
 
             <!--button class="reconnect right">Re-connect</button>
             <button class="leave right">Leave</button-->
@@ -211,20 +211,16 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
                         </select>
                     </label>
                     <label for="color">
-                        <select id="color" name="color" class="btn color">
-                            <option value="black">Black</option>
-                            <option value="red">Red</option>
-                            <option value="blue">Blue</option>
-                            <option value="green">Green</option>
-                            <option value="white">White</option>
+                        <select id="color" name="color" class="btn color" style="font-family: FontAwesome, Gulim">
+                            <option value="black" class="black"> Black</option>
+                            <option value="red" class="red"> Red</option>
+                            <option value="blue" class="blue"> Blue</option>
+                            <option value="green" class="green"> Green</option>
+                            <option value="white" class="white"> White</option>
                         </select>
                     </label>
                 </nav>
                 <section class="markup">
-
-                    <h2>
-                        You are in Lobby
-                    </h2>
 
                 </section>
                 <canvas id="whiteboard-canvas"></canvas>
