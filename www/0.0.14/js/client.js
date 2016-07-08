@@ -154,6 +154,7 @@ client.joinRoom = function (roomname, callback) {
         }, 100);
         callback(data);
 
+        initCustomSelect(); //code#782016 custom select
         // 방에 입장하면, 전자칠판을 다시 그린다.
         socket.emit('get-whiteboard-draw-line-history', client.getRoomName() );
     });

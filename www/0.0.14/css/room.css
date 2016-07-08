@@ -30,7 +30,9 @@
     color: #ffffff;
     font-weight: 600;
 }
-#room .content { position: relative; }
+#room .content {
+    position: relative;
+}
 
 #room .content .name {
     padding: 5px 0 5px 15px;
@@ -39,9 +41,14 @@
     border-bottom: 1px solid #8c8c8c;
 }
 
-#room .content .whiteboard { display: none; background-color: #e1e1e1; }
+#room .content .whiteboard {
+    display: none;
+    background-color: #e1e1e1;
+}
 
-#room.has-whiteboard .whiteboard { display: block; }
+#room.has-whiteboard .whiteboard {
+    display: block;
+}
 
 
 /** White Board Design */
@@ -75,9 +82,59 @@
     width:100%;
     height: 100%;
 }
-#room nav button span {
+#room nav button span,
+#room nav .select span {
     display: none;
 }
+
+/** Custom Color Select button**/
+#room .whiteboard .colors {
+    display: inline-block;
+    background-color: #f1f1f1;
+    float: right;
+    margin-left: 5px;
+    border-radius: 0.2rem;
+
+}
+#room .whiteboard .colors i.fa-caret-down {
+    position: absolute;
+    right: 7px;
+    top: 7px;
+}
+#room .whiteboard .select .option.active {
+    background-color: #e2e2e2;
+    border-radius: .2rem;
+}
+#room .whiteboard .select .option {
+    background-color: #e2e2e2;
+    border: 1px solid #e2e2e2;
+    padding-right: 25px;
+    border-radius: 0;
+}
+#room .whiteboard .select .option:hover {
+    background-color: #d4d4d4;
+    border: 1px solid #d4d4d4;
+}
+#room .whiteboard .select .option span {
+    min-width: 45px;
+}
+#room .whiteboard .select .option.black .fa-square {
+    color: black;
+}
+#room .whiteboard .select .option.red .fa-square {
+    color: red;
+}
+#room .whiteboard .select .option.blue .fa-square {
+    color: blue;
+}
+#room .whiteboard .select .option.green .fa-square {
+    color: green;
+}
+#room .whiteboard .select .option.white .fa-square {
+    color: white;
+}
+
+
 
 
 
@@ -104,7 +161,8 @@
 
 }
 @media all and ( min-width: 800px ){
-    #room nav button span {
+    #room nav button span,
+    #room nav .select span {
         display: inline-block;
     }
 }

@@ -41,6 +41,9 @@ var $body = $('body');
 $body.on('click', '.lobby-menu button', function(){
     var $this = $(this);
     var name = $this.attr('box');
+    var $btnLobby = $this.parent('.lobby-menu').find('button');
+    $btnLobby.removeClass('selected');
+    $this.addClass('selected');
     lobbyBox().hide();
     if ( name ) lobbyBox( name ).show();
 });

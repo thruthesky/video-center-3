@@ -18,6 +18,15 @@
     float: left;
     margin-bottom: 10px;
 }
+#lobby > div .lobby-header .lobby-menu button:focus {
+    outline: none;
+}
+#lobby > div .lobby-header .lobby-menu button.selected {
+    border: 0;
+    padding: 8px 0;
+    margin: 0;
+    background-color: #d8d8d8;
+}
 #lobby > div .lobby-header .lobby-menu .update-username,
 #lobby > div .lobby-header .lobby-menu .create-room {
     width: 40%;

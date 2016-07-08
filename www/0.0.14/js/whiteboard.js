@@ -81,7 +81,8 @@ whiteboard.getLineSize = function () {
     return whiteboard().find('#line-size').val();
 };
 whiteboard.getColor = function () {
-    return whiteboard().find('#color').val();
+    //return whiteboard().find('#color').val();
+    return whiteboard().find('.select .option.active').attr('value'); //code#782016 custom select
 };
 /**
  *

@@ -210,7 +210,7 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
                         </select>
                     </label>
                     <label for="color">
-                        <select id="color" name="color" class="btn color" style="font-family: FontAwesome, Gulim">
+                        <select id="color" name="color" class="btn color">
                             <option value="black" class="black"> Black</option>
                             <option value="red" class="red"> Red</option>
                             <option value="blue" class="blue"> Blue</option>
@@ -218,6 +218,25 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
                             <option value="white" class="white"> White</option>
                         </select>
                     </label>
+                    <div class="line-size">
+                        <div class="select">
+                            <div value="1" class="extra-small option btn-sm"><span>Extra Small</span></div>
+                            <div value="2" class="small option btn-sm"><span>Small</span></div>
+                            <div value="3" class="medium option btn-sm"><span>Medium</span></div>
+                            <div value="5" class="large option btn-sm"><span>Large</span></div>
+                            <div value="10" class="extra-large option btn-sm"><span>Extra Large</span></div>
+                        </div>
+                    </div>
+                    <div class="colors">
+                        <div class="select">
+                            <i class="fa fa-caret-down" aria-hidden="true"></i>
+                            <div value="black" class="black option btn-sm"><i class="fa fa-square" aria-hidden="true"></i> <span>Black</span></div>
+                            <div value="red" class="red option btn-sm"><i class="fa fa-square" aria-hidden="true"></i> <span>Red</span></div>
+                            <div value="blue" class="blue option btn-sm"><i class="fa fa-square" aria-hidden="true"></i> <span>Blue</span></div>
+                            <div value="green" class="green option btn-sm"><i class="fa fa-square" aria-hidden="true"></i> <span>Green</span></div>
+                            <div value="white" class="white option btn-sm"><i class="fa fa-square" aria-hidden="true"></i> <span>White</span></div>
+                        </div>
+                    </div>
                 </nav>
                 <section class="markup">
 
@@ -265,6 +284,7 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
 <script src="js/chat.js"></script>
 <script src="js/client.js"></script>
 <script src="js/document.js"></script>
+<script src="js/select.js"></script>
 <script src="css/bootstrap/js/tether.min.js"></script>
 <script src="css/bootstrap/js/bootstrap.min.js"></script>
 </body>
