@@ -1,9 +1,5 @@
 //code#782016 This is while page load showing first element
-function initCustomSelect() {
-    $('.option').addClass('inactive').hide();
-    $('.line-size .option:first').addClass('active').removeClass('inactive').show();
-    $('.colors .option:first').addClass('active').removeClass('inactive').show();
-}
+
 //Showing all option
 $body.on('click', '.select', function(){
     var $option = $(this).find('.option');
@@ -16,7 +12,7 @@ $body.on('mouseleave', '.select', function(){
 });
 //Onclick making the option active
 $body.on('click', '.option', function(){
-    $('.option').addClass('inactive').removeClass('active');
+    var $this = $(this).siblings('.option');
+    $this.addClass('inactive').removeClass('active');
     $(this).addClass('active').removeClass('inactive');
-    $('.option.inactive').hide();
 });
