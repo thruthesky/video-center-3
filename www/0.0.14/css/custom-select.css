@@ -17,7 +17,7 @@
     display: none;
     background-color: #e2e2e2;
     border: 1px solid #e2e2e2;
-    padding-right: 25px;
+    padding-right: 20px;
     border-radius: 0;
 }
 #room .whiteboard .select .option.active {
@@ -30,7 +30,7 @@
     border: 1px solid #d4d4d4;
 }
 #room .whiteboard .select .option span {
-    min-width: 45px;
+    min-width: 35px;
 }
 /** Custom Color Select button**/
 #room .whiteboard .select .option.black .fa-square {
@@ -66,4 +66,13 @@
 }
 
 
+/** Button design**/
+#room .whiteboard .line-size,
+#room .whiteboard .colors,
+#room .whiteboard button {
+    float: left;
+}
+#room .whiteboard button {
+    margin-left: 5px;
+}
 

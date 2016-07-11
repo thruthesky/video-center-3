@@ -2,8 +2,8 @@
 
 //Showing all option
 $body.on('click', '.select', function(){
-    var $option = $(this).find('.option');
-    $option.show().css( "display", "block");
+    var $option = $(this).find('.option.inactive');
+    $option.show();
 });
 //Showing selected option
 $body.on('mouseleave', '.select', function(){
@@ -15,4 +15,5 @@ $body.on('click', '.option', function(){
     var $this = $(this).siblings('.option');
     $this.addClass('inactive').removeClass('active');
     $(this).addClass('active').removeClass('inactive');
+    $(this).parent().find('.inactive').hide();
 });

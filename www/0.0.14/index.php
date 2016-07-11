@@ -147,13 +147,8 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
             <button class="video-layout-Metro left" onclick="videoLayout_metro();"><i class="fa fa-cubes" aria-hidden="true"></i> <span>Metro</span></button>
             <button class="video-layout-overlay left" onclick="videoLayout_overlay();"><i class="fa fa-object-ungroup" aria-hidden="true"></i> <span>Overlay</span></button>
             <button class="button-whiteboard left show" onclick="whiteboard.toggle();"><i class="fa fa-television" aria-hidden="true"></i> <span>WhiteBoard</span></button>
-
             <button class="room-leave left"><i class="fa fa-users" aria-hidden="true"></i> <span>Lobby</span></button>
             <button class="room-reconnect left"><i class="fa fa-refresh" aria-hidden="true"></i> <span>Reload</span></button>
-
-            <!--button class="reconnect right">Re-connect</button>
-            <button class="leave right">Leave</button-->
-
         </nav>
         <div class="content">
             <div class="videos">
@@ -201,24 +196,6 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
                     <button class="clear btn btn-primary btn-sm"><i class="fa fa-file-o" aria-hidden="true"></i> <span>Clear Whiteboard</span></button>
                     <button class="eraser btn btn-primary btn-sm"><i class="fa fa-eraser" aria-hidden="true"></i> <span>Eraser</span></button>
                     <button class="draw btn btn-primary btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i> <span>Draw</span></button>
-                    <label for="line-size">
-                        <select id="line-size" name="line-size" class="btn size">
-                            <option value="1">Extra Small</option>
-                            <option value="2">Small</option>
-                            <option value="3">Medium</option>
-                            <option value="5">Large</option>
-                            <option value="10">Extra Large</option>
-                        </select>
-                    </label>
-                    <label for="color">
-                        <select id="color" name="color" class="btn color">
-                            <option value="black" class="black"> Black</option>
-                            <option value="red" class="red"> Red</option>
-                            <option value="blue" class="blue"> Blue</option>
-                            <option value="green" class="green"> Green</option>
-                            <option value="white" class="white"> White</option>
-                        </select>
-                    </label>
                     <div class="line-size">
                         <div class="select">
                             <i class="fa fa-caret-down" aria-hidden="true"></i>
@@ -247,10 +224,7 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
             </div>
         </div>
     </section><!-- #room -->
-
-    <!--nav class="navbar navbar-fixed-bottom navbar-light bg-faded">
-        <a class="navbar-brand" href="#">Fixed bottom</a>
-    </nav-->
+    
     <footer>
         <div class="copyright">
             Company Name: <%=company_name%>

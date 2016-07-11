@@ -78,11 +78,9 @@ wb.clear_canvas = function () {
 };
 
 whiteboard.getLineSize = function () {
-    //return whiteboard().find('#line-size').val();
     return whiteboard().find('.line-size .option.active').attr('value'); //code#782016 custom select
 };
 whiteboard.getColor = function () {
-    //return whiteboard().find('#color').val();
     return whiteboard().find('.colors .option.active').attr('value'); //code#782016 custom select
 };
 /**
