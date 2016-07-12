@@ -3,7 +3,6 @@
     background-color:#19b5fe;
 }
 #room nav {
-    overflow: hidden;
     position: absolute;
     right: 5px;
     top: -45px;
@@ -83,17 +82,21 @@
     height: 100%;
 }
 #room nav button span,
-#room nav .select span {
+#room nav .selected span,
+#room nav .options span {
     display: none;
 }
-#room nav .line-size .select hr {
+#room nav .line-size .selected hr,
+#room nav .line-size .options hr {
     display: inline-block;
-    width: 20px;
-    margin-top: 0;
-    margin-bottom: 0;
+    width: 25px;
+    margin: 0 5px 0 0;
     border: 0;
     border-top: 1px solid black;
     vertical-align: middle;
+}
+#room .colors.selectBox .fa-square {
+    margin: 5px;
 }
 
 
@@ -122,10 +125,23 @@
 }
 @media all and ( min-width: 800px ){
     #room nav button span,
-    #room nav .select span {
+    #room nav .selected span,
+    #room nav .options span {
         display: inline-block;
     }
-    #room nav .line-size .select hr {
+    #room nav .line-size .selected span,
+    #room nav .line-size .options span {
+        min-width: 85px;
+    }
+    #room nav .colors .selected span,
+    #room nav .colors .options span {
+        min-width: 50px;
+    }
+    #room nav .line-size .selected hr,
+    #room nav .line-size .options hr {
         display: none;
+    }
+    #room .colors.selectBox .fa-square {
+        margin: 0;
     }
 }

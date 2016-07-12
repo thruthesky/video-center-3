@@ -1,67 +1,72 @@
 /** Custom Select button**/
-#room .whiteboard .select {
-    position: relative;
-    display: inline-block;
-    background-color: #f1f1f1;
-    float: left;
+#room .whiteboard .selectBox {
+    position:relative;
+    display:inline-block;
+    cursor:pointer;
+    text-align:left;
+    line-height:31px;
     margin-left: 5px;
-    border-radius: 0.2rem;
-
-}
-#room .whiteboard .select i.fa-caret-down {
-    position: absolute;
-    right: 7px;
-    top: 7px;
-}
-#room .whiteboard .select .option {
-    display: none;
-    background-color: #e2e2e2;
-    border: 1px solid #e2e2e2;
-    padding-right: 20px;
-    border-radius: 0;
-}
-#room .whiteboard .select .option.active {
-    display: block;
     background-color: #e2e2e2;
     border-radius: .2rem;
 }
-#room .whiteboard .select .option:hover {
+#room .whiteboard .selected {
+    padding: 0 15px 0 10px;
+}
+#room .whiteboard .options {
+    position:absolute;
+    top:31px;
+    left:0;
+    border:1px solid #ccc;
+    overflow:hidden;
+    display:none;
+}
+
+#room .whiteboard .selectBox i.fa-caret-down {
+    position: absolute;
+    right: 5px;
+    top: 7px;
+}
+#room .whiteboard .options .option {
+    background-color: #e2e2e2;
+    border: 1px solid #e2e2e2;
+    padding: 0 10px 0 10px;
+    width:100%;
+    border-radius: 0;
+}
+#room .whiteboard .options .option:hover {
     background-color: #d4d4d4;
     border: 1px solid #d4d4d4;
 }
-#room .whiteboard .select .option span {
-    min-width: 35px;
-}
 /** Custom Color Select button**/
-#room .whiteboard .select .option.black .fa-square {
+#room .whiteboard .selectBox [value='black'] .fa-square {
     color: black;
 }
-#room .whiteboard .select .option.red .fa-square {
+#room .whiteboard .selectBox [value='red'] .fa-square {
     color: red;
 }
-#room .whiteboard .select .option.blue .fa-square {
+#room .whiteboard .selectBox [value='blue'] .fa-square {
     color: blue;
 }
-#room .whiteboard .select .option.green .fa-square {
+#room .whiteboard .selectBox [value='green'] .fa-square {
     color: green;
 }
-#room .whiteboard .select .option.white .fa-square {
+#room .whiteboard .selectBox [value='white'] .fa-square {
     color: white;
 }
 /** Custom Brush Size Select button**/
-#room .whiteboard .select .option.extra-small hr {
+#room .whiteboard .selectBox [value='1'] hr {
     border-top: 1px solid black;
 }
-#room .whiteboard .select .option.small hr {
+#room .whiteboard .selectBox [value='2'] hr {
     border-top: 2px solid black;
 }
-#room .whiteboard .select .option.medium hr {
+#room .whiteboard .selectBox [value='3'] hr {
     border-top: 3px solid black;
 }
-#room .whiteboard .select .option.large hr {
+#room .whiteboard .selectBox [value='5'] hr {
     border-top: 5px solid black;
 }
-#room .whiteboard .select .option.extra-large hr {
+#room .whiteboard .selectBox [value='10'] hr {
     border-top: 10px solid black;
 }
 

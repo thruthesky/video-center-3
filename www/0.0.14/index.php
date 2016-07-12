@@ -196,24 +196,26 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
                     <button class="clear btn btn-primary btn-sm"><i class="fa fa-file-o" aria-hidden="true"></i> <span>Clear Whiteboard</span></button>
                     <button class="eraser btn btn-primary btn-sm"><i class="fa fa-eraser" aria-hidden="true"></i> <span>Eraser</span></button>
                     <button class="draw btn btn-primary btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i> <span>Draw</span></button>
-                    <div class="line-size">
-                        <div class="select">
-                            <i class="fa fa-caret-down" aria-hidden="true"></i>
-                            <div value="1" class="extra-small option btn-sm active"><hr><span>Extra Small</span></div>
-                            <div value="2" class="small option btn-sm"><hr><span>Small</span></div>
-                            <div value="3" class="medium option btn-sm"><hr><span>Medium</span></div>
-                            <div value="5" class="large option btn-sm"><hr><span>Large</span></div>
-                            <div value="10" class="extra-large option btn-sm"><hr><span>Extra Large</span></div>
+                    <div class="line-size selectBox">
+                        <span class='selected'></span>
+                        <i class="fa fa-caret-down" aria-hidden="true"></i>
+                        <div class="options">
+                            <div value="1" class="option"><hr><span>Extra Small</span></div>
+                            <div value="2" class="option"><hr><span>Small</span></div>
+                            <div value="3" class="option"><hr><span>Medium</span></div>
+                            <div value="5" class="option"><hr><span>Large</span></div>
+                            <div value="10" class="option"><hr><span>Extra Large</span></div>
                         </div>
                     </div>
-                    <div class="colors">
-                        <div class="select">
-                            <i class="fa fa-caret-down" aria-hidden="true"></i>
-                            <div value="black" class="black option btn-sm active"><i class="fa fa-square" aria-hidden="true"></i> <span>Black</span></div>
-                            <div value="red" class="red option btn-sm"><i class="fa fa-square" aria-hidden="true"></i> <span>Red</span></div>
-                            <div value="blue" class="blue option btn-sm"><i class="fa fa-square" aria-hidden="true"></i> <span>Blue</span></div>
-                            <div value="green" class="green option btn-sm"><i class="fa fa-square" aria-hidden="true"></i> <span>Green</span></div>
-                            <div value="white" class="white option btn-sm"><i class="fa fa-square" aria-hidden="true"></i> <span>White</span></div>
+                    <div class="colors selectBox">
+                        <span class='selected'></span>
+                        <i class="fa fa-caret-down" aria-hidden="true"></i>
+                        <div class="options">
+                            <div value="black" class="option"><i class="fa fa-square" aria-hidden="true"></i> <span>Black</span></div>
+                            <div value="red" class="option"><i class="fa fa-square" aria-hidden="true"></i> <span>Red</span></div>
+                            <div value="blue" class="option"><i class="fa fa-square" aria-hidden="true"></i> <span>Blue</span></div>
+                            <div value="green" class="option"><i class="fa fa-square" aria-hidden="true"></i> <span>Green</span></div>
+                            <div value="white" class="option"><i class="fa fa-square" aria-hidden="true"></i> <span>White</span></div>
                         </div>
                     </div>
                 </nav>
