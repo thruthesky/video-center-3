@@ -377,13 +377,14 @@ client.reLayout = function () {
 
 
         //whiteboard().width('100%');
-
+        var videos_width = client.videos().width();
         var room_width = client.room().width();
         var room_height = client.room().height();
         console.log('room_width:' + room_width);
         console.log('room_height:' + room_height);
-        var whiteboard_width = room_width - client.videos().width();
-        console.log( 'width: whiteboard:' + whiteboard_width);
+        var whiteboard_width = ( room_width == videos_width ? room_width : room_width - videos_width );
+        console.log( 'width: whiteboard: ' + whiteboard_width );
+
         whiteboard().width( whiteboard_width );
         whiteboard().height( room_height );
 

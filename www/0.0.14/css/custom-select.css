@@ -76,6 +76,7 @@
 #room .whiteboard .colors,
 #room .whiteboard button {
     float: left;
+    margin-bottom: 5px;
 }
 #room .whiteboard button {
     margin-left: 5px;
