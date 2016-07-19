@@ -25,6 +25,7 @@ footer .wide {
 
     #room .content .whiteboard {
         left: 246px;
+        right: 0;
     }
 
     footer .narrow {

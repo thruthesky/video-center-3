@@ -18,10 +18,16 @@ client.lobbyMenu = function() { return $('.lobby-menu'); };
 client.lobbyMenuContent = function() { return $('.lobby-menu-content'); };
 client.lobbyMenuContentBox = function() { return client.lobbyMenuContent().find('.box'); };
 
+client.videos = function() {
+    return client.room().find('.videos');
+};
+
+
 client.room = function () {
     return $('section#room');
 };
 client.roomContent = function() { return client.room().find('.content'); };
+var content = function () { return client.roomContent() };
 client.chat = function () {
     return client.room().find('.chat');
 };
@@ -368,24 +374,72 @@ client.addEventHandlers = function () {
 client.reLayout = function () {
 
     if ( client.room().hasClass('has-whiteboard') ) {
-        var w = whiteboard().width();
-        var wh = $(window).height() - 100; // 윈도우 세로 크기에서 100을 뺀다. ( 그냥 뺀다. 별 이유 없다 )
-        var h = Math.floor(w * 1.4); // whiteboard 넓이의 1.4 배.
-        if ( h > wh ) h = wh; // 윈도우 세로 크기에서 100 뺀 값과 whiteboard 너비의 1.4 배 중에서 작은 값을 캔버스 높이로 지정한다. ( 왜? 그냥 ... 적절할 까봐서 )
-        whiteboard().height( h );
+
+
+        //whiteboard().width('100%');
+
+        var room_width = client.room().width();
+        var room_height = client.room().height();
+        console.log('room_width:' + room_width);
+        console.log('room_height:' + room_height);
+        var whiteboard_width = room_width - client.videos().width();
+        console.log( 'width: whiteboard:' + whiteboard_width);
+        whiteboard().width( whiteboard_width );
+        whiteboard().height( room_height );
+
+
+        whiteboard.content().width( whiteboard_width );
+        whiteboard.content().height( room_height );
+
+
 
         /**
          * 여기서 반드시 canvas width/height 을 지정해야 한다.
          * @type {Element}
          */
-        //wb.canvas = document.getElementById("whiteboard-canvas");
-        wb.canvas.width = w;
-        wb.canvas.height = h;
+        wb.canvas = document.getElementById("whiteboard-canvas");
+        wb.canvas.width = whiteboard_width;
+        wb.canvas.height = room_height;
+
+
+        wb.book().css('max-width', '100%');
+        wb.book().css('max-height', '100%');
+
+
+
+        setTimeout(function() {
+
+            var w = wb.book().css('width');
+            var h = wb.book().css('height');
+
+            console.log(w,h);
+
+            w = w.replace("px", '');
+            w = parseInt(w);
+            h = h.replace("px", '');
+            h = parseInt(h);
+            if ( w > 0 ) {
+
+                console.log("draw now");
+
+                whiteboard().width( w );
+                whiteboard().height( h );
+                wb.content().width( w );
+                wb.content().height( h );
+                wb.canvas = document.getElementById("whiteboard-canvas");
+                wb.canvas.width = w;
+                wb.canvas.height = h;
+
+            }
+
+
+        }, 100);
 
         // clear drawing history count
         wb.whiteboard_draw_line_count = 0;
         // 화면을 재 조정하면 다시 그린다.
         socket.emit('get-whiteboard-draw-line-history', client.getRoomName() );
+        
     }
 
 };

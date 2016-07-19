@@ -24,7 +24,6 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
     <link href="css/module-video.css" rel="stylesheet">
     <link href="css/module-chat.css" rel="stylesheet">
     <link href="css/module-document.css" rel="stylesheet">
-    <link href="css/module-whiteboard.css" rel="stylesheet">
     <link href="css/custom-select.css" rel="stylesheet">
     <link href="css/header.css" rel="stylesheet">
     <link href="css/entrance.css" rel="stylesheet">
@@ -63,7 +62,7 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
 
     <header>
         <div class="caption">
-            <span class="logo">LOGO</span>
+            <span class="logo">Video English</span>
         </div>
         <nav class="header-menu">
             <div>
@@ -139,8 +138,8 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
             </div>
         </div>
     </section><!-- #lobby -->
-    
-    
+
+
     <section id="room" class="">
         <nav>
             <button class="video-layout-list left" onclick="videoLayout_list();"><i class="fa fa-list" aria-hidden="true"></i> <span>List</span></button>
@@ -186,47 +185,48 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
                         </form>
                     </div>
                 </div>
-                    <div class="document-content">
+                <div class="document-content">
 
-                    </div>
+                </div>
 
             </div>
             <div class="whiteboard">
-                <nav>
-                    <button class="clear btn btn-primary btn-sm"><i class="fa fa-file-o" aria-hidden="true"></i> <span>Clear Whiteboard</span></button>
-                    <button class="eraser btn btn-primary btn-sm"><i class="fa fa-eraser" aria-hidden="true"></i> <span>Eraser</span></button>
-                    <button class="draw btn btn-primary btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i> <span>Draw</span></button>
-                    <div class="line-size selectBox">
-                        <span class='selected'></span>
-                        <i class="fa fa-caret-down" aria-hidden="true"></i>
-                        <div class="options">
-                            <div value="1" class="option"><hr><span>Extra Small</span></div>
-                            <div value="2" class="option"><hr><span>Small</span></div>
-                            <div value="3" class="option"><hr><span>Medium</span></div>
-                            <div value="5" class="option"><hr><span>Large</span></div>
-                            <div value="10" class="option"><hr><span>Extra Large</span></div>
+                <div class="whiteboard-content">
+                    <img class="book" src="img/white.jpg">
+                    <nav>
+                        <button class="clear btn btn-primary btn-sm"><i class="fa fa-file-o" aria-hidden="true"></i> <span>Clear Whiteboard</span></button>
+                        <button class="eraser btn btn-primary btn-sm"><i class="fa fa-eraser" aria-hidden="true"></i> <span>Eraser</span></button>
+                        <button class="draw btn btn-primary btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i> <span>Draw</span></button>
+                        <div class="line-size selectBox">
+                            <span class='selected'></span>
+                            <i class="fa fa-caret-down" aria-hidden="true"></i>
+                            <div class="options">
+                                <div value="1" class="option"><hr><span>Extra Small</span></div>
+                                <div value="2" class="option"><hr><span>Small</span></div>
+                                <div value="3" class="option"><hr><span>Medium</span></div>
+                                <div value="5" class="option"><hr><span>Large</span></div>
+                                <div value="10" class="option"><hr><span>Extra Large</span></div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="colors selectBox">
-                        <span class='selected'></span>
-                        <i class="fa fa-caret-down" aria-hidden="true"></i>
-                        <div class="options">
-                            <div value="black" class="option"><i class="fa fa-square" aria-hidden="true"></i> <span>Black</span></div>
-                            <div value="red" class="option"><i class="fa fa-square" aria-hidden="true"></i> <span>Red</span></div>
-                            <div value="blue" class="option"><i class="fa fa-square" aria-hidden="true"></i> <span>Blue</span></div>
-                            <div value="green" class="option"><i class="fa fa-square" aria-hidden="true"></i> <span>Green</span></div>
-                            <div value="white" class="option"><i class="fa fa-square" aria-hidden="true"></i> <span>White</span></div>
+                        <div class="colors selectBox">
+                            <span class='selected'></span>
+                            <i class="fa fa-caret-down" aria-hidden="true"></i>
+                            <div class="options">
+                                <div value="black" class="option"><i class="fa fa-square" aria-hidden="true"></i> <span>Black</span></div>
+                                <div value="red" class="option"><i class="fa fa-square" aria-hidden="true"></i> <span>Red</span></div>
+                                <div value="blue" class="option"><i class="fa fa-square" aria-hidden="true"></i> <span>Blue</span></div>
+                                <div value="green" class="option"><i class="fa fa-square" aria-hidden="true"></i> <span>Green</span></div>
+                                <div value="white" class="option"><i class="fa fa-square" aria-hidden="true"></i> <span>White</span></div>
+                            </div>
                         </div>
-                    </div>
-                </nav>
-                <section class="markup">
-
-                </section>
-                <canvas id="whiteboard-canvas"></canvas>
-            </div>
+                    </nav>
+                    <section class="markup">FOR TITLE?</section>
+                    <canvas id="whiteboard-canvas"></canvas>
+                </div><!--/.whiteboard-content-->
+            </div><!--/.whiteboard-->
         </div>
     </section><!-- #room -->
-    
+
     <footer>
         <div class="copyright">
             Company Name: <%=company_name%>

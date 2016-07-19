@@ -2,7 +2,13 @@ var whiteboard = wb = function() {
     return $('section#room .whiteboard');
 };
 
+wb.book = function () {
+    return whiteboard().find('img.book');
+};
+
+
 wb.room = function () { return $('section#room'); };
+wb.content = function () { return wb().find('.whiteboard-content') };
 
 
 
@@ -330,5 +336,6 @@ whiteboard.hide = function() {
 
 
 whiteboard.image = function ( url ) {
-    $('.whiteboard').css( 'background-image', 'url("'+url+'")');
+
+    wb.book().prop( 'src', url);
 };

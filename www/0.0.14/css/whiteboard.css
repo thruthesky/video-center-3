@@ -1,0 +1,73 @@
+.whiteboard {
+    background: no-repeat; background-size: 100%;
+}
+
+/** White Board Design */
+#room .content .whiteboard {
+    display: none;
+    height: 340px;
+
+}
+
+
+#room.has-whiteboard .whiteboard {
+    display: block;
+}
+
+
+
+.whiteboard-content {
+    position: relative;
+}
+.whiteboard-content .book {
+    position: absolute;
+    z-index: 100;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+
+#room .content .whiteboard nav {
+    position: absolute;
+    z-index: 500;
+    top: 10px;
+    right: 5px;
+}
+#room .content .whiteboard .size,
+#room .content .whiteboard .color {
+    padding: 5px 5px;
+}
+#room .content .whiteboard section {
+    position: absolute;
+    z-index: -50;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+#room .content .whiteboard canvas {
+    position:relative;
+    z-index: 200;
+    width:100%;
+    height: 100%;
+}
+
+#room nav button span,
+#room nav .selected span,
+#room nav .options span {
+    display: none;
+}
+
+#room nav .line-size .selected hr,
+#room nav .line-size .options hr {
+    display: inline-block;
+    width: 25px;
+    margin: 0 5px 0 0;
+    border: 0;
+    border-top: 1px solid black;
+    vertical-align: middle;
+}
+#room .colors.selectBox .fa-square {
+    margin: 5px;
+}
+
