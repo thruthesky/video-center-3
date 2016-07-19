@@ -337,5 +337,5 @@ whiteboard.hide = function() {
 
 whiteboard.image = function ( url ) {
     wb.book().prop( 'src', url);
-    
+    client.reLayout();
 };
