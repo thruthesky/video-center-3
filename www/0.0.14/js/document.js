@@ -61,6 +61,10 @@ function loadBook(path) {
     });
 }
 
+function isIE(userAgent) {
+    userAgent = userAgent || navigator.userAgent;
+    return userAgent.indexOf("MSIE ") > -1 || userAgent.indexOf("Trident/") > -1 || userAgent.indexOf("Edge/") > -1;
+}
 
 $(function(){
 
@@ -69,6 +73,9 @@ $(function(){
     var $content = $('.document-content');
     $content.html( $loader );
 
+    if ( isIE() ) {
+        alert( 'Some Features are not Compatible with IE Browser,\n Use Chrome for Better Experience.');
+    }
     $('.document form').prop('action', bookServerURL + 'upload.php');
     loadBook();
 

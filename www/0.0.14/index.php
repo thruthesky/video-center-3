@@ -40,8 +40,6 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
          */
     </style>
     <script>
-
-
         //
         var debugMode = 'call-center-desktop';
 
@@ -59,7 +57,6 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
 </head>
 <body>
 <script type="text/template" id="template">
-
     <header>
         <div class="caption">
             <span class="logo">Video English</span>
