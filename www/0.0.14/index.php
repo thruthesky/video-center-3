@@ -177,7 +177,7 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
                     </a>
                     <div class="file-upload">
                         <form target="_hidden_file_upload_frame" enctype="multipart/form-data" action="<?php echo $url_server?>upload.php" method="POST">
-                            <input type="hidden" name="MAX_FILE_SIZE" value="300000" />
+                            <input type="hidden" name="MAX_FILE_SIZE" value="800000" />
                             <input name="userfile" type="file" onchange="submit();" />
                         </form>
                     </div>
