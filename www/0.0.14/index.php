@@ -230,7 +230,7 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
         </div>
         <div class="copyright">
             Company Name: <%=company_name%> President : <%=ceo_name%><br>
-            Phone: <%=phone_number%> Address: <%=address%><br>
+           <?php  /*Phone: <%=phone_number%> Address: <%=address%><br>*/     ?>
             Copyright (C) 2013 ~ <%=Ymd%>
         </div>
     </footer><!-- #footer -->
