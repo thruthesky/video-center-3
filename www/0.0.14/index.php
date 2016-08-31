@@ -60,7 +60,7 @@ $urlSocketServer = 'https://www.videocenter.co.kr:10443'; // should be real serv
     <header>
         <div class="caption">
             <span class="logo">Video English</span>
-            <span class="text">화상강의실은 크롬 브라우저만 지원합니다.</span>
+            <span class="text" style="color: red; font-weight: 600; padding-left: 20px;">화상강의실은 크롬 브라우저만 지원합니다.</span>
         </div>
         <nav class="header-menu">
             <div>
