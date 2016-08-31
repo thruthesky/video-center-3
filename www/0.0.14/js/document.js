@@ -61,9 +61,27 @@ function loadBook(path) {
     });
 }
 
-function isIE(userAgent) {
-    userAgent = userAgent || navigator.userAgent;
-    return userAgent.indexOf("MSIE ") > -1 || userAgent.indexOf("Trident/") > -1 || userAgent.indexOf("Edge/") > -1;
+//function isIE(userAgent) {
+//    userAgent = userAgent || navigator.userAgent;
+//    return userAgent.indexOf("MSIE ") > -1 || userAgent.indexOf("Trident/") > -1 || userAgent.indexOf("Edge/") > -1;
+//}
+
+function isChrome() {
+// please note,
+// that IE11 now returns undefined again for window.chrome
+// and new Opera 30 outputs true for window.chrome
+// and new IE Edge outputs to true now for window.chrome
+// so use the below updated condition
+    var isChromium = window.chrome,
+        vendorName = window.navigator.vendor,
+        isOpera = window.navigator.userAgent.indexOf("OPR") > -1,
+        isIEedge = window.navigator.userAgent.indexOf("Edge") > -1;
+
+    if (isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera == false && isIEedge == false) {
+        return null
+    } else {
+        alert( '화상강의실은 크롬 브라우저만 지원합니다.' );
+    }
 }
 
 $(function(){
@@ -73,9 +91,9 @@ $(function(){
     var $content = $('.document-content');
     $content.html( $loader );
 
-    if ( isIE() ) {
-        alert( 'Some Features are not Compatible with IE Browser,\n Use Chrome for Better Experience.');
-    }
+    isChrome();
+
+
     $('.document form').prop('action', bookServerURL + 'upload.php');
     loadBook();
 
